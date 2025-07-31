@@ -1,3 +1,4 @@
+@model manyasligida.Models.ContactMessage
 @{
     ViewData["Title"] = "İletişim - Manyaslı Gıda";
 }
@@ -71,48 +72,66 @@
                 <div class="contact-form">
                     <h3 class="mb-4">Mesaj Gönderin</h3>
                     
-                    @if (TempData["Success"] != null)
+                    @if (TempData["MessageSuccess"] != null)
                     {
-                        <div class="alert alert-success">
-                            @TempData["Success"]
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @TempData["MessageSuccess"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }
                     
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert alert-danger">
-                            @TempData["Error"]
-                        </div>
-                    }
-                    
-                    <form method="post" action="@Url.Action("SendMessage", "Contact")">
+                    <form asp-action="SendMessage" method="post">
+                        @Html.AntiForgeryToken()
+                        
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="name" class="form-label">Ad Soyad *</label>
-                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <label asp-for="Name" class="form-label">
+                                        <i class="fas fa-user me-2 text-primary"></i>Ad Soyad *
+                                    </label>
+                                    <input asp-for="Name" class="form-control" placeholder="Adınız ve soyadınız">
+                                    <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email" class="form-label">E-posta *</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <label asp-for="Email" class="form-label">
+                                        <i class="fas fa-envelope me-2 text-primary"></i>E-posta *
+                                    </label>
+                                    <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Phone" class="form-label">
+                                        <i class="fas fa-phone me-2 text-primary"></i>Telefon
+                                    </label>
+                                    <input asp-for="Phone" class="form-control" placeholder="Telefon numaranız">
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Subject" class="form-label">
+                                        <i class="fas fa-tag me-2 text-primary"></i>Konu *
+                                    </label>
+                                    <input asp-for="Subject" class="form-control" placeholder="Mesaj konunuz">
+                                    <span asp-validation-for="Subject" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="subject" class="form-label">Konu</label>
-                                    <input type="text" class="form-control" id="subject" name="subject">
+                                    <label asp-for="Message" class="form-label">
+                                        <i class="fas fa-comment me-2 text-primary"></i>Mesajınız *
+                                    </label>
+                                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="Mesajınızı buraya yazın..."></textarea>
+                                    <span asp-validation-for="Message" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="form-group">
-                                    <label for="message" class="form-label">Mesajınız *</label>
-                                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-paper-plane me-2"></i>Mesaj Gönder
                                 </button>
                             </div>
@@ -256,4 +275,8 @@
         background: #f8d7da;
         color: #721c24;
     }
-</style> 
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

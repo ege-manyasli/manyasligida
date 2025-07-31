@@ -1,5 +1,6 @@
+@model manyasligida.Models.Product
 @{
-    ViewData["Title"] = "Ürün Detayı - Manyaslı Gıda";
+    ViewData["Title"] = $"{Model.Name} - Manyaslı Gıda";
 }
 
 <!-- Page Header -->
@@ -11,7 +12,7 @@
                     <ol class="breadcrumb justify-content-center">
                         <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-white">Ana Sayfa</a></li>
                         <li class="breadcrumb-item"><a href="@Url.Action("Index", "Products")" class="text-white">Ürünler</a></li>
-                        <li class="breadcrumb-item active text-warning" aria-current="page">Ürün Detayı</li>
+                        <li class="breadcrumb-item active text-warning" aria-current="page">@Model.Name</li>
                     </ol>
                 </nav>
             </div>
@@ -26,13 +27,24 @@
             <!-- Product Images -->
             <div class="col-lg-6 mb-4" data-aos="fade-right">
                 <div class="product-gallery">
-                    <div class="main-image mb-3">
-                        <img id="mainImage" src="~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg" class="img-fluid rounded-4" alt="Ezine Peyniri">
+                    <div class="main-image-container mb-3">
+                        <img id="mainImage" src="@Model.ImageUrl" class="main-image" alt="@Model.Name">
+                        <div class="image-overlay">
+                            <button class="btn btn-light btn-sm" onclick="openImageModal()">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="thumbnail-images d-flex gap-2">
-                        <img src="~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg" class="thumbnail-img active" onclick="changeImage(this, '~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg')" alt="Ezine Peyniri 1">
-                        <img src="~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg" class="thumbnail-img" onclick="changeImage(this, '~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg')" alt="Ezine Peyniri 2">
-                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="thumbnail-img" onclick="changeImage(this, '~/img/mihalic-peyniri-350-gr.-122f.jpg')" alt="Ezine Peyniri 3">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail-images d-flex gap-2 flex-wrap">
+                            <img src="@Model.ImageUrl" class="thumbnail-img active" onclick="changeImage(this, '@Model.ImageUrl')" alt="@Model.Name">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <!-- Additional images can be added here dynamically -->
+                                <img src="@Model.ImageUrl" class="thumbnail-img" onclick="changeImage(this, '@Model.ImageUrl')" alt="@Model.Name - 2">
+                                <img src="@Model.ImageUrl" class="thumbnail-img" onclick="changeImage(this, '@Model.ImageUrl')" alt="@Model.Name - 3">
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -40,7 +52,7 @@
             <!-- Product Info -->
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="product-info">
-                    <h1 class="product-title fw-bold mb-3">Ezine Peyniri</h1>
+                    <h1 class="product-title fw-bold mb-3">@Model.Name</h1>
                     
                     <!-- Rating -->
                     <div class="rating mb-3">
@@ -52,37 +64,48 @@
                             <i class="fas fa-star text-warning"></i>
                         </div>
                         <span class="ms-2 text-muted">(24 değerlendirme)</span>
-                        <span class="ms-3 text-success"><i class="fas fa-check-circle"></i> Stokta</span>
+                        @if (Model.StockQuantity > 0)
+                        {
+                            <span class="ms-3 text-success"><i class="fas fa-check-circle"></i> Stokta</span>
+                        }
+                        else
+                        {
+                            <span class="ms-3 text-danger"><i class="fas fa-times-circle"></i> Stokta Yok</span>
+                        }
                     </div>
 
                     <!-- Price -->
                     <div class="price-section mb-4">
-                        <div class="current-price">₺45.00</div>
-                        <div class="old-price text-muted text-decoration-line-through">₺55.00</div>
-                        <span class="badge bg-danger ms-2">%18 İndirim</span>
+                        <div class="current-price">₺@Model.Price.ToString("0.00")</div>
+                        @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
+                        {
+                            <div class="old-price text-muted text-decoration-line-through">₺@Model.OldPrice?.ToString("0.00")</div>
+                            var discountPercent = ((Model.OldPrice!.Value - Model.Price) / Model.OldPrice.Value * 100).ToString("0");
+                            <span class="badge bg-danger ms-2">%@discountPercent İndirim</span>
+                        }
                     </div>
 
                     <!-- Product Details -->
                     <div class="product-details mb-4">
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="col-6">
                                 <div class="detail-item">
-                                    <strong>Gramaj:</strong> 600 Gr
+                                    <strong>Gramaj:</strong> @Model.Weight
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="detail-item">
-                                    <strong>Yağ Oranı:</strong> Tam Yağlı
+                                    <strong>Yağ Oranı:</strong> @Model.FatContent
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="detail-item">
-                                    <strong>Tuz Oranı:</strong> Orta
+                                    <strong>Kategori:</strong> @Model.Category?.Name
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="detail-item">
-                                    <strong>Raf Ömrü:</strong> 30 Gün
+                                    <strong>Stok:</strong> @Model.StockQuantity adet
                                 </div>
                             </div>
                         </div>
@@ -91,10 +114,14 @@
                     <!-- Quantity Selector -->
                     <div class="quantity-selector mb-4">
                         <label class="form-label fw-bold">Adet:</label>
-                        <div class="input-group" style="width: 150px;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                        <div class="input-group quantity-group">
+                            <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">
+                                <i class="fas fa-minus"></i>
+                            </button>
                             <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
-                            <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -102,14 +129,14 @@
                     <div class="action-buttons mb-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <button class="btn btn-primary btn-lg w-100" onclick="addToCart()">
-                                    <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                <button class="btn btn-primary btn-lg w-100" onclick="addToCart(@Model.Id)" @(Model.StockQuantity <= 0 ? "disabled" : "")>
+                                    <i class="fas fa-shopping-cart me-2"></i>@(Model.StockQuantity > 0 ? "Sepete Ekle" : "Stokta Yok")
                                 </button>
                             </div>
                             <div class="col-md-6">
-                                <button class="btn btn-outline-primary btn-lg w-100" onclick="buyNow()">
-                                    <i class="fas fa-bolt me-2"></i>Hemen Al
-                                </button>
+                                <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary btn-lg w-100">
+                                    <i class="fas fa-shopping-bag me-2"></i>Sepetim
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -169,23 +196,20 @@
                         <div class="p-4">
                             <h4 class="fw-bold mb-3">Ürün Açıklaması</h4>
                             <p class="mb-3">
-                                Ezine peyniri, Çanakkale'nin Ezine ilçesinde geleneksel yöntemlerle üretilen, 
-                                doğal inek sütünden yapılan tam yağlı beyaz peynirdir. Özel üretim teknikleri 
-                                ve doğal mayalama süreci ile elde edilen bu peynir, eşsiz lezzeti ve 
-                                yumuşak dokusu ile tanınır.
+                                @(string.IsNullOrEmpty(Model.Description) ? "Bu ürün hakkında detaylı bilgi yakında eklenecektir." : Model.Description)
                             </p>
                             <h5 class="fw-bold mb-2">Özellikler:</h5>
                             <ul class="mb-3">
-                                <li>%100 doğal inek sütü</li>
+                                <li>%100 doğal süt ürünü</li>
                                 <li>Geleneksel üretim yöntemi</li>
-                                <li>Tam yağlı ve besleyici</li>
-                                <li>Orta tuzlu, dengeli lezzet</li>
-                                <li>Yumuşak ve kremsi doku</li>
                                 <li>Katkı maddesi içermez</li>
+                                <li>Taze ve besleyici</li>
+                                <li>Kaliteli hammadde</li>
+                                <li>Hijyenik üretim</li>
                             </ul>
                             <h5 class="fw-bold mb-2">Kullanım Alanları:</h5>
                             <p>
-                                Kahvaltı sofralarının vazgeçilmezi olan Ezine peyniri, salatalarda, 
+                                Kahvaltı sofralarının vazgeçilmezi olan bu ürün, salatalarda, 
                                 böreklerde ve çeşitli yemeklerde de kullanılabilir. Özellikle 
                                 kahvaltılık olarak tüketildiğinde eşsiz bir lezzet sunar.
                             </p>
@@ -202,23 +226,23 @@
                                         <tbody>
                                             <tr>
                                                 <td><strong>Ürün Adı:</strong></td>
-                                                <td>Ezine Peyniri</td>
+                                                <td>@Model.Name</td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Gramaj:</strong></td>
-                                                <td>600 Gr</td>
+                                                <td>@Model.Weight</td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Yağ Oranı:</strong></td>
-                                                <td>%45-50</td>
+                                                <td>@Model.FatContent</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Tuz Oranı:</strong></td>
-                                                <td>%2-3</td>
+                                                <td><strong>Kategori:</strong></td>
+                                                <td>@Model.Category?.Name</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Protein:</strong></td>
-                                                <td>%18-20</td>
+                                                <td><strong>Stok Durumu:</strong></td>
+                                                <td>@(Model.StockQuantity > 0 ? "Stokta" : "Stokta Yok")</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -427,6 +451,21 @@
     </div>
 </section>
 
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name">
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .page-header {
         position: relative;
@@ -441,10 +480,48 @@
         color: var(--accent-color) !important;
     }
 
-    .product-gallery .main-image {
+    /* Product Gallery */
+    .product-gallery {
+        position: relative;
+    }
+
+    .main-image-container {
+        position: relative;
         border: 1px solid #e9ecef;
         border-radius: var(--border-radius);
         overflow: hidden;
+        background: #f8f9fa;
+    }
+
+    .main-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .main-image-container:hover .main-image {
+        transform: scale(1.05);
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .main-image-container:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .thumbnail-container {
+        overflow-x: auto;
+    }
+
+    .thumbnail-images {
+        min-width: max-content;
     }
 
     .thumbnail-img {
@@ -455,16 +532,20 @@
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.3s ease;
+        flex-shrink: 0;
     }
 
     .thumbnail-img:hover,
     .thumbnail-img.active {
         border-color: var(--primary-color);
+        transform: scale(1.05);
     }
 
+    /* Product Info */
     .product-title {
-        color: var(--text-dark);
+        color: var(--text-color);
         font-size: 2.5rem;
+        line-height: 1.2;
     }
 
     .current-price {
@@ -478,89 +559,120 @@
     }
 
     .detail-item {
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        border: 1px solid #e9ecef;
     }
 
-    .quantity-selector .input-group {
+    /* Quantity Selector */
+    .quantity-group {
+        max-width: 200px;
         border-radius: 25px;
+        overflow: hidden;
     }
 
-    .quantity-selector .btn {
-        border-radius: 25px 0 0 25px;
+    .quantity-group .btn {
+        border-radius: 0;
+        padding: 12px 16px;
     }
 
-    .quantity-selector .btn:last-child {
-        border-radius: 0 25px 25px 0;
-    }
-
-    .quantity-selector input {
+    .quantity-group .form-control {
         border: none;
         text-align: center;
         font-weight: 600;
+        padding: 12px;
     }
 
+    .quantity-group .form-control:focus {
+        box-shadow: none;
+    }
+
+    /* Action Buttons */
     .action-buttons .btn {
         border-radius: 25px;
         font-weight: 500;
+        padding: 15px 30px;
     }
 
     .quick-actions .btn {
         border-radius: 20px;
         font-size: 0.9rem;
+        padding: 10px 20px;
     }
 
     .delivery-info .card {
         border-radius: var(--border-radius);
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    /* Tabs */
+    .nav-tabs {
+        border-bottom: 2px solid #e9ecef;
     }
 
     .nav-tabs .nav-link {
         border: none;
-        color: var(--text-light);
+        color: var(--text-muted);
         font-weight: 500;
         padding: 1rem 2rem;
         border-radius: 25px 25px 0 0;
+        margin-right: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: var(--primary-color);
+        background: rgba(231, 76, 60, 0.1);
     }
 
     .nav-tabs .nav-link.active {
         background: var(--primary-color);
         color: white;
         border: none;
+        transform: translateY(-2px);
     }
 
     .tab-content {
         border: 1px solid #e9ecef;
         border-top: none;
         border-radius: 0 0 var(--border-radius) var(--border-radius);
+        background: white;
     }
 
+    /* Reviews */
     .overall-rating h2 {
         font-size: 3rem;
+        font-weight: 700;
     }
 
     .rating-bars .progress {
         border-radius: 10px;
+        background: #e9ecef;
     }
 
     .review-item {
         padding: 1rem 0;
     }
 
+    /* Product Cards */
     .product-card {
         transition: all 0.3s ease;
         border: none;
         box-shadow: var(--shadow);
+        border-radius: var(--border-radius-lg);
     }
 
     .product-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(139, 69, 19, 0.2);
+        box-shadow: var(--shadow-lg);
     }
 
     .product-image {
         position: relative;
         overflow: hidden;
-        height: 200px;
+        height: 250px;
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
     }
 
     .product-image img {
@@ -580,7 +692,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(139, 69, 19, 0.8);
+        background: rgba(231, 76, 60, 0.8);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -596,6 +708,65 @@
         font-size: 1.25rem;
         font-weight: 700;
         color: var(--primary-color);
+    }
+
+    /* Modal */
+    .modal-content {
+        border-radius: var(--border-radius-lg);
+        border: none;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .product-title {
+            font-size: 2rem;
+        }
+        
+        .main-image {
+            height: 300px;
+        }
+        
+        .thumbnail-img {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .quantity-group {
+            max-width: 100%;
+        }
+        
+        .action-buttons .btn {
+            padding: 12px 20px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .product-title {
+            font-size: 1.5rem;
+        }
+        
+        .main-image {
+            height: 250px;
+        }
+        
+        .current-price {
+            font-size: 1.5rem;
+        }
+        
+        .nav-tabs .nav-link {
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
     }
 </style>
 
@@ -627,35 +798,97 @@
         }
     }
 
-    function addToCart() {
+    function addToCart(productId) {
         const quantity = document.getElementById('quantity').value;
-        // Add to cart logic here
-        alert(`${quantity} adet Ezine Peyniri sepete eklendi!`);
+        const button = event.target;
+        const originalText = button.innerHTML;
+        
+        // Show loading state
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ekleniyor...';
+        button.disabled = true;
+
+        // Send AJAX request
+        fetch('/Cart/AddToCart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `productId=${productId}&quantity=${quantity}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.innerHTML = '<i class="fas fa-check me-2"></i>Eklendi!';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+                
+                // Show success message
+                showToast(data.message, 'success');
+                
+                // Update cart count in navbar
+                updateCartCount();
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                showToast(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showToast('Bir hata oluştu', 'error');
+        });
     }
 
-    function buyNow() {
-        const quantity = document.getElementById('quantity').value;
-        // Buy now logic here
-        alert(`${quantity} adet Ezine Peyniri için ödeme sayfasına yönlendiriliyorsunuz...`);
+    function updateCartCount() {
+        fetch('/Cart/GetCartCount')
+            .then(response => response.json())
+            .then(data => {
+                const cartCount = document.querySelector('.cart-count');
+                if (cartCount) {
+                    cartCount.textContent = data.cartItemCount;
+                    if (data.cartItemCount === 0) {
+                        cartCount.style.display = 'none';
+                    } else {
+                        cartCount.style.display = 'block';
+                    }
+                }
+            });
+    }
+
+    function openImageModal() {
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        document.getElementById('modalImage').src = document.getElementById('mainImage').src;
+        modal.show();
     }
 
     function addToWishlist() {
-        alert('Ürün favorilere eklendi!');
+        showToast('Ürün favorilere eklendi!', 'success');
     }
 
     function shareProduct() {
         if (navigator.share) {
             navigator.share({
-                title: 'Ezine Peyniri - Manyaslı Gıda',
+                title: '@Model.Name - Manyaslı Gıda',
                 text: 'Harika bir lezzet!',
                 url: window.location.href
             });
         } else {
-            alert('Paylaşım özelliği bu tarayıcıda desteklenmiyor.');
+            // Fallback for browsers that don't support Web Share API
+            const url = window.location.href;
+            const text = '@Model.Name - Manyaslı Gıda';
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(`${text}\n${url}`).then(() => {
+                    showToast('Link kopyalandı!', 'success');
+                });
+            } else {
+                showToast('Paylaşım özelliği bu tarayıcıda desteklenmiyor.', 'info');
+            }
         }
     }
 
     function showReviewForm() {
-        alert('Yorum formu açılacak...');
+        showToast('Yorum formu yakında eklenecek!', 'info');
     }
 </script> 

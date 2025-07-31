@@ -1,16 +1,53 @@
 /* 2025 Modern E-Ticaret Teması */
 :root {
-    --primary: #0d6efd;
-    --secondary: #ff3b3b;
-    --accent: #3CB815;
-    --bg-main: #f7f8fc;
-    --bg-card: #fff;
-    --bg-footer: #23272b;
-    --text-main: #222;
-    --text-light: #fff;
+    /* Modern ve canlı renkler */
+    --primary: #7C3AED;
+    --secondary: #06B6D4;
+    --accent: #F59E0B;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    
+    /* Arka plan ve kart renkleri */
+    --bg-main: #F9FAFB;
+    --bg-card: #FFFFFF;
+    --bg-footer: #1F2937;
+    
+    /* Metin renkleri */
+    --text-main: #111827;
+    --text-light: #FFFFFF;
+    --text-muted: #6B7280;
+    
+    /* Gradyanlar */
+    --gradient-primary: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+    --gradient-secondary: linear-gradient(135deg, #06B6D4 0%, #0EA5E9 100%);
+    --gradient-accent: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+    --gradient-dark: linear-gradient(135deg, #1F2937 0%, #374151 100%);
+    
+    /* Gölgeler */
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --shadow-primary: 0 8px 25px rgba(124, 58, 237, 0.25);
+    --shadow-secondary: 0 8px 25px rgba(6, 182, 212, 0.25);
+    
+    /* Border radius */
+    --border-radius-sm: 0.8rem;
     --border-radius: 1.2rem;
-    --transition: 0.25s cubic-bezier(.4,0,.2,1);
-    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+    --border-radius-lg: 2rem;
+    
+    /* Animasyonlar */
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    /* Yazı tipleri */
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Inter', sans-serif;
+    
+    /* Özel renkler */
+    --color-glass: rgba(255, 255, 255, 0.1);
+    --color-glass-dark: rgba(0, 0, 0, 0.1);
+    --border-color: rgba(0, 0, 0, 0.08);
 }
 [data-theme="dark"] {
     --bg-main: #181a1b;
@@ -59,16 +96,142 @@ html, body {
     background: var(--primary);
     color: #fff;
 }
-input, select, textarea {
-    border-radius: 1.2rem;
-    border: 1px solid #e0e0e0;
-    padding: 0.6rem 1.1rem;
-    transition: border var(--transition), box-shadow var(--transition);
+/* Form Styles */
+.form-control,
+.form-select {
+    border-radius: var(--border-radius);
+    border: 2px solid var(--border-color);
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    font-family: var(--font-secondary);
+    color: var(--text-main);
+    background-color: var(--bg-card);
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
 }
-input:focus, select:focus, textarea:focus {
+
+.form-control:hover,
+.form-select:hover {
+    border-color: rgba(124, 58, 237, 0.3);
+}
+
+.form-control:focus,
+.form-select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px #e9f1ff;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
     outline: none;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.2px;
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+/* Floating Label */
+.form-floating > .form-control,
+.form-floating > .form-select {
+    padding: 1.2rem;
+    height: calc(3.5rem + 2px);
+}
+
+.form-floating > label {
+    padding: 1rem 1.2rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    color: var(--primary);
+    transform: scale(0.85) translateY(-1rem) translateX(-0.15rem);
+}
+
+/* Input Groups */
+.input-group {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.input-group .form-control {
+    border-radius: var(--border-radius);
+}
+
+.input-group-text {
+    background: var(--bg-main);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 0.8rem 1.2rem;
+}
+
+/* Custom Checkbox & Radio */
+.form-check {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-right: 0.5rem;
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+}
+
+.form-check-label {
+    cursor: pointer;
+    user-select: none;
+    font-weight: 500;
+}
+
+/* Search Input */
+.search-input {
+    position: relative;
+}
+
+.search-input .form-control {
+    padding-left: 3rem;
+    padding-right: 1.2rem;
+}
+
+.search-input i {
+    position: absolute;
+    left: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+    transition: color var(--transition);
+}
+
+.search-input .form-control:focus + i {
+    color: var(--primary);
 }
 .badge {
     border-radius: 1rem;
@@ -130,7 +293,7 @@ input:focus, select:focus, textarea:focus {
     border-color: var(--primary);
 }
 /* Animasyonlar */
-@keyframes fadeInUp {
+@@keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: none; }
 }
@@ -173,40 +336,152 @@ input:focus, select:focus, textarea:focus {
 /* Ürün Kartı */
 .product-card {
     background: var(--bg-card);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow);
-    padding: 1.5rem;
-    transition: box-shadow var(--transition), transform var(--transition);
+    padding: 1.8rem;
+    transition: all var(--transition-bounce);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
 }
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(124, 58, 237, 0.05) 0%, 
+        rgba(6, 182, 212, 0.05) 50%,
+        rgba(245, 158, 11, 0.05) 100%
+    );
+    opacity: 0;
+    transition: var(--transition);
+}
+
 .product-card:hover {
-    box-shadow: 0 8px 32px rgba(13,110,253,0.13);
-    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px);
+    border-color: rgba(124, 58, 237, 0.2);
 }
+
+.product-card:hover::before {
+    opacity: 1;
+}
+
 .product-card img {
     max-width: 100%;
-    border-radius: 1rem;
-    margin-bottom: 1rem;
-    transition: transform 0.2s;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    transition: transform var(--transition-bounce);
+    box-shadow: var(--shadow-sm);
 }
+
 .product-card:hover img {
-    transform: scale(1.05) rotate(-2deg);
+    transform: scale(1.08) rotate(-2deg);
 }
-.product-card .price {
-    color: var(--primary);
-    font-size: 1.2rem;
+
+.product-card-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.product-title {
+    font-family: var(--font-primary);
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    color: var(--text-main);
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.3px;
+    transition: var(--transition);
 }
-.product-card .old-price {
-    color: #888;
-    text-decoration: line-through;
+
+.product-card:hover .product-title {
+    color: var(--primary);
+}
+
+.product-description {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+}
+
+.price-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.price {
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.price-currency {
     font-size: 1rem;
-    margin-left: 0.5rem;
+    margin-right: 0.2rem;
+    font-weight: 500;
+    color: var(--text-muted);
 }
+
+.old-price {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    font-size: 1.1rem;
+    opacity: 0.7;
+}
+
 .product-card .btn {
-    margin-top: 1rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    transform-origin: center;
+    transition: transform var(--transition-bounce), 
+                background var(--transition),
+                box-shadow var(--transition);
+}
+
+.product-card .btn:hover {
+    transform: scale(1.05);
+}
+
+/* Ürün badge'leri */
+.product-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.85rem;
+    z-index: 2;
+}
+
+.badge-new {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.badge-sale {
+    background: var(--gradient-accent);
+    color: white;
+}
+
+.badge-out-of-stock {
+    background: var(--gradient-dark);
+    color: white;
 }

@@ -1,0 +1,369 @@
+@model manyasligida.Models.User
+@{
+    ViewData["Title"] = "Profilim - Manyaslı Gıda";
+}
+
+<!-- Page Header -->
+<section class="page-header bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-user-circle me-3"></i>Profilim
+                </h1>
+                <p class="lead mb-0">Hesap bilgilerinizi yönetin</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-white">Ana Sayfa</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Profilim</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profile Section -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Navigation -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="profile-avatar mb-3">
+                                <i class="fas fa-user-circle fa-4x text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold">@Model.FullName</h5>
+                            <p class="text-muted mb-0">@Model.Email</p>
+                        </div>
+                        
+                        <div class="list-group list-group-flush">
+                            <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                                <i class="fas fa-user me-2"></i>Profil Bilgileri
+                            </a>
+                            <a href="#orders" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="fas fa-shopping-bag me-2"></i>Sipariş Geçmişi
+                            </a>
+                            <a href="#address" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="fas fa-map-marker-alt me-2"></i>Adres Bilgileri
+                            </a>
+                            <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="fas fa-shield-alt me-2"></i>Güvenlik
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="col-lg-9">
+                <div class="tab-content">
+                    <!-- Profile Information -->
+                    <div class="tab-pane fade show active" id="profile">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-user me-2 text-primary"></i>Profil Bilgileri
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @if (TempData["ProfileUpdateSuccess"] != null)
+                                {
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-check-circle me-2"></i>@TempData["ProfileUpdateSuccess"]
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                }
+
+                                <form asp-action="UpdateProfile" method="post">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label asp-for="FirstName" class="form-label fw-bold">Ad</label>
+                                            <input asp-for="FirstName" class="form-control" required>
+                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label asp-for="LastName" class="form-label fw-bold">Soyad</label>
+                                            <input asp-for="LastName" class="form-control" required>
+                                            <span asp-validation-for="LastName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label asp-for="Email" class="form-label fw-bold">E-posta</label>
+                                            <input asp-for="Email" class="form-control" type="email" required readonly>
+                                            <small class="text-muted">E-posta adresi değiştirilemez</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label asp-for="Phone" class="form-label fw-bold">Telefon</label>
+                                            <input asp-for="Phone" class="form-control" required>
+                                            <span asp-validation-for="Phone" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label asp-for="City" class="form-label fw-bold">Şehir</label>
+                                            <input asp-for="City" class="form-control">
+                                            <span asp-validation-for="City" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label asp-for="PostalCode" class="form-label fw-bold">Posta Kodu</label>
+                                            <input asp-for="PostalCode" class="form-control">
+                                            <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="Address" class="form-label fw-bold">Adres</label>
+                                        <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-muted">
+                                            <small>
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Üye olma tarihi: @Model.CreatedAt.ToString("dd.MM.yyyy")
+                                            </small>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order History -->
+                    <div class="tab-pane fade" id="orders">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-shopping-bag me-2 text-primary"></i>Sipariş Geçmişi
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @{
+                                    var orders = ViewBag.UserOrders as List<manyasligida.Models.Order>;
+                                }
+                                
+                                @if (orders != null && orders.Any())
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Sipariş No</th>
+                                                    <th>Tarih</th>
+                                                    <th>Tutar</th>
+                                                    <th>Durum</th>
+                                                    <th>İşlem</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var order in orders)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <strong>#@order.Id</strong>
+                                                        </td>
+                                                        <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                                        <td>
+                                                            <span class="fw-bold text-primary">@order.TotalAmount.ToString("C")</span>
+                                                        </td>
+                                                        <td>
+                                                            @{
+                                                                var statusClass = order.OrderStatus switch
+                                                                {
+                                                                    "Pending" => "badge bg-warning",
+                                                                    "Processing" => "badge bg-info",
+                                                                    "Shipped" => "badge bg-primary",
+                                                                    "Delivered" => "badge bg-success",
+                                                                    "Cancelled" => "badge bg-danger",
+                                                                    _ => "badge bg-secondary"
+                                                                };
+                                                                
+                                                                var statusText = order.OrderStatus switch
+                                                                {
+                                                                    "Pending" => "Beklemede",
+                                                                    "Processing" => "Hazırlanıyor",
+                                                                    "Shipped" => "Kargoda",
+                                                                    "Delivered" => "Teslim Edildi",
+                                                                    "Cancelled" => "İptal Edildi",
+                                                                    _ => order.OrderStatus
+                                                                };
+                                                            }
+                                                            <span class="@statusClass">@statusText</span>
+                                                        </td>
+                                                        <td>
+                                                            <a href="@Url.Action("OrderDetail", "Order", new { id = order.Id })" 
+                                                               class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-eye me-1"></i>Detay
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                                        <h5>Henüz siparişiniz bulunmuyor</h5>
+                                        <p class="text-muted">İlk siparişinizi vermek için ürünlerimizi keşfedin.</p>
+                                        <a href="@Url.Action("Index", "Products")" class="btn btn-primary">
+                                            <i class="fas fa-shopping-cart me-2"></i>Alışverişe Başla
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="tab-pane fade" id="address">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Adres Bilgileri
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Şehir</label>
+                                        <input type="text" class="form-control" value="@Model.City" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Posta Kodu</label>
+                                        <input type="text" class="form-control" value="@Model.PostalCode" readonly>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Adres</label>
+                                    <textarea class="form-control" rows="4" readonly>@Model.Address</textarea>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Adres bilgilerinizi güncellemek için "Profil Bilgileri" sekmesini kullanın.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="tab-pane fade" id="security">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 py-3">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-shield-alt me-2 text-primary"></i>Güvenlik
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card border">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-lock fa-2x text-primary mb-3"></i>
+                                                <h6>Şifre Değiştir</h6>
+                                                <p class="text-muted small">Hesap güvenliğiniz için şifrenizi düzenli olarak değiştirin.</p>
+                                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                                    <i class="fas fa-key me-1"></i>Şifre Değiştir
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-sign-out-alt fa-2x text-warning mb-3"></i>
+                                                <h6>Oturumu Kapat</h6>
+                                                <p class="text-muted small">Güvenlik için işleminiz bittiğinde oturumu kapatın.</p>
+                                                <a href="@Url.Action("Logout", "Account")" class="btn btn-outline-warning btn-sm">
+                                                    <i class="fas fa-sign-out-alt me-1"></i>Çıkış Yap
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-key me-2"></i>Şifre Değiştir
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mevcut Şifre</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Yeni Şifre</label>
+                        <input type="password" class="form-control" id="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Yeni Şifre (Tekrar)</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Şifreyi Değiştir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Change password form
+            $('#changePasswordForm').submit(function(e) {
+                e.preventDefault();
+                
+                var newPassword = $('#newPassword').val();
+                var confirmPassword = $('#confirmPassword').val();
+                
+                if (newPassword !== confirmPassword) {
+                    alert('Yeni şifreler eşleşmiyor!');
+                    return;
+                }
+                
+                if (newPassword.length < 6) {
+                    alert('Şifre en az 6 karakter olmalıdır!');
+                    return;
+                }
+                
+                // Here you would typically make an AJAX call to change password
+                alert('Şifre değiştirme özelliği yakında eklenecek!');
+                $('#changePasswordModal').modal('hide');
+            });
+        });
+    </script>
+} 

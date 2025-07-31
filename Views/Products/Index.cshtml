@@ -23,9 +23,9 @@
             <div class="col-lg-6 mb-4">
                 <form method="get" action="@Url.Action("Search", "Products")" class="search-form">
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Ürün ara..." value="@ViewBag.SearchTerm">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i>
+                        <input type="text" name="q" class="form-control form-control-lg" placeholder="Ürün ara..." value="@ViewBag.SearchTerm">
+                        <button class="btn btn-primary btn-lg" type="submit">
+                            <i class="fas fa-search me-2"></i>Ara
                         </button>
                     </div>
                 </form>
@@ -33,12 +33,12 @@
             
             <!-- Sort Options -->
             <div class="col-lg-6 mb-4">
-                <select class="form-select" id="sortSelect" onchange="changeSort(this.value)">
-                    <option value="name" @(ViewBag.SortBy == "name" ? "selected" : "")>İsme Göre</option>
-                    <option value="price" @(ViewBag.SortBy == "price" ? "selected" : "")>Fiyat (Düşük-Yüksek)</option>
-                    <option value="price_desc" @(ViewBag.SortBy == "price_desc" ? "selected" : "")>Fiyat (Yüksek-Düşük)</option>
-                    <option value="new" @(ViewBag.SortBy == "new" ? "selected" : "")>En Yeni</option>
-                    <option value="popular" @(ViewBag.SortBy == "popular" ? "selected" : "")>Popüler</option>
+                <select class="form-select form-select-lg" id="sortSelect" onchange="changeSort(this.value)">
+                    <option value="name">İsme Göre</option>
+                    <option value="price">Fiyat (Düşük-Yüksek)</option>
+                    <option value="price_desc">Fiyat (Yüksek-Düşük)</option>
+                    <option value="new">En Yeni</option>
+                    <option value="popular">Popüler</option>
                 </select>
             </div>
         </div>
@@ -48,11 +48,13 @@
             <div class="col-12">
                 <div class="filter-section text-center" data-aos="fade-up">
                     <div class="btn-group" role="group">
-                        <a href="@Url.Action("Index", "Products")" class="btn @(ViewBag.SelectedCategoryId == null ? "btn-primary" : "btn-outline-primary")">Tümü</a>
+                        <a href="@Url.Action("Index", "Products")" class="btn @(ViewBag.SelectedCategoryId == null ? "btn-primary" : "btn-outline-primary") btn-lg">
+                            <i class="fas fa-th-large me-2"></i>Tümü
+                        </a>
                         @foreach (var category in ViewBag.Categories)
                         {
                             <a href="@Url.Action("Index", "Products", new { categoryId = category.Id })" 
-                               class="btn @(ViewBag.SelectedCategoryId == category.Id ? "btn-primary" : "btn-outline-primary")">
+                               class="btn @(ViewBag.SelectedCategoryId == category.Id ? "btn-primary" : "btn-outline-primary") btn-lg">
                                 @category.Name
                             </a>
                         }
@@ -69,10 +71,14 @@
         @if (!Model.Any())
         {
             <div class="text-center py-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h3>Aradığınız kriterlere uygun ürün bulunamadı</h3>
-                <p class="text-muted">Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.</p>
-                <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Tüm Ürünleri Gör</a>
+                <div class="mb-4">
+                    <i class="fas fa-search fa-4x text-muted"></i>
+                </div>
+                <h3 class="mb-3">Aradığınız kriterlere uygun ürün bulunamadı</h3>
+                <p class="text-muted mb-4">Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.</p>
+                <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-lg">
+                    <i class="fas fa-th-large me-2"></i>Tüm Ürünleri Gör
+                </a>
             </div>
         }
         else
@@ -82,274 +88,262 @@
                 @foreach (var product in Model)
                 {
                     <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(100 * (Model.ToList().IndexOf(product) + 1))">
-                        <div class="card product-card h-100">
-                            <div class="product-image">
+                        <div class="card product-card h-100 border-0 shadow-sm">
+                            <div class="product-image position-relative">
                                 <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                                <div class="product-overlay">
-                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-primary">İncele</a>
-                                </div>
+                                
+                                <!-- Product Badges -->
                                 @if (product.IsPopular)
                                 {
-                                    <div class="product-badge popular">Popüler</div>
+                                    <span class="badge bg-warning position-absolute top-0 start-0 m-2">
+                                        <i class="fas fa-star me-1"></i>Popüler
+                                    </span>
                                 }
                                 @if (product.IsNew)
                                 {
-                                    <div class="product-badge new">Yeni</div>
+                                    <span class="badge bg-success position-absolute top-0 start-0 m-2">
+                                        <i class="fas fa-sparkles me-1"></i>Yeni
+                                    </span>
                                 }
                                 @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
                                 {
-                                    <div class="product-badge discount">%@(((product.OldPrice.Value - product.Price) / product.OldPrice.Value * 100).ToString("0")) İndirim</div>
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                        <i class="fas fa-percent me-1"></i>İndirim
+                                    </span>
                                 }
-                            </div>
-                            <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">@product.Name</h5>
-                                <p class="text-muted">@(product.Description?.Length > 80 ? product.Description.Substring(0, 80) + "..." : product.Description)</p>
-                                <div class="product-info">
-                                    <span class="badge bg-success me-2">@product.Weight</span>
-                                    <span class="badge bg-info">@product.FatContent</span>
+                                
+                                <!-- Quick View Overlay -->
+                                <div class="product-overlay">
+                                    <div class="overlay-content">
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-light btn-sm mb-2">
+                                            <i class="fas fa-eye me-1"></i>İncele
+                                        </a>
+                                        <button class="btn btn-primary btn-sm" onclick="addToCart(@product.Id)">
+                                            <i class="fas fa-shopping-cart me-1"></i>Sepete Ekle
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="price mt-3">
-                                    @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <div class="mb-2">
+                                    @if (product.Category != null)
                                     {
-                                        <span class="old-price text-muted text-decoration-line-through">₺@product.OldPrice.Value.ToString("0.00")</span>
+                                        <span class="badge bg-light text-dark">@product.Category.Name</span>
                                     }
-                                    <span class="current-price fw-bold text-primary">₺@product.Price.ToString("0.00")</span>
                                 </div>
-                                <div class="rating mt-2">
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <span class="ms-2 text-muted">(24)</span>
+                                
+                                <h6 class="card-title fw-bold mb-2">@product.Name</h6>
+                                <p class="card-text text-muted small mb-2">@product.Weight</p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="product-price">₺@product.Price.ToString("0.00")</span>
+                                        @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
+                                        {
+                                            <span class="product-old-price ms-2">₺@product.OldPrice?.ToString("0.00")</span>
+                                        }
+                                    </div>
+                                    <span class="badge bg-primary">@product.FatContent</span>
                                 </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-0 text-center">
-                                <button class="btn btn-primary w-100 add-to-cart" data-product-id="@product.Id">
-                                    <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                                </button>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="addToCart(@product.Id)">
+                                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                        </button>
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-outline-primary">
+                                            <i class="fas fa-info-circle me-2"></i>Detayları Gör
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 }
             </div>
-
-            <!-- Load More Button -->
-            <div class="row mt-5">
-                <div class="col-12 text-center">
-                    <button class="btn btn-outline-primary btn-lg" id="loadMoreBtn">
-                        <i class="fas fa-plus me-2"></i>Daha Fazla Ürün Yükle
-                    </button>
+            
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <nav aria-label="Ürün sayfaları">
+                            <ul class="pagination justify-content-center">
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", "Products", new { page = i, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
-            </div>
+            }
         }
     </div>
 </section>
 
 <style>
-    .search-form .input-group {
-        border-radius: 25px;
+    .page-header {
+        position: relative;
         overflow: hidden;
-        box-shadow: var(--shadow);
     }
-
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .search-form .input-group {
+        border-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
     .search-form .form-control {
         border: none;
-        padding: 15px 20px;
-        font-size: 16px;
-    }
-
-    .search-form .btn {
-        border-radius: 0 25px 25px 0;
         padding: 15px 25px;
     }
-
-    .filter-section .btn-group {
-        border-radius: 25px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
+    
+    .search-form .btn {
+        border-radius: 0 50px 50px 0;
+        padding: 15px 30px;
     }
-
+    
+    .filter-section .btn-group {
+        border-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
     .filter-section .btn {
         border: none;
         padding: 12px 24px;
-        font-weight: 500;
-        transition: all 0.3s ease;
     }
-
-    .filter-section .btn:hover {
-        transform: translateY(-2px);
-    }
-
+    
     .product-card {
-        border: none;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
         transition: all 0.3s ease;
+        border-radius: 15px;
         overflow: hidden;
     }
-
+    
     .product-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 8px 30px rgba(255, 107, 53, 0.2);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
     }
-
+    
     .product-image {
-        position: relative;
-        overflow: hidden;
         height: 250px;
+        overflow: hidden;
+        position: relative;
     }
-
+    
     .product-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.3s ease;
     }
-
+    
     .product-card:hover .product-image img {
         transform: scale(1.1);
     }
-
+    
     .product-overlay {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(255, 107, 53, 0.9);
+        background: rgba(0,0,0,0.7);
         display: flex;
         align-items: center;
         justify-content: center;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
-
+    
     .product-card:hover .product-overlay {
         opacity: 1;
     }
-
-    .product-badge {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
+    
+    .overlay-content {
+        text-align: center;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .product-old-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 0.9rem;
+    }
+    
+    .pagination .page-link {
+        border: none;
+        color: var(--primary-color);
+        padding: 12px 16px;
+        margin: 0 2px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: var(--primary-color);
         color: white;
-        z-index: 2;
-    }
-
-    .product-badge.popular {
-        background: var(--success-color);
-    }
-
-    .product-badge.new {
-        background: var(--accent-color);
-        color: var(--text-dark);
-    }
-
-    .product-badge.discount {
-        background: var(--danger-color);
-    }
-
-    .price {
-        font-size: 18px;
-    }
-
-    .old-price {
-        font-size: 14px;
-        margin-right: 8px;
-    }
-
-    .current-price {
-        font-size: 20px;
-    }
-
-    .add-to-cart {
-        border-radius: 25px;
-        padding: 12px 24px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .add-to-cart:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
     }
-
-    #loadMoreBtn {
-        border-radius: 25px;
-        padding: 15px 40px;
-        font-weight: 500;
-        transition: all 0.3s ease;
+    
+    .pagination .page-item.active .page-link {
+        background: var(--primary-color);
+        color: white;
     }
-
-    #loadMoreBtn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    
+    @@media (max-width: 768px) {
+        .filter-section .btn-group {
+            flex-direction: column;
+            border-radius: 15px;
+        }
+        
+        .filter-section .btn {
+            border-radius: 0 !important;
+        }
+        
+        .filter-section .btn:first-child {
+            border-top-left-radius: 15px !important;
+            border-top-right-radius: 15px !important;
+        }
+        
+        .filter-section .btn:last-child {
+            border-bottom-left-radius: 15px !important;
+            border-bottom-right-radius: 15px !important;
+        }
     }
 </style>
 
 <script>
     function changeSort(value) {
-        const url = new URL(window.location);
-        url.searchParams.set('sortBy', value);
-        window.location.href = url.toString();
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort', value);
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
     }
-
-    // Add to cart functionality
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            const originalText = this.innerHTML;
-            
-            // Show loading state
-            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ekleniyor...';
-            this.disabled = true;
-
-            // Send AJAX request
-            fetch('/Products/AddToCart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `productId=${productId}&quantity=1`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    this.innerHTML = '<i class="fas fa-check me-2"></i>Eklendi!';
-                    this.classList.remove('btn-primary');
-                    this.classList.add('btn-success');
-                    
-                    // Show success message
-                    showNotification(data.message, 'success');
-                } else {
-                    this.innerHTML = originalText;
-                    this.disabled = false;
-                    showNotification(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                this.innerHTML = originalText;
-                this.disabled = false;
-                showNotification('Bir hata oluştu', 'error');
-            });
-        });
+    
+    // Set current sort value
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get('sort') || 'name';
+        document.getElementById('sortSelect').value = currentSort;
     });
-
-    function showNotification(message, type) {
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
-        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-        notification.innerHTML = message;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
 </script> 

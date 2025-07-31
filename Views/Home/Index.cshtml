@@ -2,9 +2,17 @@
     ViewData["Title"] = "Ana Sayfa - Manyaslı Gıda";
 }
 
-<!-- Hero Section -->
-<section class="hero-section position-relative" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); min-height: 100vh; display: flex; align-items: center;">
-    <div class="container">
+<!-- Hero Section with Video -->
+<section class="hero-section position-relative" style="min-height: 100vh; display: flex; align-items: center; overflow: hidden;">
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="~/video/9586240-uhd_4096_2160_25fps.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+    
+    <div class="container position-relative z-index-2">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right">
                 <h1 class="display-3 fw-bold text-white mb-4">
@@ -15,7 +23,7 @@
                     Manyas'ın bereketli topraklarından sofralarınıza uzanan %100 doğal süt ürünleri. 
                     Katkısız, taze ve güvenilir üretimle sağlığınız için en iyisi.
                 </p>
-                <div class="d-flex gap-3">
+                <div class="d-flex gap-3 flex-wrap">
                     <a href="@Url.Action("Index", "Products")" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
                         <i class="fas fa-shopping-cart me-2"></i>Ürünleri Keşfet
                     </a>
@@ -26,7 +34,7 @@
             </div>
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="text-center">
-                    <img src="~/img/manyasli-gida.png" alt="Manyaslı Gıda" class="img-fluid" style="max-height: 400px;">
+                    <img src="~/img/manyasli-gida.png" alt="Manyaslı Gıda" class="img-fluid hero-logo" style="max-height: 400px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));">
                 </div>
             </div>
         </div>
@@ -37,6 +45,11 @@
         <div class="floating-element" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
         <div class="floating-element" style="top: 60%; right: 15%; animation-delay: 2s;"></div>
         <div class="floating-element" style="bottom: 30%; left: 20%; animation-delay: 4s;"></div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-arrow"></div>
     </div>
 </section>
 
@@ -50,7 +63,7 @@
         
         <div class="row g-4">
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="card text-center h-100 border-0">
+                <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3">
                             <i class="fas fa-leaf fa-3x text-success"></i>
@@ -62,7 +75,7 @@
             </div>
             
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="card text-center h-100 border-0">
+                <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3">
                             <i class="fas fa-truck fa-3x text-primary"></i>
@@ -74,7 +87,7 @@
             </div>
             
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="card text-center h-100 border-0">
+                <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3">
                             <i class="fas fa-award fa-3x text-warning"></i>
@@ -86,13 +99,13 @@
             </div>
             
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="card text-center h-100 border-0">
+                <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3">
                             <i class="fas fa-heart fa-3x text-danger"></i>
                         </div>
-                        <h5 class="card-title fw-bold">Geleneksel Lezzet</h5>
-                        <p class="card-text text-muted">Nesillerden gelen geleneksel üretim yöntemleri.</p>
+                        <h5 class="card-title fw-bold">Sağlıklı Beslenme</h5>
+                        <p class="card-text text-muted">Besin değeri yüksek, sağlıklı ve lezzetli ürünler.</p>
                     </div>
                 </div>
             </div>
@@ -100,8 +113,8 @@
     </div>
 </section>
 
-<!-- Products Preview Section -->
-<section class="section-padding" style="background: var(--bg-light);">
+<!-- Popular Products Section -->
+<section class="section-padding bg-light">
     <div class="container">
         <div class="section-title" data-aos="fade-up">
             <h2>Popüler Ürünlerimiz</h2>
@@ -109,74 +122,50 @@
         </div>
         
         <div class="row g-4">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg" class="card-img-top" alt="Ezine Peyniri">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 1 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Ezine Peyniri</h5>
-                        <p class="text-muted">Doğal inek sütünden, tam yağlı</p>
-                        <div class="price">₺45.00</div>
-                    </div>
-                </div>
-            </div>
+            @{
+                var popularProducts = ViewBag.PopularProducts as List<manyasligida.Models.Product> ?? new List<manyasligida.Models.Product>();
+            }
             
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg" class="card-img-top" alt="Taze Kaşar">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 2 })" class="btn btn-primary">İncele</a>
+            @foreach (var product in popularProducts.Take(4))
+            {
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(popularProducts.IndexOf(product) * 100)">
+                    <div class="card product-card h-100 border-0 shadow-sm">
+                        <div class="product-image position-relative">
+                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                            @if (product.IsNew)
+                            {
+                                <span class="badge bg-success position-absolute top-0 start-0 m-2">Yeni</span>
+                            }
+                            @if (product.OldPrice > product.Price)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">İndirim</span>
+                            }
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title fw-bold">@product.Name</h6>
+                            <p class="card-text text-muted small mb-2">@product.Weight</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="product-price">₺@product.Price.ToString("0.00")</span>
+                                    @if (product.OldPrice > product.Price)
+                                    {
+                                        <span class="product-old-price ms-2">₺@product.OldPrice?.ToString("0.00")</span>
+                                    }
+                                </div>
+                                <span class="badge bg-primary">@product.FatContent</span>
+                            </div>
+                            <button class="btn btn-primary mt-auto" onclick="addToCart(@product.Id)">
+                                <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Taze Kaşar</h5>
-                        <p class="text-muted">Yumuşak ve lezzetli</p>
-                        <div class="price">₺35.00</div>
-                    </div>
                 </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="card-img-top" alt="Mihaliç Peyniri">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 3 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Mihaliç Peyniri</h5>
-                        <p class="text-muted">Geleneksel lezzet</p>
-                        <div class="price">₺28.00</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg" class="card-img-top" alt="Çörek Otlu Peynir">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 4 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Çörek Otlu Peynir</h5>
-                        <p class="text-muted">Aromatik sepet peyniri</p>
-                        <div class="price">₺32.00</div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
         
         <div class="text-center mt-5" data-aos="fade-up">
             <a href="@Url.Action("Index", "Products")" class="btn btn-outline-primary btn-lg">
-                Tüm Ürünleri Gör <i class="fas fa-arrow-right ms-2"></i>
+                <i class="fas fa-arrow-right me-2"></i>Tüm Ürünleri Gör
             </a>
         </div>
     </div>
@@ -187,140 +176,160 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right">
-                <img src="~/img/about.jpg" alt="Hakkımızda" class="img-fluid rounded-4">
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="ps-lg-4">
-                    <h2 class="fw-bold mb-4">Gelenekten Geleceğe Doğal Lezzetler</h2>
-                    <p class="lead text-muted mb-4">
-                        Manyas'ın bereketli topraklarından sofralarınıza uzanan %100 doğal süt ürünleri. 
-                        Katkısız, taze ve güvenilir üretimle sağlığınız için en iyisi.
-                    </p>
-                    <div class="row g-3 mb-4">
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <span>%100 Doğal</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <span>Katkısız</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <span>Taze Üretim</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <span>Güvenilir</span>
+                <div class="section-title text-start">
+                    <h2>Geleneksel Lezzet, Modern Üretim</h2>
+                    <p>Manyas'ın bereketli topraklarında, geleneksel yöntemlerle modern teknolojiyi birleştirerek üretim yapıyoruz.</p>
+                </div>
+                
+                <div class="row g-3 mt-4">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Doğal Süt</h6>
+                                <p class="text-muted small mb-0">Çiftliklerden taze süt</p>
                             </div>
                         </div>
                     </div>
-                    <a href="@Url.Action("Index", "About")" class="btn btn-primary">Daha Fazla Bilgi</a>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Hijyenik Üretim</h6>
+                                <p class="text-muted small mb-0">Modern tesisler</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Kalite Kontrol</h6>
+                                <p class="text-muted small mb-0">Sürekli denetim</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Hızlı Teslimat</h6>
+                                <p class="text-muted small mb-0">Soğuk zincir</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="@Url.Action("Index", "About")" class="btn btn-primary">
+                        <i class="fas fa-info-circle me-2"></i>Daha Fazla Bilgi
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="position-relative">
+                    <img src="~/img/about.jpg" alt="Manyaslı Gıda Üretim" class="img-fluid rounded-3 shadow-lg">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-10 rounded-3"></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="section-padding" style="background: var(--bg-light);">
+<!-- Stats Section -->
+<section class="section-padding" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
+    <div class="container">
+        <div class="row text-center text-white">
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-item">
+                    <div class="stat-number display-4 fw-bold mb-2">500+</div>
+                    <div class="stat-label">Mutlu Müşteri</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item">
+                    <div class="stat-number display-4 fw-bold mb-2">50+</div>
+                    <div class="stat-label">Ürün Çeşidi</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-item">
+                    <div class="stat-number display-4 fw-bold mb-2">10+</div>
+                    <div class="stat-label">Yıllık Deneyim</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-item">
+                    <div class="stat-number display-4 fw-bold mb-2">24/7</div>
+                    <div class="stat-label">Müşteri Desteği</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Section -->
+<section class="section-padding bg-light">
     <div class="container">
         <div class="section-title" data-aos="fade-up">
-            <h2>Müşteri Yorumları</h2>
-            <p>Gerçek müşterilerimizin deneyimlerinden bazıları</p>
+            <h2>Blog & Haberler</h2>
+            <p>Sağlıklı beslenme ve peynir dünyasından haberler</p>
         </div>
         
         <div class="row g-4">
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card testimonial-card h-100 border-0">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="~/img/testimonial-1.jpg" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <h6 class="fw-bold mb-0">Ayşe K.</h6>
-                                <small class="text-muted">İstanbul</small>
-                            </div>
-                        </div>
-                        <p class="mb-0">"Peynirlerinizin doğallığı ve lezzeti harika. Siparişim çok hızlı geldi, teşekkürler!"</p>
-                        <div class="stars mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @{
+                var recentBlogs = ViewBag.RecentBlogs as List<manyasligida.Models.Blog> ?? new List<manyasligida.Models.Blog>();
+            }
             
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card testimonial-card h-100 border-0">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="~/img/testimonial-2.jpg" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <h6 class="fw-bold mb-0">Mehmet D.</h6>
-                                <small class="text-muted">Bursa</small>
-                            </div>
+            @foreach (var blog in recentBlogs.Take(3))
+            {
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@(recentBlogs.IndexOf(blog) * 100)">
+                    <div class="card blog-card h-100 border-0 shadow-sm">
+                        <div class="blog-image">
+                            <img src="@blog.ImageUrl" class="card-img-top" alt="@blog.Title">
                         </div>
-                        <p class="mb-0">"Gerçekten taze ve kaliteli ürünler. Herkese tavsiye ederim."</p>
-                        <div class="stars mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card testimonial-card h-100 border-0">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="~/img/testimonial-3.jpg" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <h6 class="fw-bold mb-0">Elif S.</h6>
-                                <small class="text-muted">Ankara</small>
-                            </div>
-                        </div>
-                        <p class="mb-0">"Kargolama ve paketleme çok özenliydi. Peynirler taptaze geldi."</p>
-                        <div class="stars mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
+                        <div class="card-body d-flex flex-column">
+                                                            <div class="blog-date text-primary fw-bold mb-2">
+                                    <i class="fas fa-calendar me-1"></i>@(blog.PublishedAt?.ToString("dd MMM yyyy") ?? blog.CreatedAt.ToString("dd MMM yyyy"))
+                                </div>
+                            <h5 class="card-title fw-bold">@blog.Title</h5>
+                            <p class="card-text text-muted">@blog.Summary</p>
+                            <a href="@Url.Action("Detail", "Blog", new { id = blog.Id })" class="btn btn-outline-primary mt-auto">
+                                <i class="fas fa-arrow-right me-2"></i>Devamını Oku
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
+        </div>
+        
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="@Url.Action("Index", "Blog")" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-newspaper me-2"></i>Tüm Yazıları Gör
+            </a>
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="section-padding" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
+<!-- Newsletter Section -->
+<section class="section-padding bg-white">
     <div class="container">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8" data-aos="fade-up">
-                <h2 class="text-white fw-bold mb-4">Lezzetli Peynirlerimizi Deneyin!</h2>
-                <p class="text-white mb-4">Hemen sipariş verin, doğal lezzetleri evinize getirelim.</p>
-                <div class="d-flex gap-3 justify-content-center">
-                    <a href="@Url.Action("Index", "Products")" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
-                        <i class="fas fa-shopping-cart me-2"></i>Sipariş Ver
-                    </a>
-                    <a href="@Url.Action("Index", "Contact")" class="btn btn-outline-light btn-lg px-4 py-3">
-                        <i class="fas fa-phone me-2"></i>Bize Ulaşın
-                    </a>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <div class="section-title">
+                    <h2>Bültenimize Katılın</h2>
+                    <p>Yeni ürünler ve özel kampanyalardan haberdar olun</p>
+                </div>
+                
+                <div class="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control form-control-lg" placeholder="E-posta adresinizi girin">
+                        <button class="btn btn-primary btn-lg" type="button">
+                            <i class="fas fa-paper-plane me-2"></i>Abone Ol
+                        </button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Gizlilik politikamızı okudunuz ve kabul ettiniz.</small>
                 </div>
             </div>
         </div>
@@ -328,6 +337,67 @@
 </section>
 
 <style>
+    /* Video Hero Styles */
+    .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+    
+    .hero-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.7) 0%, rgba(78, 205, 196, 0.7) 100%);
+    }
+    
+    .z-index-2 {
+        z-index: 2;
+    }
+    
+    .hero-logo {
+        animation: logoFloat 3s ease-in-out infinite;
+    }
+    
+    @@keyframes logoFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        animation: bounce 2s infinite;
+    }
+    
+    .scroll-arrow {
+        width: 30px;
+        height: 30px;
+        border-right: 3px solid white;
+        border-bottom: 3px solid white;
+        transform: rotate(45deg);
+    }
+    
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+        40% { transform: translateX(-50%) translateY(-10px); }
+        60% { transform: translateX(-50%) translateY(-5px); }
+    }
+    
     .hero-section {
         position: relative;
         overflow: hidden;
@@ -340,6 +410,7 @@
         width: 100%;
         height: 100%;
         pointer-events: none;
+        z-index: 2;
     }
     
     .floating-element {
@@ -419,4 +490,118 @@
         justify-content: center;
         margin: 0 auto;
     }
+    
+    /* Responsive Video */
+    @@media (max-width: 768px) {
+        .hero-video {
+            object-position: center;
+        }
+        
+        .hero-logo {
+            max-height: 250px !important;
+        }
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    
+    .product-image {
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+    
+    .product-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .product-old-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 0.9rem;
+    }
+    
+    .blog-card {
+        transition: all 0.3s ease;
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+    
+    .blog-image {
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .blog-card:hover .blog-image img {
+        transform: scale(1.1);
+    }
+    
+    .newsletter-form .input-group {
+        border-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .newsletter-form .form-control {
+        border: none;
+        padding: 15px 25px;
+    }
+    
+    .newsletter-form .btn {
+        border-radius: 0 50px 50px 0;
+        padding: 15px 30px;
+    }
+    
+    .stat-item {
+        padding: 20px;
+    }
+    
+    .stat-number {
+        color: white;
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
 </style>
+
+<script>
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>

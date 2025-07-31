@@ -1,5 +1,5 @@
 @{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = null;
     ViewData["Title"] = "Admin Giriş";
 }
 <!DOCTYPE html>
@@ -7,34 +7,165 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Giriş</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin Giriş - Manyaslı Gıda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #f8f9fa; }
+        :root {
+            --primary: #7C3AED;
+            --text-main: #1F2937;
+            --bg-main: #F9FAFB;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
         .admin-login-box {
-            max-width: 400px;
-            margin: 8vh auto;
-            background: #fff;
+            width: 100%;
+            max-width: 420px;
+            background: white;
             border-radius: 1.5rem;
-            box-shadow: 0 4px 32px rgba(0,0,0,0.08);
-            padding: 2.5rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2.5rem;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .logo-container p {
+            color: #6B7280;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 2px solid #E5E7EB;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+            border: none;
+            border-radius: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.25);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .back-to-site {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-top: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .back-to-site:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="admin-login-box">
-        <h2 class="mb-4 text-center">Admin Panel Girişi</h2>
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-        <form method="post">
-            <div class="mb-3">
-                <label class="form-label">Şifre</label>
-                <input type="password" name="password" class="form-control" placeholder="Admin şifresi" required />
+    <div class="d-flex flex-column align-items-center">
+        <div class="admin-login-box">
+            <div class="logo-container">
+                <img src="~/logomanyasli.png" alt="Manyaslı Gıda" />
+                <h1>Admin Panel</h1>
+                <p>Yönetici girişi için şifrenizi giriniz</p>
             </div>
-            <button type="submit" class="btn btn-primary w-100 rounded-pill">Giriş Yap</button>
-        </form>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form method="post">
+                <div class="mb-4">
+                    <label class="form-label">Şifre</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-lock"></i>
+                    Giriş Yap
+                </button>
+            </form>
+        </div>
+
+        <a href="@Url.Action("Index", "Home")" class="back-to-site">
+            <i class="fas fa-arrow-left"></i>
+            Siteye Dön
+        </a>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

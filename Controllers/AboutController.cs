@@ -1,26 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using manyasligida.Data;
-using manyasligida.Models;
-using System.Threading.Tasks;
+using manyasligida.Services;
 
 namespace manyasligida.Controllers
 {
     public class AboutController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly CartService _cartService;
 
-        public AboutController(ApplicationDbContext context)
+        public AboutController(CartService cartService)
         {
-            _context = context;
+            _cartService = cartService;
         }
 
-        public async Task<IActionResult> Index()
+        // GET: About/Index
+        public IActionResult Index()
         {
-            // İstatistikler için veritabanından veri çekebiliriz
-            ViewBag.TotalProducts = await _context.Products.CountAsync(p => p.IsActive);
-            ViewBag.TotalCategories = await _context.Categories.CountAsync(c => c.IsActive);
-            
+            ViewBag.CartItemCount = _cartService.GetCartItemCount();
             return View();
         }
     }

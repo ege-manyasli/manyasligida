@@ -1,0 +1,296 @@
+@model IEnumerable<manyasligida.Models.Product>
+@{
+    ViewData["Title"] = "Ürün Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-box me-2 text-primary"></i>
+            Ürün Yönetimi
+        </h1>
+        <p class="text-muted mb-0">Tüm ürünleri görüntüleyin ve yönetin</p>
+    </div>
+    <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Yeni Ürün Ekle
+    </a>
+</div>
+
+<!-- Success Message -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Products Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Ürün Listesi (@Model.Count() ürün)
+                </h5>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Ürün ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="productsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Görsel</th>
+                        <th>Ürün Adı</th>
+                        <th>Kategori</th>
+                        <th>Fiyat</th>
+                        <th>Stok</th>
+                        <th>Durum</th>
+                        <th>Tarih</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="product-image">
+                                    <img src="@product.ImageUrl" alt="@product.Name" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <h6 class="mb-1">@product.Name</h6>
+                                    <small class="text-muted">@product.Weight • @product.FatContent</small>
+                                    <div class="product-badges mt-1">
+                                        @if (product.IsPopular)
+                                        {
+                                            <span class="badge bg-success me-1">Popüler</span>
+                                        }
+                                        @if (product.IsNew)
+                                        {
+                                            <span class="badge bg-warning me-1">Yeni</span>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">@product.Category?.Name</span>
+                            </td>
+                            <td>
+                                <div>
+                                    <span class="fw-bold text-success">₺@product.Price.ToString("0.00")</span>
+                                    @if (product.OldPrice > product.Price)
+                                    {
+                                        <br><small class="text-muted text-decoration-line-through">₺@product.OldPrice.("0.00")</small>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                @if (product.StockQuantity > 20)
+                                {
+                                    <span class="badge bg-success">@product.StockQuantity</span>
+                                }
+                                else if (product.StockQuantity > 0)
+                                {
+                                    <span class="badge bg-warning">@product.StockQuantity</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Tükendi</span>
+                                }
+                            </td>
+                            <td>
+                                @if (product.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Pasif</span>
+                                }
+                            </td>
+                            <td>
+                                <small class="text-muted">@product.CreatedAt.ToString("dd.MM.yyyy")</small>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("EditProduct", "Admin", new { id = product.Id })" class="btn btn-sm btn-outline-primary" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-sm btn-outline-info" title="Görüntüle" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Sil" onclick="deleteProduct(@product.Id, '@product.Name')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Ürün Silme Onayı
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu ürünü silmek istediğinizden emin misiniz?</p>
+                <p class="fw-bold" id="productName"></p>
+                <p class="text-muted small">Bu işlem geri alınamaz.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-image img {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+    }
+
+    .product-badges .badge {
+        font-size: 0.7rem;
+    }
+
+    .btn-group .btn {
+        border-radius: 5px;
+        margin-right: 2px;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: var(--text-dark);
+        background: var(--bg-light);
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        border-radius: 0 0 15px 15px;
+    }
+
+    @@media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-group .btn {
+            margin-right: 0;
+            margin-bottom: 2px;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const table = document.getElementById('productsTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const productName = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+            if (productName.includes(searchTerm)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    });
+
+    // Delete product functionality
+    function deleteProduct(productId, productName) {
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('deleteForm').action = '@Url.Action("DeleteProduct", "Admin")/' + productId;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script> 

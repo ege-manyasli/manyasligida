@@ -12,58 +12,26 @@ namespace manyasligida.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Cart> Carts { get; set; }
-        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Gallery> Galleries { get; set; }
         public DbSet<FAQ> FAQs { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Product - Category relationship
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Category)
-                .WithMany(c => c.Products)
-                .HasForeignKey(p => p.CategoryId);
-
-            // Order - User relationship
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.User)
-                .WithMany(u => u.Orders)
-                .HasForeignKey(o => o.UserId);
-
-            // Order - OrderItems relationship
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(oi => oi.Order)
-                .WithMany(o => o.OrderItems)
-                .HasForeignKey(oi => oi.OrderId);
-
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(oi => oi.Product)
-                .WithMany()
-                .HasForeignKey(oi => oi.ProductId);
-
-            // Cart - User relationship
-            modelBuilder.Entity<Cart>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.Carts)
-                .HasForeignKey(c => c.UserId);
-
-            // Cart - CartItems relationship
+            // CartItem - Cart relationship
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
-                .WithMany(c => c.CartItems)
-                .HasForeignKey(ci => ci.CartId);
-
-            modelBuilder.Entity<CartItem>()
-                .HasOne(ci => ci.Product)
-                .WithMany()
-                .HasForeignKey(ci => ci.ProductId);
+                .WithMany(c => c.Items)
+                .HasForeignKey(ci => ci.CartId)
+                .IsRequired(false);
 
             // Seed data
             SeedData(modelBuilder);
@@ -73,124 +41,231 @@ namespace manyasligida.Data
         {
             // Categories
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Beyaz Peynir", Description = "Geleneksel beyaz peynir çeşitleri" },
-                new Category { Id = 2, Name = "Kaşar Peyniri", Description = "Kaşar peyniri çeşitleri" },
-                new Category { Id = 3, Name = "Özel Peynirler", Description = "Özel üretim peynir çeşitleri" }
+                new Category { Id = 1, Name = "Beyaz Peynir", Description = "Geleneksel beyaz peynir çeşitleri", DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 2, Name = "Kaşar Peyniri", Description = "Taze ve eski kaşar peynirleri", DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 3, Name = "Sepet Peyniri", Description = "Özel sepet peynirleri", DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 4, Name = "Özel Peynirler", Description = "Özel üretim peynir çeşitleri", DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.Now }
             );
 
             // Products
             modelBuilder.Entity<Product>().HasData(
-                new Product
-                {
-                    Id = 1,
-                    Name = "Ezine Tipi Sert Beyaz Peynir",
-                    Description = "Ezine bölgesinin özel iklim koşullarında üretilen sert beyaz peynir",
-                    Price = 45.50m,
+                new Product { 
+                    Id = 1, 
+                    Name = "Ezine Beyaz Peynir", 
+                    Description = "Çanakkale Ezine'den özel üretim tam yağlı beyaz peynir", 
+                    Price = 45.00m, 
                     OldPrice = 55.00m,
-                    StockQuantity = 100,
-                    CategoryId = 1,
+                    Weight = "600 Gr", 
+                    FatContent = "%45-50", 
+                    StockQuantity = 100, 
                     ImageUrl = "/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg",
-                    IsPopular = true,
-                    IsNew = false,
-                    Weight = "650 gr",
-                    FatContent = "%45",
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    CategoryId = 1, 
+                    IsActive = true, 
+                    IsPopular = true, 
+                    IsNew = true, 
+                    CreatedAt = DateTime.Now.AddDays(-5) 
                 },
-                new Product
-                {
-                    Id = 2,
-                    Name = "Taze Kaşar Peyniri",
-                    Description = "Taze ve yumuşak kaşar peyniri",
-                    Price = 85.00m,
-                    OldPrice = 95.00m,
-                    StockQuantity = 75,
-                    CategoryId = 2,
+                new Product { 
+                    Id = 2, 
+                    Name = "Taze Kaşar Peyniri", 
+                    Description = "Günlük taze üretim yumuşak kaşar peyniri", 
+                    Price = 35.00m, 
+                    OldPrice = null,
+                    Weight = "1000 Gr", 
+                    FatContent = "%40-45", 
+                    StockQuantity = 75, 
                     ImageUrl = "/img/taze-kasar-peyniri-1000-gr.-63a593.jpg",
-                    IsPopular = true,
-                    IsNew = true,
-                    Weight = "1000 gr",
-                    FatContent = "%50",
-                    CreatedAt = new DateTime(2024, 1, 2)
+                    CategoryId = 2, 
+                    IsActive = true, 
+                    IsPopular = true, 
+                    IsNew = false, 
+                    CreatedAt = DateTime.Now.AddDays(-10) 
                 },
-                new Product
-                {
-                    Id = 3,
-                    Name = "Eski Kaşar Peyniri",
-                    Description = "Olgunlaştırılmış eski kaşar peyniri",
-                    Price = 120.00m,
-                    OldPrice = 140.00m,
-                    StockQuantity = 50,
-                    CategoryId = 2,
-                    ImageUrl = "/img/eski-kasar-peyniri-300-g.-6a1-d2.jpg",
-                    IsPopular = false,
-                    IsNew = false,
-                    Weight = "300 gr",
-                    FatContent = "%55",
-                    CreatedAt = new DateTime(2024, 1, 3)
-                },
-                new Product
-                {
-                    Id = 4,
-                    Name = "Dil Peyniri",
-                    Description = "Geleneksel dil peyniri",
-                    Price = 65.00m,
-                    OldPrice = 75.00m,
-                    StockQuantity = 80,
-                    CategoryId = 3,
-                    ImageUrl = "/img/dil-peyniri-400-gr.-5f1a.jpg",
-                    IsPopular = false,
-                    IsNew = true,
-                    Weight = "400 gr",
-                    FatContent = "%40",
-                    CreatedAt = new DateTime(2024, 1, 4)
-                },
-                new Product
-                {
-                    Id = 5,
-                    Name = "Biberli Sepet Peyniri",
-                    Description = "Biber ile tatlandırılmış özel sepet peyniri",
-                    Price = 55.00m,
-                    OldPrice = 65.00m,
-                    StockQuantity = 60,
-                    CategoryId = 3,
-                    ImageUrl = "/img/biberli-sepet-peyniri-350-gr.-2e1f.jpg",
-                    IsPopular = true,
-                    IsNew = false,
-                    Weight = "350 gr",
-                    FatContent = "%42",
-                    CreatedAt = new DateTime(2024, 1, 5)
-                },
-                new Product
-                {
-                    Id = 6,
-                    Name = "Çörek Otlu Sepet Peyniri",
-                    Description = "Çörek otu ile zenginleştirilmiş sepet peyniri",
-                    Price = 58.00m,
-                    OldPrice = 68.00m,
-                    StockQuantity = 70,
-                    CategoryId = 3,
-                    ImageUrl = "/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg",
-                    IsPopular = false,
-                    IsNew = true,
-                    Weight = "350 gr",
-                    FatContent = "%43",
-                    CreatedAt = new DateTime(2024, 1, 6)
-                },
-                new Product
-                {
-                    Id = 7,
-                    Name = "Mihaliç Peyniri",
-                    Description = "Geleneksel Mihaliç peyniri",
-                    Price = 72.00m,
-                    OldPrice = 82.00m,
-                    StockQuantity = 45,
-                    CategoryId = 1,
+                new Product { 
+                    Id = 3, 
+                    Name = "Mihaliç Peyniri", 
+                    Description = "Geleneksel Mihaliç peyniri", 
+                    Price = 28.00m, 
+                    OldPrice = 35.00m,
+                    Weight = "350 Gr", 
+                    FatContent = "%35-40", 
+                    StockQuantity = 50, 
                     ImageUrl = "/img/mihalic-peyniri-350-gr.-122f.jpg",
-                    IsPopular = false,
-                    IsNew = false,
-                    Weight = "350 gr",
-                    FatContent = "%48",
-                    CreatedAt = new DateTime(2024, 1, 7)
+                    CategoryId = 4, 
+                    IsActive = true, 
+                    IsPopular = false, 
+                    IsNew = true, 
+                    CreatedAt = DateTime.Now.AddDays(-3) 
+                },
+                new Product { 
+                    Id = 4, 
+                    Name = "Çörek Otlu Sepet Peyniri", 
+                    Description = "Çörek otu ile aromalandırılmış özel sepet peyniri", 
+                    Price = 32.00m, 
+                    OldPrice = null,
+                    Weight = "350 Gr", 
+                    FatContent = "%42-47", 
+                    StockQuantity = 60, 
+                    ImageUrl = "/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg",
+                    CategoryId = 3, 
+                    IsActive = true, 
+                    IsPopular = false, 
+                    IsNew = false, 
+                    CreatedAt = DateTime.Now.AddDays(-15) 
+                },
+                new Product { 
+                    Id = 5, 
+                    Name = "Biberli Sepet Peyniri", 
+                    Description = "Kırmızı biber ile tatlandırılmış sepet peyniri", 
+                    Price = 30.00m, 
+                    OldPrice = 38.00m,
+                    Weight = "350 Gr", 
+                    FatContent = "%40-45", 
+                    StockQuantity = 40, 
+                    ImageUrl = "/img/biberli-sepet-peyniri-350-gr.-2e1f.jpg",
+                    CategoryId = 3, 
+                    IsActive = true, 
+                    IsPopular = true, 
+                    IsNew = false, 
+                    CreatedAt = DateTime.Now.AddDays(-20) 
+                },
+                new Product { 
+                    Id = 6, 
+                    Name = "Eski Kars Kaşarı", 
+                    Description = "Olgunlaştırılmış eski kaşar peyniri", 
+                    Price = 42.00m, 
+                    OldPrice = null,
+                    Weight = "300 Gr", 
+                    FatContent = "%45-50", 
+                    StockQuantity = 30, 
+                    ImageUrl = "/img/eski-kasar-peyniri-300-g.-6a1-d2.jpg",
+                    CategoryId = 2, 
+                    IsActive = true, 
+                    IsPopular = false, 
+                    IsNew = false, 
+                    CreatedAt = DateTime.Now.AddDays(-25) 
+                },
+                new Product { 
+                    Id = 7, 
+                    Name = "Dil Peyniri", 
+                    Description = "Yumuşak ve lezzetli dil peyniri", 
+                    Price = 25.00m, 
+                    OldPrice = 32.00m,
+                    Weight = "400 Gr", 
+                    FatContent = "%35-40", 
+                    StockQuantity = 80, 
+                    ImageUrl = "/img/dil-peyniri-400-gr.-5f1a.jpg",
+                    CategoryId = 1, 
+                    IsActive = true, 
+                    IsPopular = false, 
+                    IsNew = true, 
+                    CreatedAt = DateTime.Now.AddDays(-2) 
+                },
+                new Product { 
+                    Id = 8, 
+                    Name = "Otlu Beyaz Peynir", 
+                    Description = "Taze otlar ile aromalandırılmış beyaz peynir", 
+                    Price = 38.00m, 
+                    OldPrice = null,
+                    Weight = "500 Gr", 
+                    FatContent = "%42-47", 
+                    StockQuantity = 55, 
+                    ImageUrl = "/img/product-1.jpg",
+                    CategoryId = 1, 
+                    IsActive = true, 
+                    IsPopular = true, 
+                    IsNew = false, 
+                    CreatedAt = DateTime.Now.AddDays(-12) 
+                }
+            );
+
+            // Blogs
+            modelBuilder.Entity<Blog>().HasData(
+                new Blog { 
+                    Id = 1, 
+                    Title = "Peynir Üretiminde Geleneksel Yöntemler", 
+                    Summary = "Manyas'ta peynir üretiminde kullanılan geleneksel yöntemler ve modern teknolojinin uyumu hakkında detaylı bilgi.",
+                    Content = "Peynir üretimi, binlerce yıllık bir geleneğe sahiptir. Manyas'ta bu geleneksel yöntemler modern teknoloji ile birleştirilerek en kaliteli peynirler üretilmektedir...", 
+                    ImageUrl = "/img/blog-1.jpg", 
+                    IsActive = true, 
+                    PublishedAt = DateTime.Now.AddDays(-5), 
+                    CreatedAt = DateTime.Now.AddDays(-5) 
+                },
+                new Blog { 
+                    Id = 2, 
+                    Title = "Sağlıklı Beslenmede Peynirin Önemi", 
+                    Summary = "Peynirin besin değeri ve sağlıklı beslenmedeki rolü hakkında uzman görüşleri.",
+                    Content = "Peynir, protein, kalsiyum ve diğer önemli besin maddelerini içeren değerli bir gıda maddesidir. Düzenli tüketimi kemik sağlığı ve kas gelişimi için önemlidir...", 
+                    ImageUrl = "/img/blog-2.jpg", 
+                    IsActive = true, 
+                    PublishedAt = DateTime.Now.AddDays(-10), 
+                    CreatedAt = DateTime.Now.AddDays(-10) 
+                },
+                new Blog { 
+                    Id = 3, 
+                    Title = "Peynir Çeşitleri ve Kullanım Alanları", 
+                    Summary = "Farklı peynir çeşitlerinin özellikleri ve mutfakta nasıl kullanılacağı hakkında pratik bilgiler.",
+                    Content = "Her peynir çeşidinin kendine özgü lezzeti ve kullanım alanı vardır. Beyaz peynir kahvaltı sofralarının vazgeçilmezi iken, kaşar peyniri ısıtıldığında eriyen yapısıyla pizza ve tost için idealdir...", 
+                    ImageUrl = "/img/blog-3.jpg", 
+                    IsActive = true, 
+                    PublishedAt = DateTime.Now.AddDays(-15), 
+                    CreatedAt = DateTime.Now.AddDays(-15) 
+                }
+            );
+
+            // FAQs
+            modelBuilder.Entity<FAQ>().HasData(
+                new FAQ { 
+                    Id = 1, 
+                    Question = "Peynirleriniz ne kadar taze?", 
+                    Answer = "Tüm peynirlerimiz günlük üretimdir ve en fazla 24 saat içinde satışa sunulur.", 
+                    DisplayOrder = 1, 
+                    IsActive = true, 
+                    CreatedAt = DateTime.Now 
+                },
+                new FAQ { 
+                    Id = 2, 
+                    Question = "Kargo süresi ne kadar?", 
+                    Answer = "Siparişleriniz 1-3 iş günü içinde teslim edilir.", 
+                    DisplayOrder = 2, 
+                    IsActive = true, 
+                    CreatedAt = DateTime.Now 
+                },
+                new FAQ { 
+                    Id = 3, 
+                    Question = "Minimum sipariş tutarı var mı?", 
+                    Answer = "Evet, minimum sipariş tutarı 50 TL'dir.", 
+                    DisplayOrder = 3, 
+                    IsActive = true, 
+                    CreatedAt = DateTime.Now 
+                }
+            );
+
+            // Gallery
+            modelBuilder.Entity<Gallery>().HasData(
+                new Gallery { 
+                    Id = 1, 
+                    Title = "Üretim Tesisi", 
+                    Description = "Modern üretim tesisimiz", 
+                    ImageUrl = "/img/about.jpg", 
+                    IsActive = true, 
+                    CreatedAt = DateTime.Now 
+                },
+                new Gallery { 
+                    Id = 2, 
+                    Title = "Kalite Kontrol", 
+                    Description = "Kalite kontrol süreçlerimiz", 
+                    ImageUrl = "/img/product-2.jpg", 
+                    IsActive = true, 
+                    CreatedAt = DateTime.Now 
+                },
+                new Gallery { 
+                    Id = 3, 
+                    Title = "Ürün Çeşitliliği", 
+                    Description = "Geniş ürün yelpazemiz", 
+                    ImageUrl = "/img/product-3.jpg", 
+                    IsActive = true, 
+                    CreatedAt = DateTime.Now 
                 }
             );
         }

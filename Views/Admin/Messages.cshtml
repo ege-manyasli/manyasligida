@@ -1,0 +1,380 @@
+@model IEnumerable<manyasligida.Models.ContactMessage>
+@{
+    ViewData["Title"] = "Mesaj Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-envelope me-2 text-warning"></i>
+            Mesaj Yönetimi
+        </h1>
+        <p class="text-muted mb-0">İletişim formundan gelen tüm mesajları görüntüleyin</p>
+    </div>
+    <div class="d-flex gap-2">
+        <span class="badge bg-danger fs-6">
+            <i class="fas fa-envelope me-1"></i>
+            @Model.Count(m => !m.IsRead) okunmamış
+        </span>
+    </div>
+</div>
+
+<!-- Success Message -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Messages List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Mesaj Listesi (@Model.Count() mesaj)
+                        </h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Mesaj ara...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="messagesTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Durum</th>
+                                <th>Gönderen</th>
+                                <th>Konu</th>
+                                <th>Mesaj</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var message in Model)
+                            {
+                                <tr class="@(!message.IsRead ? "table-warning" : "")">
+                                    <td>
+                                        <div class="d-flex flex-column align-items-center">
+                                            @if (!message.IsRead)
+                                            {
+                                                <span class="badge bg-danger mb-1">Yeni</span>
+                                            }
+                                            else if (message.IsReplied)
+                                            {
+                                                <span class="badge bg-success mb-1">Yanıtlandı</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary mb-1">Okundu</span>
+                                            }
+                                            <small class="text-muted">@message.CreatedAt.ToString("dd.MM")</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">@message.Name</h6>
+                                            <small class="text-muted">@message.Email</small>
+                                            @if (!string.IsNullOrEmpty(message.Phone))
+                                            {
+                                                <br><small class="text-muted">@message.Phone</small>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">@message.Subject</h6>
+                                            <small class="text-muted">@message.CreatedAt.ToString("HH:mm")</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="message-preview">
+                                            @(message.Message.Length > 100 ? message.Message.Substring(0, 100) + "..." : message.Message)
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <div class="fw-bold">@message.CreatedAt.ToString("dd")</div>
+                                            <small class="text-muted">@message.CreatedAt.ToString("MMM yyyy")</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="@Url.Action("MessageDetail", "Admin", new { id = message.Id })" class="btn btn-sm btn-outline-primary" title="Detay">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if (!message.IsReplied)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-success" title="Yanıtla" onclick="replyMessage(@message.Id, '@message.Name')">
+                                                    <i class="fas fa-reply"></i>
+                                                </button>
+                                            }
+                                            <button type="button" class="btn btn-sm btn-outline-danger" title="Sil" onclick="deleteMessage(@message.Id, '@message.Name')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal fade" id="replyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-reply text-success me-2"></i>
+                    Mesaj Yanıtla
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="replyForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Gönderen:</label>
+                                <input type="text" class="form-control" id="senderName" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">E-posta:</label>
+                                <input type="email" class="form-control" id="senderEmail" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Orijinal Mesaj:</label>
+                        <textarea class="form-control" id="originalMessage" rows="3" readonly></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="replyMessage" class="form-label">Yanıtınız:</label>
+                        <textarea class="form-control" id="replyMessage" name="replyMessage" rows="5" placeholder="Yanıtınızı buraya yazın..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane me-2"></i>Yanıt Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Mesaj Silme Onayı
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu mesajı silmek istediğinizden emin misiniz?</p>
+                <p class="fw-bold" id="messageName"></p>
+                <p class="text-muted small">Bu işlem geri alınamaz.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .message-preview {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .table-warning {
+        background-color: #fff3cd !important;
+    }
+
+    .table-warning:hover {
+        background-color: #ffeaa7 !important;
+    }
+
+    .btn-group .btn {
+        border-radius: 5px;
+        margin-right: 2px;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: var(--text-dark);
+        background: var(--bg-light);
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        border-radius: 0 0 15px 15px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+
+    @@media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-group .btn {
+            margin-right: 0;
+            margin-bottom: 2px;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+        
+        .message-preview {
+            max-width: 200px;
+        }
+    }
+</style>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const table = document.getElementById('messagesTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const senderName = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+            const subject = rows[i].getElementsByTagName('td')[2].textContent.toLowerCase();
+            const message = rows[i].getElementsByTagName('td')[3].textContent.toLowerCase();
+            
+            if (senderName.includes(searchTerm) || subject.includes(searchTerm) || message.includes(searchTerm)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    });
+
+    // Reply message functionality
+    function replyMessage(messageId, senderName) {
+        // Bu fonksiyon mesaj detaylarını almak için AJAX kullanabilir
+        document.getElementById('senderName').value = senderName;
+        document.getElementById('replyForm').action = '@Url.Action("ReplyMessage", "Admin")';
+        
+        // Hidden input for message ID
+        let messageIdInput = document.getElementById('replyForm').querySelector('input[name="messageId"]');
+        if (!messageIdInput) {
+            messageIdInput = document.createElement('input');
+            messageIdInput.type = 'hidden';
+            messageIdInput.name = 'messageId';
+            document.getElementById('replyForm').appendChild(messageIdInput);
+        }
+        messageIdInput.value = messageId;
+        
+        const replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
+        replyModal.show();
+    }
+
+    // Delete message functionality
+    function deleteMessage(messageId, senderName) {
+        document.getElementById('messageName').textContent = senderName;
+        document.getElementById('deleteForm').action = '@Url.Action("DeleteMessage", "Admin")/' + messageId;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script> 

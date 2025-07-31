@@ -1,195 +1,494 @@
 @{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Admin Panel";
-    var servers = new[]
-    {
-        new { Id = 1, Title = "Arkel Cloud LB-1", ViewBagName = "ServerStatusesArkelCloudLB1" },
-        new { Id = 2, Title = "Arkel Cloud LB-2", ViewBagName = "ServerStatusesArkelCloudLB2" },
-        new { Id = 3, Title = "Arkel Cloud Proxy-1", ViewBagName = "ServerStatusesArkelCloudProxy1" },
-        new { Id = 4, Title = "Arkel Cloud Proxy-2", ViewBagName = "ServerStatusesArkelCloudProxy2" },
-        new { Id = 5, Title = "Arkel Web Server", ViewBagName = "ServerStatusesArkelWebServer" },
-        new { Id = 6, Title = "AX AOS Server", ViewBagName = "ServerStatusesAXAOSServer" },
-        new { Id = 7, Title = "AX SQL Server", ViewBagName = "ServerStatusesAXSQLServer" },
-        new { Id = 8, Title = "PBX Server", ViewBagName = "ServerStatusesPBXServer" },
-        new { Id = 9, Title = "EXC Server", ViewBagName = "ServerStatusesEXCServer" }
-    };
+    ViewData["Title"] = "Admin Dashboard - Manyaslı Gıda";
+    Layout = "_AdminLayout";
 }
 
-<style>
-    #chartDiv {
-        max-width: 950px;
-        height: 95px;
-        margin: 0 auto;
-        padding: 10px;
-    }
-    .header-container {
-        max-width: 100% !important;
-        text-align: center;
-        padding: 50px 0;
-        box-sizing: border-box;
-        width: 100% !important;
-    }
-    #brandingLogo {
-        display: none;
-    }
-    .chart-info-container {
-        max-width: 950px;
-        margin: 20px auto;
-        border: 1px solid #aaa;
-        border-radius: 3px;
-        padding: 15px;
-    }
-    .chart-container {
-        max-width: 950px;
-        height: 50px;
-        margin: 0 auto;
-        padding: 10px;
-    }
-    .uptime-info {
-        display: flex;
-        justify-content: space-between;
-        font-size: 15px;
-        color: #7a7a7a;
-        margin-top: 8px;
-    }
-</style>
-
-<div class="container" style="display: flex; justify-content: center;">
-    <div class="card bg-success border-success text-white-50 mb-3" style="margin-bottom: 20px; -webkit-box-shadow: 0 2px 3px #e6e8eb; box-shadow: 0 2px 3px #e6e8eb; border: none; width: 75%;">
-        <div class="card-body text-white" style="font-weight: bold;">
-            Tüm Sistemler Çalışıyor.
+<!-- Dashboard Header -->
+<div class="dashboard-header mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                Admin Dashboard
+            </h1>
+            <p class="text-muted mb-0">Hoş geldiniz! İşte sitenizin genel durumu</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="current-time">
+                <i class="fas fa-clock me-2"></i>
+                <span id="currentTime"></span>
+            </div>
         </div>
     </div>
 </div>
 
-@foreach (var server in servers)
-{
-    <div class="chart-info-container">
-        <div id="chartDiv_@server.Id"></div>
-        <div class="uptime-info">
-            <span>90 days ago</span>
-            <span>----------------------------------------------------</span>
-            <span id="uptimePercentage_@server.Id"></span>
-            <span>----------------------------------------------------------</span>
-            <span>Today</span>
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-primary text-white">
+            <div class="stat-card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number">@ViewBag.TotalProducts</h3>
+                        <p class="stat-label mb-0">Toplam Ürün</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-}
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-success text-white">
+            <div class="stat-card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number">@ViewBag.TotalOrders</h3>
+                        <p class="stat-label mb-0">Toplam Sipariş</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-warning text-white">
+            <div class="stat-card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number">@ViewBag.TotalUsers</h3>
+                        <p class="stat-label mb-0">Kayıtlı Kullanıcı</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-danger text-white">
+            <div class="stat-card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number">@ViewBag.UnreadMessages</h3>
+                        <p class="stat-label mb-0">Okunmamış Mesaj</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-envelope fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script src="~/dist/js/jscharting.js"></script>
-<script src="~/dist/js/modules/types.js"></script>
+<!-- Revenue Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card revenue-card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="card-title mb-2">
+                            <i class="fas fa-chart-line me-2 text-success"></i>
+                            Toplam Gelir
+                        </h5>
+                        <h2 class="text-success mb-0">₺@ViewBag.TotalRevenue.ToString("0.00")</h2>
+                        <p class="text-muted mb-0">Teslim edilen siparişlerden elde edilen gelir</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="revenue-chart">
+                            <i class="fas fa-chart-pie fa-4x text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script type="text/javascript">
-    var statuses = ['UP', 'DOWN', 'NO DATA'];
-    var palette = ['#3BA55C', '#ff0000', '#b3bac5'];
-    var statuses1 = ['No interruptions were recorded on this day.', 'Some servers are down!', 'There is no data for today.'];
+<!-- Recent Orders and Messages -->
+<div class="row g-4">
+    <!-- Recent Orders -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-shopping-bag me-2 text-primary"></i>
+                    Son Siparişler
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Müşteri</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.RecentOrders != null)
+                            {
+                                @foreach (var order in ViewBag.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-light text-dark">#@order.OrderNumber</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-2">
+                                                    <i class="fas fa-user-circle fa-lg text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@order.CustomerName</div>
+                                                    <small class="text-muted">@order.CustomerEmail</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-success">₺@order.TotalAmount.ToString("0.00")</span>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusClass = order.OrderStatus switch
+                                                {
+                                                    "Pending" => "bg-warning",
+                                                    "Processing" => "bg-info",
+                                                    "Shipped" => "bg-primary",
+                                                    "Delivered" => "bg-success",
+                                                    "Cancelled" => "bg-danger",
+                                                    _ => "bg-secondary"
+                                                };
+                                                var statusText = order.OrderStatus switch
+                                                {
+                                                    "Pending" => "Beklemede",
+                                                    "Processing" => "İşleniyor",
+                                                    "Shipped" => "Kargoda",
+                                                    "Delivered" => "Teslim Edildi",
+                                                    "Cancelled" => "İptal Edildi",
+                                                    _ => order.OrderStatus
+                                                };
+                                            }
+                                            <span class="badge @statusClass">@statusText</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("OrderDetail", "Admin", new { id = order.Id })" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-0">Henüz sipariş bulunmuyor</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">
+                    <i class="fas fa-list me-2"></i>Tüm Siparişleri Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Messages -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-envelope me-2 text-warning"></i>
+                    Son Mesajlar
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="message-list">
+                    @if (ViewBag.RecentMessages != null)
+                    {
+                        @foreach (var message in ViewBag.RecentMessages)
+                        {
+                            <div class="message-item @(!message.IsRead ? "unread" : "")">
+                                <div class="message-avatar">
+                                    <i class="fas fa-user-circle fa-lg text-primary"></i>
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <h6 class="message-sender mb-1">@message.Name</h6>
+                                        <small class="text-muted">@message.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                                    </div>
+                                    <p class="message-subject mb-1">@message.Subject</p>
+                                    <p class="message-preview mb-0">@(message.Message.Length > 50 ? message.Message.Substring(0, 50) + "..." : message.Message)</p>
+                                </div>
+                                <div class="message-actions">
+                                    <a href="@Url.Action("MessageDetail", "Admin", new { id = message.Id })" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">Henüz mesaj bulunmuyor</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="@Url.Action("Messages", "Admin")" class="btn btn-warning">
+                    <i class="fas fa-list me-2"></i>Tüm Mesajları Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
-    // Sunucu bilgilerini JS dizisine aktar
-    var servers = [
-        { id: 1, title: "Arkel Cloud LB-1", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudLB1) },
-        { id: 2, title: "Arkel Cloud LB-2", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudLB2) },
-        { id: 3, title: "Arkel Cloud Proxy-1", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudProxy1) },
-        { id: 4, title: "Arkel Cloud Proxy-2", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudProxy2) },
-        { id: 5, title: "Arkel Web Server", data: @Html.Raw(ViewBag.ServerStatusesArkelWebServer) },
-        { id: 6, title: "AX AOS Server", data: @Html.Raw(ViewBag.ServerStatusesAXAOSServer) },
-        { id: 7, title: "AX SQL Server", data: @Html.Raw(ViewBag.ServerStatusesAXSQLServer) },
-        { id: 8, title: "PBX Server", data: @Html.Raw(ViewBag.ServerStatusesPBXServer) },
-        { id: 9, title: "EXC Server", data: @Html.Raw(ViewBag.ServerStatusesEXCServer) }
-    ];
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2 text-info"></i>
+                    Hızlı İşlemler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Yeni Ürün Ekle
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Products", "Admin")" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-box me-2"></i>Ürünleri Yönet
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline-success w-100">
+                            <i class="fas fa-shopping-cart me-2"></i>Siparişleri Görüntüle
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Messages", "Admin")" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-envelope me-2"></i>Mesajları Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    // Tüm chartları döngüyle render et
-    servers.forEach(function(server) {
-        renderChart(
-            'chartDiv_' + server.id,
-            'uptimePercentage_' + server.id,
-            makeSeries(server.data.slice(-90)),
-            server.title
-        );
-    });
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
 
-    // Son durum kontrolü
-    var allServersUp = servers.every(function(server) {
-        var lastStatus = server.data[server.data.length - 1].status;
-        return lastStatus !== 1;
-    });
+    .current-time {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
 
-    updateStatusCard(allServersUp ? 0 : 1);
+    .stat-card {
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
 
-    function updateStatusCard(status) {
-        var statusCard = document.querySelector('.card');
-        var statusMessage = status === 0 ? "All servers are up" : "Some servers are down!";
-        var cardBody = statusCard.querySelector('.card-body');
-        if (status === 0) {
-            statusCard.classList.remove('bg-danger', 'border-danger');
-            statusCard.classList.add('bg-success', 'border-success');
-        } else {
-            statusCard.classList.remove('bg-success', 'border-success');
-            statusCard.classList.add('bg-danger', 'border-danger');
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .stat-icon {
+        opacity: 0.8;
+    }
+
+    .revenue-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .revenue-chart {
+        opacity: 0.3;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 15px 15px 0 0 !important;
+        padding: 1.5rem;
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .message-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .message-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.3s ease;
+    }
+
+    .message-item:last-child {
+        border-bottom: none;
+    }
+
+    .message-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .message-item.unread {
+        background-color: #fff3cd;
+    }
+
+    .message-avatar {
+        margin-right: 1rem;
+    }
+
+    .message-content {
+        flex: 1;
+    }
+
+    .message-sender {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .message-subject {
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .message-preview {
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    .message-actions {
+        margin-left: 1rem;
+    }
+
+    .btn {
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .badge {
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header {
+            padding: 1.5rem;
         }
-        cardBody.innerHTML = statusMessage;
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+        
+        .message-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .message-actions {
+            margin-left: 0;
+            margin-top: 1rem;
+        }
     }
+</style>
 
-    function renderChart(chartId, uptimeId, series, title) {
-        JSC.chart(chartId, {
-            type: 'heatmap solid',
-            height: 75,
-            title_label_text: title,
-            title_label_style: {
-                fontWeight: '600',
-                color: 'black',
-                fontFamily: 'proxima-nova", "Helvetica Neue", Helvetica, Arial, Sans-Serif'
-            },
-            debug: false,
-            legend: {
-                margin_top: -26,
-                position: 'inside top right',
-                defaultEntry: { icon_width: 10 }
-            },
-            palette: {
-                pointValue: function (p) {
-                    return p.options('z');
-                },
-                ranges: makePaletteRanges(palette)
-            },
-            yAxis_visible: false,
-            xAxis: {
-                scale_type: 'time',
-                visible: false
-            },
-            defaultSeries_shape_innerPadding: 0.15,
-            defaultPoint: {
-                outline_width: 0,
-                tooltip: '{%xValue:date} <br>Status: <b>%status</b>'
-            },
-            series: series,
-            logo_visible: false
+<script>
+    // Update current time
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleString('tr-TR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
         });
-        var lastUptimePercentage = series[0].points[series[0].points.length - 1].attributes_status.split('%')[1];
-        document.getElementById(uptimeId).innerHTML = lastUptimePercentage + "% uptime";
+        document.getElementById('currentTime').textContent = timeString;
     }
 
-    function makeSeries(data) {
-        return [
-            {
-                points: data.map(function (item) {
-                    return {
-                        x: new Date(item.date),
-                        y: 'System',
-                        z: item.status,
-                        attributes_status: statuses1[item.status] + ' - %' + item.uptime
-                    };
-                })
-            }
-        ];
-    }
-
-    function makePaletteRanges(palette) {
-        return palette.map(function (item, i) {
-            return {
-                value: i,
-                color: item,
-                legendEntry_value: statuses[i]
-            };
-        });
-    }
+    // Update time every second
+    updateTime();
+    setInterval(updateTime, 1000);
 </script> 

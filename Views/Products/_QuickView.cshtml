@@ -1,0 +1,70 @@
+@model manyasligida.Models.Product
+
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickViewModalLabel">@Model.Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="@Model.GetMainImageUrl()" class="img-fluid rounded" alt="@Model.Name">
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="fw-bold mb-3">@Model.Name</h4>
+                        
+                        <!-- Price -->
+                        <div class="price-section mb-3">
+                            <div class="current-price h4 text-primary fw-bold">₺@Model.Price.ToString("0.00")</div>
+                            @if (Model.HasDiscount)
+                            {
+                                <div class="old-price text-muted text-decoration-line-through">₺@Model.OldPrice?.ToString("0.00")</div>
+                                <span class="badge bg-danger">%@Model.DiscountPercentage İndirim</span>
+                            }
+                        </div>
+
+                        <!-- Stock Status -->
+                        <div class="stock-status mb-3">
+                            @if (Model.IsInStock)
+                            {
+                                <span class="text-success"><i class="fas fa-check-circle"></i> Stokta</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger"><i class="fas fa-times-circle"></i> Stokta Yok</span>
+                            }
+                        </div>
+
+                        <!-- Quick Details -->
+                        <div class="quick-details mb-3">
+                            <div class="row">
+                                <div class="col-6">
+                                    <small class="text-muted">Gramaj:</small><br>
+                                    <strong>@Model.Weight</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Kategori:</small><br>
+                                    <strong>@Model.Category?.Name</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" onclick="addToCart(@Model.Id)" @(Model.StockQuantity <= 0 ? "disabled" : "")>
+                                    <i class="fas fa-shopping-cart me-2"></i>@(Model.StockQuantity > 0 ? "Sepete Ekle" : "Stokta Yok")
+                                </button>
+                                <a href="@Url.Action("Detail", "Products", new { id = Model.Id })" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye me-2"></i>Detayları Gör
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
