@@ -1,0 +1,661 @@
+@{
+    ViewData["Title"] = "Ürün Detayı - Manyaslı Gıda";
+}
+
+<!-- Page Header -->
+<section class="page-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 120px 0 80px;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-white">Ana Sayfa</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Products")" class="text-white">Ürünler</a></li>
+                        <li class="breadcrumb-item active text-warning" aria-current="page">Ürün Detayı</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Detail Section -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Product Images -->
+            <div class="col-lg-6 mb-4" data-aos="fade-right">
+                <div class="product-gallery">
+                    <div class="main-image mb-3">
+                        <img id="mainImage" src="~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg" class="img-fluid rounded-4" alt="Ezine Peyniri">
+                    </div>
+                    <div class="thumbnail-images d-flex gap-2">
+                        <img src="~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg" class="thumbnail-img active" onclick="changeImage(this, '~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg')" alt="Ezine Peyniri 1">
+                        <img src="~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg" class="thumbnail-img" onclick="changeImage(this, '~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg')" alt="Ezine Peyniri 2">
+                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="thumbnail-img" onclick="changeImage(this, '~/img/mihalic-peyniri-350-gr.-122f.jpg')" alt="Ezine Peyniri 3">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="product-info">
+                    <h1 class="product-title fw-bold mb-3">Ezine Peyniri</h1>
+                    
+                    <!-- Rating -->
+                    <div class="rating mb-3">
+                        <div class="stars">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <span class="ms-2 text-muted">(24 değerlendirme)</span>
+                        <span class="ms-3 text-success"><i class="fas fa-check-circle"></i> Stokta</span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="price-section mb-4">
+                        <div class="current-price">₺45.00</div>
+                        <div class="old-price text-muted text-decoration-line-through">₺55.00</div>
+                        <span class="badge bg-danger ms-2">%18 İndirim</span>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="product-details mb-4">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="detail-item">
+                                    <strong>Gramaj:</strong> 600 Gr
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-item">
+                                    <strong>Yağ Oranı:</strong> Tam Yağlı
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-item">
+                                    <strong>Tuz Oranı:</strong> Orta
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-item">
+                                    <strong>Raf Ömrü:</strong> 30 Gün
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Selector -->
+                    <div class="quantity-selector mb-4">
+                        <label class="form-label fw-bold">Adet:</label>
+                        <div class="input-group" style="width: 150px;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                            <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                            <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary btn-lg w-100" onclick="addToCart()">
+                                    <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-outline-primary btn-lg w-100" onclick="buyNow()">
+                                    <i class="fas fa-bolt me-2"></i>Hemen Al
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions mb-4">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-outline-secondary w-100" onclick="addToWishlist()">
+                                    <i class="far fa-heart me-2"></i>Favorilere Ekle
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-secondary w-100" onclick="shareProduct()">
+                                    <i class="fas fa-share me-2"></i>Paylaş
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Info -->
+                    <div class="delivery-info">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold"><i class="fas fa-truck me-2"></i>Kargo Bilgileri</h6>
+                                <p class="card-text mb-2">Ücretsiz kargo (150₺ üzeri alışverişlerde)</p>
+                                <p class="card-text mb-0"><small class="text-muted">1-3 iş günü içinde teslimat</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Description -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Açıklama</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications" type="button" role="tab">Özellikler</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Yorumlar</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="productTabsContent">
+                    <!-- Description Tab -->
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <div class="p-4">
+                            <h4 class="fw-bold mb-3">Ürün Açıklaması</h4>
+                            <p class="mb-3">
+                                Ezine peyniri, Çanakkale'nin Ezine ilçesinde geleneksel yöntemlerle üretilen, 
+                                doğal inek sütünden yapılan tam yağlı beyaz peynirdir. Özel üretim teknikleri 
+                                ve doğal mayalama süreci ile elde edilen bu peynir, eşsiz lezzeti ve 
+                                yumuşak dokusu ile tanınır.
+                            </p>
+                            <h5 class="fw-bold mb-2">Özellikler:</h5>
+                            <ul class="mb-3">
+                                <li>%100 doğal inek sütü</li>
+                                <li>Geleneksel üretim yöntemi</li>
+                                <li>Tam yağlı ve besleyici</li>
+                                <li>Orta tuzlu, dengeli lezzet</li>
+                                <li>Yumuşak ve kremsi doku</li>
+                                <li>Katkı maddesi içermez</li>
+                            </ul>
+                            <h5 class="fw-bold mb-2">Kullanım Alanları:</h5>
+                            <p>
+                                Kahvaltı sofralarının vazgeçilmezi olan Ezine peyniri, salatalarda, 
+                                böreklerde ve çeşitli yemeklerde de kullanılabilir. Özellikle 
+                                kahvaltılık olarak tüketildiğinde eşsiz bir lezzet sunar.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Specifications Tab -->
+                    <div class="tab-pane fade" id="specifications" role="tabpanel">
+                        <div class="p-4">
+                            <h4 class="fw-bold mb-3">Teknik Özellikler</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Ürün Adı:</strong></td>
+                                                <td>Ezine Peyniri</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Gramaj:</strong></td>
+                                                <td>600 Gr</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Yağ Oranı:</strong></td>
+                                                <td>%45-50</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Tuz Oranı:</strong></td>
+                                                <td>%2-3</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Protein:</strong></td>
+                                                <td>%18-20</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Raf Ömrü:</strong></td>
+                                                <td>30 Gün</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Saklama Koşulu:</strong></td>
+                                                <td>+4°C</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Üretim Yeri:</strong></td>
+                                                <td>Manyas, Balıkesir</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Üretim Tarihi:</strong></td>
+                                                <td>Günlük</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Sertifika:</strong></td>
+                                                <td>ISO 22000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews" role="tabpanel">
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold mb-0">Müşteri Yorumları</h4>
+                                <button class="btn btn-primary" onclick="showReviewForm()">
+                                    <i class="fas fa-plus me-2"></i>Yorum Yap
+                                </button>
+                            </div>
+                            
+                            <!-- Review Stats -->
+                            <div class="review-stats mb-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 text-center">
+                                        <div class="overall-rating">
+                                            <h2 class="text-warning mb-0">4.8</h2>
+                                            <div class="stars mb-2">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                            </div>
+                                            <small class="text-muted">24 değerlendirme</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="rating-bars">
+                                            <div class="rating-bar d-flex align-items-center mb-2">
+                                                <span class="me-2">5</span>
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 80%"></div>
+                                                </div>
+                                                <span class="text-muted">19</span>
+                                            </div>
+                                            <div class="rating-bar d-flex align-items-center mb-2">
+                                                <span class="me-2">4</span>
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 15%"></div>
+                                                </div>
+                                                <span class="text-muted">4</span>
+                                            </div>
+                                            <div class="rating-bar d-flex align-items-center mb-2">
+                                                <span class="me-2">3</span>
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 5%"></div>
+                                                </div>
+                                                <span class="text-muted">1</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review List -->
+                            <div class="review-list">
+                                <div class="review-item border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Ayşe K.</h6>
+                                            <div class="stars">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">2 gün önce</small>
+                                    </div>
+                                    <p class="mb-0">Harika bir lezzet! Gerçekten taze ve doğal. Kahvaltı sofralarımızın vazgeçilmezi oldu. Kesinlikle tavsiye ederim.</p>
+                                </div>
+
+                                <div class="review-item border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Mehmet D.</h6>
+                                            <div class="stars">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">1 hafta önce</small>
+                                    </div>
+                                    <p class="mb-0">Kaliteli ürün, hızlı teslimat. Peynir gerçekten çok lezzetli. Tekrar sipariş vereceğim.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+<section class="section-padding">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2>Benzer Ürünler</h2>
+            <p>Bu ürünle birlikte alabileceğiniz diğer lezzetler</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="card product-card h-100">
+                    <div class="product-image">
+                        <img src="~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg" class="card-img-top" alt="Taze Kaşar">
+                        <div class="product-overlay">
+                            <a href="@Url.Action("Detail", "Products", new { id = 2 })" class="btn btn-primary">İncele</a>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">Taze Kaşar</h5>
+                        <p class="text-muted">Yumuşak ve lezzetli</p>
+                        <div class="price">₺35.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="card product-card h-100">
+                    <div class="product-image">
+                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="card-img-top" alt="Mihaliç Peyniri">
+                        <div class="product-overlay">
+                            <a href="@Url.Action("Detail", "Products", new { id = 3 })" class="btn btn-primary">İncele</a>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">Mihaliç Peyniri</h5>
+                        <p class="text-muted">Geleneksel lezzet</p>
+                        <div class="price">₺28.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="card product-card h-100">
+                    <div class="product-image">
+                        <img src="~/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg" class="card-img-top" alt="Çörek Otlu Peynir">
+                        <div class="product-overlay">
+                            <a href="@Url.Action("Detail", "Products", new { id = 4 })" class="btn btn-primary">İncele</a>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">Çörek Otlu Peynir</h5>
+                        <p class="text-muted">Aromatik sepet peyniri</p>
+                        <div class="price">₺32.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="card product-card h-100">
+                    <div class="product-image">
+                        <img src="~/img/eski-kasar-peyniri-300-g.-6a1-d2.jpg" class="card-img-top" alt="Eski Kars Kaşarı">
+                        <div class="product-overlay">
+                            <a href="@Url.Action("Detail", "Products", new { id = 6 })" class="btn btn-primary">İncele</a>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">Eski Kars Kaşarı</h5>
+                        <p class="text-muted">Olgunlaştırılmış</p>
+                        <div class="price">₺42.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .page-header {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .breadcrumb-item a {
+        text-decoration: none;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--accent-color) !important;
+    }
+
+    .product-gallery .main-image {
+        border: 1px solid #e9ecef;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .thumbnail-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .thumbnail-img:hover,
+    .thumbnail-img.active {
+        border-color: var(--primary-color);
+    }
+
+    .product-title {
+        color: var(--text-dark);
+        font-size: 2.5rem;
+    }
+
+    .current-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .old-price {
+        font-size: 1.2rem;
+    }
+
+    .detail-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .quantity-selector .input-group {
+        border-radius: 25px;
+    }
+
+    .quantity-selector .btn {
+        border-radius: 25px 0 0 25px;
+    }
+
+    .quantity-selector .btn:last-child {
+        border-radius: 0 25px 25px 0;
+    }
+
+    .quantity-selector input {
+        border: none;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .action-buttons .btn {
+        border-radius: 25px;
+        font-weight: 500;
+    }
+
+    .quick-actions .btn {
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .delivery-info .card {
+        border-radius: var(--border-radius);
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        color: var(--text-light);
+        font-weight: 500;
+        padding: 1rem 2rem;
+        border-radius: 25px 25px 0 0;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+    }
+
+    .tab-content {
+        border: 1px solid #e9ecef;
+        border-top: none;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+
+    .overall-rating h2 {
+        font-size: 3rem;
+    }
+
+    .rating-bars .progress {
+        border-radius: 10px;
+    }
+
+    .review-item {
+        padding: 1rem 0;
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: var(--shadow);
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(139, 69, 19, 0.2);
+    }
+
+    .product-image {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(139, 69, 19, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+
+    .price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+</style>
+
+<script>
+    function changeImage(thumbnail, imageSrc) {
+        // Remove active class from all thumbnails
+        document.querySelectorAll('.thumbnail-img').forEach(img => {
+            img.classList.remove('active');
+        });
+        
+        // Add active class to clicked thumbnail
+        thumbnail.classList.add('active');
+        
+        // Change main image
+        document.getElementById('mainImage').src = imageSrc.replace('~/', '/');
+    }
+
+    function decreaseQuantity() {
+        const input = document.getElementById('quantity');
+        if (input.value > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    function increaseQuantity() {
+        const input = document.getElementById('quantity');
+        if (input.value < 10) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+
+    function addToCart() {
+        const quantity = document.getElementById('quantity').value;
+        // Add to cart logic here
+        alert(`${quantity} adet Ezine Peyniri sepete eklendi!`);
+    }
+
+    function buyNow() {
+        const quantity = document.getElementById('quantity').value;
+        // Buy now logic here
+        alert(`${quantity} adet Ezine Peyniri için ödeme sayfasına yönlendiriliyorsunuz...`);
+    }
+
+    function addToWishlist() {
+        alert('Ürün favorilere eklendi!');
+    }
+
+    function shareProduct() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Ezine Peyniri - Manyaslı Gıda',
+                text: 'Harika bir lezzet!',
+                url: window.location.href
+            });
+        } else {
+            alert('Paylaşım özelliği bu tarayıcıda desteklenmiyor.');
+        }
+    }
+
+    function showReviewForm() {
+        alert('Yorum formu açılacak...');
+    }
+</script> 
