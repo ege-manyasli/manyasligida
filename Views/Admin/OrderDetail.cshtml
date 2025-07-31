@@ -1,0 +1,327 @@
+@model manyasligida.Models.Order
+@{
+    ViewData["Title"] = "Sipariş Detayı";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Sipariş Detayı #@Model.Id</h1>
+            <p class="page-subtitle">Sipariş bilgilerini görüntüleyin ve yönetin</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+            </a>
+            <button type="button" class="btn btn-primary" onclick="printOrder()">
+                <i class="fas fa-print me-2"></i>Yazdır
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Order Information -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Sipariş Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sipariş Numarası:</label>
+                            <p class="mb-0">#@Model.Id</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sipariş Tarihi:</label>
+                            <p class="mb-0">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sipariş Durumu:</label>
+                            @{
+                                var statusClass = Model.OrderStatus switch
+                                {
+                                    "Pending" => "bg-warning",
+                                    "Confirmed" => "bg-info",
+                                    "Shipped" => "bg-primary",
+                                    "Delivered" => "bg-success",
+                                    "Cancelled" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                                var statusText = Model.OrderStatus switch
+                                {
+                                    "Pending" => "Beklemede",
+                                    "Confirmed" => "Onaylandı",
+                                    "Shipped" => "Kargoda",
+                                    "Delivered" => "Teslim Edildi",
+                                    "Cancelled" => "İptal Edildi",
+                                    _ => Model.OrderStatus
+                                };
+                            }
+                            <span class="badge @statusClass fs-6">@statusText</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ödeme Durumu:</label>
+                            @{
+                                var paymentClass = Model.PaymentStatus switch
+                                {
+                                    "Pending" => "bg-warning",
+                                    "Paid" => "bg-success",
+                                    "Failed" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                                var paymentText = Model.PaymentStatus switch
+                                {
+                                    "Pending" => "Beklemede",
+                                    "Paid" => "Ödendi",
+                                    "Failed" => "Başarısız",
+                                    _ => Model.PaymentStatus
+                                };
+                            }
+                            <span class="badge @paymentClass fs-6">@paymentText</span>
+                        </div>
+                        @if (Model.ShippedDate.HasValue)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Kargo Tarihi:</label>
+                                <p class="mb-0">@Model.ShippedDate.Value.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                        }
+                        @if (Model.DeliveredDate.HasValue)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Teslim Tarihi:</label>
+                                <p class="mb-0">@Model.DeliveredDate.Value.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-box me-2"></i>Sipariş Ürünleri</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.OrderItems != null && Model.OrderItems.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th>Fiyat</th>
+                                    <th>Adet</th>
+                                    <th>Toplam</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                                {
+                                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
+                                                }
+                                                <div>
+                                                    <strong>@item.Product?.Name</strong>
+                                                    <br>
+                                                    <small class="text-muted">@item.Product?.Weight</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>₺@item.UnitPrice.ToString("0.00")</td>
+                                        <td>@item.Quantity</td>
+                                        <td><strong>₺@((item.UnitPrice * item.Quantity).ToString("0.00"))</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">Sipariş ürünü bulunamadı.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Müşteri Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ad Soyad:</label>
+                    <p class="mb-0">@Model.User?.FirstName @Model.User?.LastName</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">E-posta:</label>
+                    <p class="mb-0">@Model.User?.Email</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Telefon:</label>
+                    <p class="mb-0">@Model.User?.Phone</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Adres:</label>
+                    <p class="mb-0">@Model.ShippingAddress</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Sipariş Özeti</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Ara Toplam:</span>
+                    <span>₺@Model.SubTotal.ToString("0.00")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Kargo:</span>
+                    <span>₺@Model.ShippingCost.ToString("0.00")</span>
+                </div>
+                @if (Model.DiscountAmount > 0)
+                {
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>İndirim:</span>
+                        <span>-₺@Model.DiscountAmount.ToString("0.00")</span>
+                    </div>
+                }
+                <hr>
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                    <span>Toplam:</span>
+                    <span class="text-primary">₺@Model.TotalAmount.ToString("0.00")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>İşlemler</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.OrderStatus != "Delivered" && Model.OrderStatus != "Cancelled")
+                {
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary" onclick="updateOrderStatus(@Model.Id, '@Model.OrderStatus')">
+                            <i class="fas fa-edit me-2"></i>Durum Güncelle
+                        </button>
+                        @if (Model.OrderStatus != "Cancelled")
+                        {
+                            <button type="button" class="btn btn-danger" onclick="cancelOrder(@Model.Id)">
+                                <i class="fas fa-times me-2"></i>Siparişi İptal Et
+                            </button>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center mb-0">
+                        @if (Model.OrderStatus == "Delivered")
+                        {
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Sipariş teslim edildi</span>
+                        }
+                        else if (Model.OrderStatus == "Cancelled")
+                        {
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            <span>Sipariş iptal edildi</span>
+                        }
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Order Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sipariş Durumu Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="UpdateOrderStatus" method="post">
+                <input type="hidden" id="orderId" name="orderId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="orderStatus" class="form-label">Sipariş Durumu</label>
+                        <select class="form-select" id="orderStatus" name="status" required>
+                            <option value="Pending">Beklemede</option>
+                            <option value="Confirmed">Onaylandı</option>
+                            <option value="Shipped">Kargoda</option>
+                            <option value="Delivered">Teslim Edildi</option>
+                            <option value="Cancelled">İptal Edildi</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateOrderStatus(orderId, currentStatus) {
+            document.getElementById('orderId').value = orderId;
+            document.getElementById('orderStatus').value = currentStatus;
+            new bootstrap.Modal(document.getElementById('updateStatusModal')).show();
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm('Bu siparişi iptal etmek istediğinizden emin misiniz?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("UpdateOrderStatus", "Admin")';
+                
+                const orderIdInput = document.createElement('input');
+                orderIdInput.type = 'hidden';
+                orderIdInput.name = 'orderId';
+                orderIdInput.value = orderId;
+                
+                const statusInput = document.createElement('input');
+                statusInput.type = 'hidden';
+                statusInput.name = 'status';
+                statusInput.value = 'Cancelled';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                
+                form.appendChild(orderIdInput);
+                form.appendChild(statusInput);
+                form.appendChild(tokenInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function printOrder() {
+            window.print();
+        }
+    </script>
+} 

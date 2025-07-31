@@ -1,0 +1,206 @@
+@model manyasligida.Models.Product
+@{
+    ViewData["Title"] = "Ürün Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Ürün Düzenle</h1>
+            <p class="page-subtitle">Ürün bilgilerini güncelleyin</p>
+        </div>
+        <a href="@Url.Action("Products", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Ürün Düzenle: @Model.Name</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditProduct" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Ürün Adı</label>
+                        <input asp-for="Name" class="form-control" placeholder="Ürün adı" required>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Ürün açıklaması"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Price" class="form-label">Fiyat (₺)</label>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" placeholder="0.00" required>
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="OldPrice" class="form-label">Eski Fiyat (₺)</label>
+                                <input asp-for="OldPrice" class="form-control" type="number" step="0.01" placeholder="0.00">
+                                <span asp-validation-for="OldPrice" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Weight" class="form-label">Ağırlık</label>
+                                <input asp-for="Weight" class="form-control" placeholder="350 gr" required>
+                                <span asp-validation-for="Weight" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="FatContent" class="form-label">Yağ Oranı</label>
+                                <input asp-for="FatContent" class="form-control" placeholder="%45" required>
+                                <span asp-validation-for="FatContent" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="StockQuantity" class="form-label">Stok Miktarı</label>
+                                <input asp-for="StockQuantity" class="form-control" type="number" placeholder="100" required>
+                                <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="SortOrder" class="form-label">Sıralama</label>
+                                <input asp-for="SortOrder" class="form-control" type="number" placeholder="0">
+                                <span asp-validation-for="SortOrder" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Ingredients" class="form-label">İçindekiler</label>
+                        <textarea asp-for="Ingredients" class="form-control" rows="3" placeholder="Ürün içindekileri"></textarea>
+                        <span asp-validation-for="Ingredients" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label">Kategori</label>
+                        <select asp-for="CategoryId" class="form-select">
+                            <option value="">Kategori Seçin</option>
+                            @if (ViewBag.Categories != null)
+                            {
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    @if (category.Id == Model.CategoryId)
+                                    {
+                                        <option value="@category.Id" selected>@category.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Ürün Resmi</label>
+                        <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
+                        <div class="form-text">Yeni resim seçerseniz mevcut resim değiştirilecektir.</div>
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Mevcut Resim</label>
+                            <div class="border rounded p-2">
+                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" style="max-height: 150px;">
+                            </div>
+                        </div>
+                    }
+                    
+                    <div class="mb-3">
+                        <div id="imagePreview" class="d-none">
+                            <label class="form-label">Yeni Resim Önizleme</label>
+                            <div class="border rounded p-2">
+                                <img id="previewImg" src="" alt="Önizleme" class="img-fluid rounded" style="max-height: 150px;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsNew" class="form-check-input" type="checkbox">
+                            <label asp-for="IsNew" class="form-check-label">Yeni Ürün</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsPopular" class="form-check-input" type="checkbox">
+                            <label asp-for="IsPopular" class="form-check-label">Popüler Ürün</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsFeatured" class="form-check-input" type="checkbox">
+                            <label asp-for="IsFeatured" class="form-check-label">Öne Çıkan Ürün</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                            <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a href="@Url.Action("Products", "Admin")" class="btn btn-outline-secondary">İptal</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Güncelle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Resim önizleme fonksiyonu
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.classList.add('d-none');
+        }
+    });
+</script> 

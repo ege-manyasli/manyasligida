@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using manyasligida.Data;
 
@@ -11,9 +12,11 @@ using manyasligida.Data;
 namespace manyasligida.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250731131347_UpdateProductModel")]
+    partial class UpdateProductModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,10 +72,10 @@ namespace manyasligida.Migrations
                         {
                             Id = 1,
                             Content = "Peynir üretimi, binlerce yıllık bir geleneğe sahiptir. Manyas'ta bu geleneksel yöntemler modern teknoloji ile birleştirilerek en kaliteli peynirler üretilmektedir...",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 26, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(4843),
                             ImageUrl = "/img/blog-1.jpg",
                             IsActive = true,
-                            PublishedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PublishedAt = new DateTime(2025, 7, 26, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(4460),
                             Summary = "Manyas'ta peynir üretiminde kullanılan geleneksel yöntemler ve modern teknolojinin uyumu hakkında detaylı bilgi.",
                             Title = "Peynir Üretiminde Geleneksel Yöntemler"
                         },
@@ -80,10 +83,10 @@ namespace manyasligida.Migrations
                         {
                             Id = 2,
                             Content = "Peynir, protein, kalsiyum ve diğer önemli besin maddelerini içeren değerli bir gıda maddesidir. Düzenli tüketimi kemik sağlığı ve kas gelişimi için önemlidir...",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 21, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(5065),
                             ImageUrl = "/img/blog-2.jpg",
                             IsActive = true,
-                            PublishedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PublishedAt = new DateTime(2025, 7, 21, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(5063),
                             Summary = "Peynirin besin değeri ve sağlıklı beslenmedeki rolü hakkında uzman görüşleri.",
                             Title = "Sağlıklı Beslenmede Peynirin Önemi"
                         },
@@ -91,10 +94,10 @@ namespace manyasligida.Migrations
                         {
                             Id = 3,
                             Content = "Her peynir çeşidinin kendine özgü lezzeti ve kullanım alanı vardır. Beyaz peynir kahvaltı sofralarının vazgeçilmezi iken, kaşar peyniri ısıtıldığında eriyen yapısıyla pizza ve tost için idealdir...",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 16, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(5070),
                             ImageUrl = "/img/blog-3.jpg",
                             IsActive = true,
-                            PublishedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PublishedAt = new DateTime(2025, 7, 16, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(5069),
                             Summary = "Farklı peynir çeşitlerinin özellikleri ve mutfakta nasıl kullanılacağı hakkında pratik bilgiler.",
                             Title = "Peynir Çeşitleri ve Kullanım Alanları"
                         });
@@ -200,7 +203,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 546, DateTimeKind.Local).AddTicks(7414),
                             Description = "Geleneksel beyaz peynir çeşitleri",
                             DisplayOrder = 1,
                             IsActive = true,
@@ -209,7 +212,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 546, DateTimeKind.Local).AddTicks(7868),
                             Description = "Taze ve eski kaşar peynirleri",
                             DisplayOrder = 2,
                             IsActive = true,
@@ -218,7 +221,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 546, DateTimeKind.Local).AddTicks(7871),
                             Description = "Özel sepet peynirleri",
                             DisplayOrder = 3,
                             IsActive = true,
@@ -227,7 +230,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 546, DateTimeKind.Local).AddTicks(7874),
                             Description = "Özel üretim peynir çeşitleri",
                             DisplayOrder = 4,
                             IsActive = true,
@@ -322,7 +325,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 1,
                             Answer = "Tüm peynirlerimiz günlük üretimdir ve en fazla 24 saat içinde satışa sunulur.",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(7047),
                             DisplayOrder = 1,
                             IsActive = true,
                             Question = "Peynirleriniz ne kadar taze?"
@@ -331,7 +334,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 2,
                             Answer = "Siparişleriniz 1-3 iş günü içinde teslim edilir.",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(7272),
                             DisplayOrder = 2,
                             IsActive = true,
                             Question = "Kargo süresi ne kadar?"
@@ -340,7 +343,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 3,
                             Answer = "Evet, minimum sipariş tutarı 50 TL'dir.",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(7275),
                             DisplayOrder = 3,
                             IsActive = true,
                             Question = "Minimum sipariş tutarı var mı?"
@@ -392,7 +395,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(9002),
                             Description = "Modern üretim tesisimiz",
                             DisplayOrder = 0,
                             ImageUrl = "/img/about.jpg",
@@ -402,7 +405,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(9302),
                             Description = "Kalite kontrol süreçlerimiz",
                             DisplayOrder = 0,
                             ImageUrl = "/img/product-2.jpg",
@@ -412,7 +415,7 @@ namespace manyasligida.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 31, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(9304),
                             Description = "Geniş ürün yelpazemiz",
                             DisplayOrder = 0,
                             ImageUrl = "/img/product-3.jpg",
@@ -446,9 +449,6 @@ namespace manyasligida.Migrations
 
                     b.Property<DateTime?>("DeliveredDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("DiscountAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -547,7 +547,7 @@ namespace manyasligida.Migrations
                     b.Property<string>("AllergenInfo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -640,7 +640,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 26, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(1718),
                             Description = "Çanakkale Ezine'den özel üretim tam yağlı beyaz peynir",
                             FatContent = "%45-50",
                             ImageUrl = "/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg",
@@ -659,7 +659,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 21, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2060),
                             Description = "Günlük taze üretim yumuşak kaşar peyniri",
                             FatContent = "%40-45",
                             ImageUrl = "/img/taze-kasar-peyniri-1000-gr.-63a593.jpg",
@@ -677,7 +677,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 3,
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 28, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2069),
                             Description = "Geleneksel Mihaliç peyniri",
                             FatContent = "%35-40",
                             ImageUrl = "/img/mihalic-peyniri-350-gr.-122f.jpg",
@@ -696,7 +696,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 4,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 16, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2102),
                             Description = "Çörek otu ile aromalandırılmış özel sepet peyniri",
                             FatContent = "%42-47",
                             ImageUrl = "/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg",
@@ -714,7 +714,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 5,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 11, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2107),
                             Description = "Kırmızı biber ile tatlandırılmış sepet peyniri",
                             FatContent = "%40-45",
                             ImageUrl = "/img/biberli-sepet-peyniri-350-gr.-2e1f.jpg",
@@ -733,7 +733,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 6,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 6, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2114),
                             Description = "Olgunlaştırılmış eski kaşar peyniri",
                             FatContent = "%45-50",
                             ImageUrl = "/img/eski-kasar-peyniri-300-g.-6a1-d2.jpg",
@@ -751,7 +751,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 7,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 29, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2122),
                             Description = "Yumuşak ve lezzetli dil peyniri",
                             FatContent = "%35-40",
                             ImageUrl = "/img/dil-peyniri-400-gr.-5f1a.jpg",
@@ -770,7 +770,7 @@ namespace manyasligida.Migrations
                         {
                             Id = 8,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 19, 16, 13, 46, 548, DateTimeKind.Local).AddTicks(2127),
                             Description = "Taze otlar ile aromalandırılmış beyaz peynir",
                             FatContent = "%42-47",
                             ImageUrl = "/img/product-1.jpg",
@@ -807,9 +807,6 @@ namespace manyasligida.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -821,9 +818,6 @@ namespace manyasligida.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLoginAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastLoginDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
@@ -840,9 +834,6 @@ namespace manyasligida.Migrations
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -911,7 +902,9 @@ namespace manyasligida.Migrations
                 {
                     b.HasOne("manyasligida.Models.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });

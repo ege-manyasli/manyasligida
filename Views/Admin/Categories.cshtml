@@ -1,0 +1,187 @@
+@model IEnumerable<manyasligida.Models.Category>
+@{
+    ViewData["Title"] = "Kategori Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Kategori Yönetimi</h1>
+            <p class="page-subtitle">Ürün kategorilerini yönetin</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            <i class="fas fa-plus me-2"></i>Yeni Kategori
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Kategoriler</h5>
+    </div>
+    <div class="card-body">
+        @if (Model != null && Model.Count() > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Kategori Adı</th>
+                            <th>Açıklama</th>
+                            <th>Sıra</th>
+                            <th>Ürün Sayısı</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.Id</td>
+                                <td>
+                                    <strong>@category.Name</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@(category.Description?.Length > 50 ? category.Description.Substring(0, 50) + "..." : category.Description)</small>
+                                </td>
+                                <td>@category.DisplayOrder</td>
+                                <td>
+                                    <span class="badge bg-info">@(ViewBag.ProductCounts != null && ViewBag.ProductCounts.ContainsKey(category.Id) ? ViewBag.ProductCounts[category.Id] : 0)</span>
+                                </td>
+                                <td>
+                                    @if (category.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editCategory(@category.Id, '@category.Name', '@category.Description', @category.DisplayOrder, @category.IsActive.ToString().ToLower())">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form asp-action="DeleteCategory" method="post" style="display: inline;" onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')">
+                                            <input type="hidden" name="id" value="@category.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Henüz kategori bulunmuyor</h5>
+                <p class="text-muted">İlk kategorinizi eklemek için yukarıdaki butonu kullanın.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Kategori Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddCategory" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Kategori Adı</label>
+                        <input type="text" class="form-control" id="categoryName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="categoryDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="displayOrder" class="form-label">Görüntüleme Sırası</label>
+                        <input type="number" class="form-control" id="displayOrder" name="DisplayOrder" value="1" min="1">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="isActive" name="IsActive" checked>
+                            <label class="form-check-label" for="isActive">
+                                Aktif
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kategori Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="EditCategory" method="post">
+                <input type="hidden" id="editCategoryId" name="Id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Kategori Adı</label>
+                        <input type="text" class="form-control" id="editCategoryName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategoryDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="editCategoryDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDisplayOrder" class="form-label">Görüntüleme Sırası</label>
+                        <input type="number" class="form-control" id="editDisplayOrder" name="DisplayOrder" min="1">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="editIsActive" name="IsActive">
+                            <label class="form-check-label" for="editIsActive">
+                                Aktif
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function editCategory(id, name, description, displayOrder, isActive) {
+            document.getElementById('editCategoryId').value = id;
+            document.getElementById('editCategoryName').value = name;
+            document.getElementById('editCategoryDescription').value = description;
+            document.getElementById('editDisplayOrder').value = displayOrder;
+            document.getElementById('editIsActive').checked = isActive === 'true';
+            
+            new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
+        }
+    </script>
+} 

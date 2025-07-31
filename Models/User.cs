@@ -13,8 +13,11 @@ namespace manyasligida.Models
         public string? PostalCode { get; set; }
         public bool IsActive { get; set; } = true;
         public bool IsAdmin { get; set; } = false;
+        public bool EmailConfirmed { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
+        public DateTime? LastLoginDate { get; set; }
         
         // Navigation properties
         public ICollection<Order> Orders { get; set; } = new List<Order>();

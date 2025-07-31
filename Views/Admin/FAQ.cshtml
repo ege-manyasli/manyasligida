@@ -1,0 +1,326 @@
+@model IEnumerable<manyasligida.Models.FAQ>
+@{
+    ViewData["Title"] = "SSS Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .faq-page {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+    
+    .page-header {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .page-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 15px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 25px 30px;
+    }
+    
+    .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+    }
+    
+    .accordion-item {
+        border: none;
+        margin-bottom: 15px;
+        border-radius: 15px !important;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .accordion-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .accordion-button {
+        background: white;
+        border: none;
+        padding: 20px 25px;
+        font-weight: 600;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: none;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border: none;
+    }
+    
+    .accordion-button::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23667eea'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+    
+    .accordion-button:not(.collapsed)::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+    
+    .accordion-body {
+        background: #f8f9fa;
+        padding: 25px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .btn-group .btn {
+        border-radius: 10px;
+        margin: 0 2px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary {
+        border-color: #667eea;
+        color: #667eea;
+    }
+    
+    .btn-outline-primary:hover {
+        background: #667eea;
+        border-color: #667eea;
+        transform: translateY(-1px);
+    }
+    
+    .btn-outline-danger {
+        border-color: #e74c3c;
+        color: #e74c3c;
+    }
+    
+    .btn-outline-danger:hover {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        transform: translateY(-1px);
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 15px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+    
+    .alert-success {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+        color: white;
+    }
+    
+    .alert-danger {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+        color: white;
+    }
+    
+    .text-center.py-5 {
+        background: white;
+        border-radius: 20px;
+        padding: 60px 30px;
+        margin: 20px 0;
+    }
+    
+    .text-muted {
+        color: #7f8c8d !important;
+    }
+    
+    .fa-3x {
+        color: #bdc3c7;
+    }
+    
+    .badge {
+        border-radius: 10px;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .badge.bg-success {
+        background: linear-gradient(45deg, #27ae60, #2ecc71) !important;
+    }
+    
+    .badge.bg-danger {
+        background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    }
+    
+    .badge.bg-info {
+        background: linear-gradient(45deg, #3498db, #2980b9) !important;
+    }
+    
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .accordion-button {
+            padding: 15px 20px;
+        }
+        
+        .accordion-body {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="faq-page">
+    <div class="container">
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">SSS Yönetimi</h1>
+                    <p class="page-subtitle">Sıkça sorulan soruları yönetin</p>
+                </div>
+                <a href="@Url.Action("AddFAQ", "Admin")" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Yeni SSS
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Sıkça Sorulan Sorular</h5>
+            </div>
+            <div class="card-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                
+                @if (Model != null && Model.Any())
+                {
+                    <div class="accordion" id="faqAccordion">
+                        @foreach (var faq in Model)
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq-@faq.Id">
+                                    <button class="accordion-button @(faq.Id == Model.First().Id ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@faq.Id" aria-expanded="@(faq.Id == Model.First().Id ? "true" : "false")" aria-controls="collapse-@faq.Id">
+                                        <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                            <span class="fw-medium">@faq.Question</span>
+                                            <div class="btn-group btn-group-sm" onclick="event.stopPropagation();">
+                                                <a href="@Url.Action("EditFAQ", "Admin", new { id = faq.Id })" class="btn btn-outline-primary btn-sm" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-danger btn-sm" title="Sil" onclick="deleteFAQ(@faq.Id, '@faq.Question')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-@faq.Id" class="accordion-collapse collapse @(faq.Id == Model.First().Id ? "show" : "")" aria-labelledby="faq-@faq.Id" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        <div class="mb-3">
+                                            @Html.Raw(faq.Answer.Replace("\n", "<br>"))
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted small">
+                                                <i class="fas fa-sort me-1"></i>Sıra: @faq.DisplayOrder
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-circle me-1 @(faq.IsActive ? "text-success" : "text-danger")"></i>
+                                                @(faq.IsActive ? "Aktif" : "Pasif")
+                                                @if (!string.IsNullOrEmpty(faq.Category))
+                                                {
+                                                    <span class="mx-2">|</span>
+                                                    <i class="fas fa-tag me-1"></i>@faq.Category
+                                                }
+                                            </div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                @faq.CreatedAt.ToString("dd.MM.yyyy")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz SSS bulunmuyor</h5>
+                        <p class="text-muted">İlk SSS öğenizi eklemek için yukarıdaki butonu kullanın.</p>
+                        <a href="@Url.Action("AddFAQ", "Admin")" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>İlk SSS'yi Ekle
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Silme Formu -->
+<form id="deleteFAQForm" asp-action="DeleteFAQ" method="post" style="display: none;">
+    <input type="hidden" name="id" id="deleteFAQId" />
+</form>
+
+<script>
+function deleteFAQ(id, question) {
+    if (confirm(`"${question}" sorusunu silmek istediğinizden emin misiniz?`)) {
+        document.getElementById('deleteFAQId').value = id;
+        document.getElementById('deleteFAQForm').submit();
+    }
+}
+</script> 

@@ -41,10 +41,10 @@ namespace manyasligida.Data
         {
             // Categories
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Beyaz Peynir", Description = "Geleneksel beyaz peynir çeşitleri", DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 2, Name = "Kaşar Peyniri", Description = "Taze ve eski kaşar peynirleri", DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 3, Name = "Sepet Peyniri", Description = "Özel sepet peynirleri", DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 4, Name = "Özel Peynirler", Description = "Özel üretim peynir çeşitleri", DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.Now }
+                new Category { Id = 1, Name = "Beyaz Peynir", Description = "Geleneksel beyaz peynir çeşitleri", DisplayOrder = 1, IsActive = true, CreatedAt = new DateTime(2024, 1, 1) },
+                new Category { Id = 2, Name = "Kaşar Peyniri", Description = "Taze ve eski kaşar peynirleri", DisplayOrder = 2, IsActive = true, CreatedAt = new DateTime(2024, 1, 1) },
+                new Category { Id = 3, Name = "Sepet Peyniri", Description = "Özel sepet peynirleri", DisplayOrder = 3, IsActive = true, CreatedAt = new DateTime(2024, 1, 1) },
+                new Category { Id = 4, Name = "Özel Peynirler", Description = "Özel üretim peynir çeşitleri", DisplayOrder = 4, IsActive = true, CreatedAt = new DateTime(2024, 1, 1) }
             );
 
             // Products
@@ -63,7 +63,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = true, 
                     IsNew = true, 
-                    CreatedAt = DateTime.Now.AddDays(-5) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 2, 
@@ -79,7 +79,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = true, 
                     IsNew = false, 
-                    CreatedAt = DateTime.Now.AddDays(-10) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 3, 
@@ -95,7 +95,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = false, 
                     IsNew = true, 
-                    CreatedAt = DateTime.Now.AddDays(-3) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 4, 
@@ -111,7 +111,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = false, 
                     IsNew = false, 
-                    CreatedAt = DateTime.Now.AddDays(-15) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 5, 
@@ -127,7 +127,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = true, 
                     IsNew = false, 
-                    CreatedAt = DateTime.Now.AddDays(-20) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 6, 
@@ -143,7 +143,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = false, 
                     IsNew = false, 
-                    CreatedAt = DateTime.Now.AddDays(-25) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 7, 
@@ -159,7 +159,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = false, 
                     IsNew = true, 
-                    CreatedAt = DateTime.Now.AddDays(-2) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Product { 
                     Id = 8, 
@@ -175,7 +175,7 @@ namespace manyasligida.Data
                     IsActive = true, 
                     IsPopular = true, 
                     IsNew = false, 
-                    CreatedAt = DateTime.Now.AddDays(-12) 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 }
             );
 
@@ -188,8 +188,8 @@ namespace manyasligida.Data
                     Content = "Peynir üretimi, binlerce yıllık bir geleneğe sahiptir. Manyas'ta bu geleneksel yöntemler modern teknoloji ile birleştirilerek en kaliteli peynirler üretilmektedir...", 
                     ImageUrl = "/img/blog-1.jpg", 
                     IsActive = true, 
-                    PublishedAt = DateTime.Now.AddDays(-5), 
-                    CreatedAt = DateTime.Now.AddDays(-5) 
+                    PublishedAt = new DateTime(2024, 1, 1), 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Blog { 
                     Id = 2, 
@@ -198,8 +198,8 @@ namespace manyasligida.Data
                     Content = "Peynir, protein, kalsiyum ve diğer önemli besin maddelerini içeren değerli bir gıda maddesidir. Düzenli tüketimi kemik sağlığı ve kas gelişimi için önemlidir...", 
                     ImageUrl = "/img/blog-2.jpg", 
                     IsActive = true, 
-                    PublishedAt = DateTime.Now.AddDays(-10), 
-                    CreatedAt = DateTime.Now.AddDays(-10) 
+                    PublishedAt = new DateTime(2024, 1, 1), 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Blog { 
                     Id = 3, 
@@ -208,8 +208,8 @@ namespace manyasligida.Data
                     Content = "Her peynir çeşidinin kendine özgü lezzeti ve kullanım alanı vardır. Beyaz peynir kahvaltı sofralarının vazgeçilmezi iken, kaşar peyniri ısıtıldığında eriyen yapısıyla pizza ve tost için idealdir...", 
                     ImageUrl = "/img/blog-3.jpg", 
                     IsActive = true, 
-                    PublishedAt = DateTime.Now.AddDays(-15), 
-                    CreatedAt = DateTime.Now.AddDays(-15) 
+                    PublishedAt = new DateTime(2024, 1, 1), 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 }
             );
 
@@ -221,7 +221,7 @@ namespace manyasligida.Data
                     Answer = "Tüm peynirlerimiz günlük üretimdir ve en fazla 24 saat içinde satışa sunulur.", 
                     DisplayOrder = 1, 
                     IsActive = true, 
-                    CreatedAt = DateTime.Now 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new FAQ { 
                     Id = 2, 
@@ -229,7 +229,7 @@ namespace manyasligida.Data
                     Answer = "Siparişleriniz 1-3 iş günü içinde teslim edilir.", 
                     DisplayOrder = 2, 
                     IsActive = true, 
-                    CreatedAt = DateTime.Now 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new FAQ { 
                     Id = 3, 
@@ -237,7 +237,7 @@ namespace manyasligida.Data
                     Answer = "Evet, minimum sipariş tutarı 50 TL'dir.", 
                     DisplayOrder = 3, 
                     IsActive = true, 
-                    CreatedAt = DateTime.Now 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 }
             );
 
@@ -249,7 +249,7 @@ namespace manyasligida.Data
                     Description = "Modern üretim tesisimiz", 
                     ImageUrl = "/img/about.jpg", 
                     IsActive = true, 
-                    CreatedAt = DateTime.Now 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Gallery { 
                     Id = 2, 
@@ -257,7 +257,7 @@ namespace manyasligida.Data
                     Description = "Kalite kontrol süreçlerimiz", 
                     ImageUrl = "/img/product-2.jpg", 
                     IsActive = true, 
-                    CreatedAt = DateTime.Now 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 },
                 new Gallery { 
                     Id = 3, 
@@ -265,7 +265,7 @@ namespace manyasligida.Data
                     Description = "Geniş ürün yelpazemiz", 
                     ImageUrl = "/img/product-3.jpg", 
                     IsActive = true, 
-                    CreatedAt = DateTime.Now 
+                    CreatedAt = new DateTime(2024, 1, 1) 
                 }
             );
         }

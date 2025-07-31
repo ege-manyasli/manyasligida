@@ -3,7 +3,7 @@
 }
 
 <!-- Hero Section with Video -->
-<section class="hero-section position-relative" style="min-height: 100vh; display: flex; align-items: center; overflow: hidden;">
+<section class="hero-section position-relative" style="min-height: 100vh; display: flex; align-items: center; overflow: hidden; margin-top: -80px; padding-top: 80px;">
     <!-- Video Background -->
     <div class="video-background">
         <video autoplay muted loop playsinline class="hero-video">
@@ -241,28 +241,31 @@
 <section class="section-padding" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
     <div class="container">
         <div class="row text-center text-white">
+            @{
+                var stats = ViewBag.Stats as dynamic ?? new { TotalProducts = 0, TotalOrders = 0, TotalUsers = 0, TotalBlogs = 0 };
+            }
             <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">500+</div>
+                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalOrders)+</div>
                     <div class="stat-label">Mutlu Müşteri</div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">50+</div>
+                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalProducts)+</div>
                     <div class="stat-label">Ürün Çeşidi</div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">10+</div>
-                    <div class="stat-label">Yıllık Deneyim</div>
+                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalUsers)+</div>
+                    <div class="stat-label">Kayıtlı Üye</div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
                 <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">24/7</div>
-                    <div class="stat-label">Müşteri Desteği</div>
+                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalBlogs)+</div>
+                    <div class="stat-label">Blog Yazısı</div>
                 </div>
             </div>
         </div>
@@ -290,9 +293,9 @@
                             <img src="@blog.ImageUrl" class="card-img-top" alt="@blog.Title">
                         </div>
                         <div class="card-body d-flex flex-column">
-                                                            <div class="blog-date text-primary fw-bold mb-2">
-                                    <i class="fas fa-calendar me-1"></i>@(blog.PublishedAt?.ToString("dd MMM yyyy") ?? blog.CreatedAt.ToString("dd MMM yyyy"))
-                                </div>
+                            <div class="blog-date text-primary fw-bold mb-2">
+                                <i class="fas fa-calendar me-1"></i>@(blog.PublishedAt?.ToString("dd MMM yyyy") ?? blog.CreatedAt.ToString("dd MMM yyyy"))
+                            </div>
                             <h5 class="card-title fw-bold">@blog.Title</h5>
                             <p class="card-text text-muted">@blog.Summary</p>
                             <a href="@Url.Action("Detail", "Blog", new { id = blog.Id })" class="btn btn-outline-primary mt-auto">
@@ -359,7 +362,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, rgba(255, 107, 53, 0.7) 0%, rgba(78, 205, 196, 0.7) 100%);
+        background: linear-gradient(135deg, rgba(231, 76, 60, 0.7) 0%, rgba(243, 156, 18, 0.7) 100%);
     }
     
     .z-index-2 {
@@ -499,6 +502,10 @@
         
         .hero-logo {
             max-height: 250px !important;
+        }
+        
+        .hero-section {
+            min-height: 80vh !important;
         }
     }
 

@@ -1,0 +1,104 @@
+@model manyasligida.Models.Blog
+@{
+    ViewData["Title"] = "Blog Yazısı Ekle";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Blog Yazısı Ekle</h1>
+            <p class="page-subtitle">Yeni blog yazısı oluşturun</p>
+        </div>
+        <a href="@Url.Action("Blog", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Yeni Blog Yazısı</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddBlog" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Başlık</label>
+                        <input asp-for="Title" class="form-control" placeholder="Blog yazısı başlığı" required>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Summary" class="form-label">Özet</label>
+                        <textarea asp-for="Summary" class="form-control" rows="3" placeholder="Blog yazısı özeti" required></textarea>
+                        <span asp-validation-for="Summary" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label">İçerik</label>
+                        <textarea asp-for="Content" class="form-control" rows="10" placeholder="Blog yazısı içeriği" required></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Blog Resmi</label>
+                        <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
+                        <div class="form-text">Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maksimum dosya boyutu: 5MB</div>
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div id="imagePreview" class="d-none">
+                            <img id="previewImg" src="" alt="Önizleme" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Author" class="form-label">Yazar</label>
+                        <input asp-for="Author" class="form-control" placeholder="Yazar adı">
+                        <span asp-validation-for="Author" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                            <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a href="@Url.Action("Blog", "Admin")" class="btn btn-outline-secondary">İptal</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Resim önizleme fonksiyonu
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.classList.add('d-none');
+        }
+    });
+</script> 

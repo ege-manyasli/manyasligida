@@ -1,0 +1,115 @@
+@model manyasligida.Models.Blog
+@{
+    ViewData["Title"] = "Blog Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Blog Düzenle</h1>
+            <p class="page-subtitle">Blog yazısını güncelleyin</p>
+        </div>
+        <a href="@Url.Action("Blog", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Blog Düzenle: @Model.Title</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditBlog" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Başlık *</label>
+                        <input asp-for="Title" class="form-control" placeholder="Blog başlığı" required>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Summary" class="form-label">Özet</label>
+                        <textarea asp-for="Summary" class="form-control" rows="3" placeholder="Blog özeti"></textarea>
+                        <span asp-validation-for="Summary" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label">İçerik *</label>
+                        <textarea asp-for="Content" class="form-control" rows="10" placeholder="Blog içeriği" required></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Blog Resmi</label>
+                        <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
+                        <div class="form-text">Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maksimum dosya boyutu: 5MB</div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Mevcut Resim</label>
+                            <img src="@Model.ImageUrl" alt="Mevcut resim" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                    }
+
+                    <div id="imagePreview" class="mb-3 d-none">
+                        <label class="form-label">Yeni Resim Önizleme</label>
+                        <img id="previewImg" src="" alt="Önizleme" class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                            <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PublishedAt" class="form-label">Yayın Tarihi</label>
+                        <input asp-for="PublishedAt" class="form-control" type="datetime-local">
+                        <span asp-validation-for="PublishedAt" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="@Url.Action("Blog", "Admin")" class="btn btn-secondary">
+                    <i class="fas fa-times me-2"></i>İptal
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Güncelle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Resim önizleme fonksiyonu
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.classList.add('d-none');
+        }
+    });
+</script> 

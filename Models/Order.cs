@@ -13,6 +13,7 @@ namespace manyasligida.Models
         public string? City { get; set; }
         public string? PostalCode { get; set; }
         public decimal SubTotal { get; set; }
+        public decimal DiscountAmount { get; set; }
         public decimal ShippingCost { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }

@@ -38,6 +38,9 @@ builder.Services.AddHttpContextAccessor();
 // Add CartService
 builder.Services.AddScoped<CartService>();
 
+// Add FileUploadService
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

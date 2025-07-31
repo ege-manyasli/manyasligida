@@ -4,293 +4,476 @@
     Layout = "_AdminLayout";
 }
 
-<!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 mb-0">
-            <i class="fas fa-box me-2 text-primary"></i>
-            Ürün Yönetimi
-        </h1>
-        <p class="text-muted mb-0">Tüm ürünleri görüntüleyin ve yönetin</p>
-    </div>
-    <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">
-        <i class="fas fa-plus me-2"></i>Yeni Ürün Ekle
-    </a>
-</div>
-
-<!-- Success Message -->
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i>
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-<!-- Products Table -->
-<div class="card">
-    <div class="card-header">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-list me-2"></i>
-                    Ürün Listesi (@Model.Count() ürün)
-                </h5>
-            </div>
-            <div class="col-md-6">
-                <div class="input-group">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Ürün ara...">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0" id="productsTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Görsel</th>
-                        <th>Ürün Adı</th>
-                        <th>Kategori</th>
-                        <th>Fiyat</th>
-                        <th>Stok</th>
-                        <th>Durum</th>
-                        <th>Tarih</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var product in Model)
-                    {
-                        <tr>
-                            <td>
-                                <div class="product-image">
-                                    <img src="@product.ImageUrl" alt="@product.Name" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <h6 class="mb-1">@product.Name</h6>
-                                    <small class="text-muted">@product.Weight • @product.FatContent</small>
-                                    <div class="product-badges mt-1">
-                                        @if (product.IsPopular)
-                                        {
-                                            <span class="badge bg-success me-1">Popüler</span>
-                                        }
-                                        @if (product.IsNew)
-                                        {
-                                            <span class="badge bg-warning me-1">Yeni</span>
-                                        }
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">@product.Category?.Name</span>
-                            </td>
-                            <td>
-                                <div>
-                                    <span class="fw-bold text-success">₺@product.Price.ToString("0.00")</span>
-                                    @if (product.OldPrice > product.Price)
-                                    {
-                                        <br><small class="text-muted text-decoration-line-through">₺@product.OldPrice.("0.00")</small>
-                                    }
-                                </div>
-                            </td>
-                            <td>
-                                @if (product.StockQuantity > 20)
-                                {
-                                    <span class="badge bg-success">@product.StockQuantity</span>
-                                }
-                                else if (product.StockQuantity > 0)
-                                {
-                                    <span class="badge bg-warning">@product.StockQuantity</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Tükendi</span>
-                                }
-                            </td>
-                            <td>
-                                @if (product.IsActive)
-                                {
-                                    <span class="badge bg-success">Aktif</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Pasif</span>
-                                }
-                            </td>
-                            <td>
-                                <small class="text-muted">@product.CreatedAt.ToString("dd.MM.yyyy")</small>
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="@Url.Action("EditProduct", "Admin", new { id = product.Id })" class="btn btn-sm btn-outline-primary" title="Düzenle">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-sm btn-outline-info" title="Görüntüle" target="_blank">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Sil" onclick="deleteProduct(@product.Id, '@product.Name')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
-                    Ürün Silme Onayı
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Bu ürünü silmek istediğinizden emin misiniz?</p>
-                <p class="fw-bold" id="productName"></p>
-                <p class="text-muted small">Bu işlem geri alınamaz.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                <form id="deleteForm" method="post" style="display: inline;">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Sil
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
-    .product-image img {
-        border-radius: 8px;
-        border: 2px solid #e9ecef;
+    /* Modern Minimal Design */
+    .products-page {
+        background: #ffffff;
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-
-    .product-badges .badge {
-        font-size: 0.7rem;
+    
+    .page-header-minimal {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 3rem 0;
+        border-bottom: 1px solid #e2e8f0;
     }
-
-    .btn-group .btn {
-        border-radius: 5px;
-        margin-right: 2px;
+    
+    .page-title-minimal {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
     }
-
-    .btn-group .btn:last-child {
-        margin-right: 0;
+    
+    .page-subtitle-minimal {
+        color: #64748b;
+        font-size: 1.125rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
     }
-
-    .table th {
+    
+    .btn-minimal {
+        background: #1e293b;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 28px;
         font-weight: 600;
-        color: var(--text-dark);
-        background: var(--bg-light);
-        border-bottom: 2px solid #dee2e6;
+        color: white;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-
-    .table td {
-        vertical-align: middle;
-        border-bottom: 1px solid #f0f0f0;
+    
+    .btn-minimal:hover {
+        background: #334155;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: white;
     }
-
-    .table tbody tr:hover {
-        background-color: #f8f9fa;
+    
+    .stats-minimal {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
     }
-
-    .badge {
+    
+    .stat-minimal {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .stat-minimal:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-number-minimal {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label-minimal {
+        color: #64748b;
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .products-grid-minimal {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+    }
+    
+    .product-card-minimal {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .product-card-minimal:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        transform: translateY(-4px);
+    }
+    
+    .product-image-minimal {
+        position: relative;
+        width: 100%;
+        height: 240px;
+        background: #f8fafc;
+        overflow: hidden;
+    }
+    
+    .product-image-minimal img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card-minimal:hover .product-image-minimal img {
+        transform: scale(1.05);
+    }
+    
+    .product-image-placeholder-minimal {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        color: #94a3b8;
+        font-size: 2.5rem;
+    }
+    
+    .product-status-minimal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 6px 12px;
+        border-radius: 20px;
         font-size: 0.75rem;
-        padding: 0.5rem 0.75rem;
+        font-weight: 600;
+        z-index: 10;
+        backdrop-filter: blur(10px);
     }
-
-    .alert {
-        border-radius: 10px;
+    
+    .status-active-minimal {
+        background: rgba(34, 197, 94, 0.9);
+        color: white;
+    }
+    
+    .status-inactive-minimal {
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+    }
+    
+    .product-content-minimal {
+        padding: 1.5rem;
+    }
+    
+    .product-name-minimal {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+    
+    .product-weight-minimal {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .product-category-minimal {
+        display: inline-block;
+        background: #f1f5f9;
+        color: #475569;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .product-price-minimal {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .current-price-minimal {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #059669;
+    }
+    
+    .old-price-minimal {
+        font-size: 1rem;
+        color: #94a3b8;
+        text-decoration: line-through;
+    }
+    
+    .product-actions-minimal {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .btn-action-minimal {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .btn-edit-minimal {
+        background: #ffffff;
+        color: #1e293b;
+        border-color: #e2e8f0;
+    }
+    
+    .btn-edit-minimal:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #1e293b;
+        transform: translateY(-1px);
+    }
+    
+    .btn-delete-minimal {
+        background: #ffffff;
+        color: #dc2626;
+        border-color: #fecaca;
+    }
+    
+    .btn-delete-minimal:hover {
+        background: #fef2f2;
+        border-color: #fca5a5;
+        color: #dc2626;
+        transform: translateY(-1px);
+    }
+    
+    .empty-state-minimal {
+        background: #ffffff;
+        border: 2px dashed #e2e8f0;
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .empty-icon-minimal {
+        font-size: 3rem;
+        color: #94a3b8;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-title-minimal {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-description-minimal {
+        color: #64748b;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+    
+    .alert-minimal {
         border: none;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        font-weight: 500;
     }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
+    
+    .alert-success-minimal {
+        background: #f0fdf4;
+        color: #166534;
+        border-left: 4px solid #22c55e;
     }
-
-    .modal-content {
-        border-radius: 15px;
-        border: none;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    
+    .alert-danger-minimal {
+        background: #fef2f2;
+        color: #dc2626;
+        border-left: 4px solid #ef4444;
     }
-
-    .modal-header {
-        border-bottom: 1px solid #e9ecef;
-        border-radius: 15px 15px 0 0;
-    }
-
-    .modal-footer {
-        border-top: 1px solid #e9ecef;
-        border-radius: 0 0 15px 15px;
-    }
-
+    
     @@media (max-width: 768px) {
-        .btn-group {
+        .products-grid-minimal {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .page-title-minimal {
+            font-size: 2rem;
+        }
+        
+        .stats-minimal {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .product-image-minimal {
+            height: 200px;
+        }
+    }
+    
+    @@media (max-width: 480px) {
+        .stats-minimal {
+            grid-template-columns: 1fr;
+        }
+        
+        .product-actions-minimal {
             flex-direction: column;
-        }
-        
-        .btn-group .btn {
-            margin-right: 0;
-            margin-bottom: 2px;
-        }
-        
-        .table-responsive {
-            font-size: 0.9rem;
         }
     }
 </style>
 
-<script>
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const searchTerm = this.value.toLowerCase();
-        const table = document.getElementById('productsTable');
-        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+<div class="products-page">
+    <!-- Minimal Header -->
+    <div class="page-header-minimal">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="page-title-minimal">Ürün Yönetimi</h1>
+                    <p class="page-subtitle-minimal">Tüm ürünlerinizi modern bir arayüzle yönetin</p>
+                </div>
+                <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-minimal">
+                    <i class="fas fa-plus me-2"></i>Yeni Ürün
+                </a>
+            </div>
+        </div>
+    </div>
 
-        for (let i = 0; i < rows.length; i++) {
-            const productName = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
-            if (productName.includes(searchTerm)) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
-            }
+    <div class="container">
+        <!-- Statistics -->
+        <div class="stats-minimal">
+            <div class="stat-minimal">
+                <div class="stat-number-minimal">@(Model?.Count() ?? 0)</div>
+                <div class="stat-label-minimal">Toplam Ürün</div>
+            </div>
+            <div class="stat-minimal">
+                <div class="stat-number-minimal">@(Model?.Count(p => p.IsActive) ?? 0)</div>
+                <div class="stat-label-minimal">Aktif Ürün</div>
+            </div>
+            <div class="stat-minimal">
+                <div class="stat-number-minimal">@(Model?.Count(p => !p.IsActive) ?? 0)</div>
+                <div class="stat-label-minimal">Pasif Ürün</div>
+            </div>
+            <div class="stat-minimal">
+                <div class="stat-number-minimal">@(Model?.Count(p => p.OldPrice > p.Price) ?? 0)</div>
+                <div class="stat-label-minimal">İndirimli</div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger-minimal alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         }
-    });
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success-minimal alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
 
-    // Delete product functionality
-    function deleteProduct(productId, productName) {
-        document.getElementById('productName').textContent = productName;
-        document.getElementById('deleteForm').action = '@Url.Action("DeleteProduct", "Admin")/' + productId;
-        
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-    }
+        <!-- Products Grid -->
+        @if (Model != null && Model.Count() > 0)
+        {
+            <div class="products-grid-minimal">
+                @foreach (var product in Model)
+                {
+                    <div class="product-card-minimal">
+                        <!-- Status Badge -->
+                        <div class="product-status-minimal @(product.IsActive ? "status-active-minimal" : "status-inactive-minimal")">
+                            @(product.IsActive ? "Aktif" : "Pasif")
+                        </div>
 
-    // Auto-hide alerts after 5 seconds
-    setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 5000);
-</script> 
+                        <!-- Product Image -->
+                        <div class="product-image-minimal">
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.Name">
+                            }
+                            else
+                            {
+                                <div class="product-image-placeholder-minimal">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Product Content -->
+                        <div class="product-content-minimal">
+                            <h3 class="product-name-minimal">@product.Name</h3>
+                            <div class="product-weight-minimal">
+                                <i class="fas fa-weight-hanging"></i>
+                                @product.Weight
+                            </div>
+                            @if (product.Category != null)
+                            {
+                                <span class="product-category-minimal">
+                                    @product.Category.Name
+                                </span>
+                            }
+
+                            <!-- Price -->
+                            <div class="product-price-minimal">
+                                <span class="current-price-minimal">₺@product.Price.ToString("0.00")</span>
+                                @if (product.OldPrice > product.Price)
+                                {
+                                    <span class="old-price-minimal">₺@product.OldPrice?.ToString("0.00")</span>
+                                }
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="product-actions-minimal">
+                                <a href="@Url.Action("EditProduct", "Admin", new { id = product.Id })" class="btn-action-minimal btn-edit-minimal">
+                                    <i class="fas fa-edit"></i>
+                                    Düzenle
+                                </a>
+                                <form asp-action="DeleteProduct" method="post" style="display: inline;" onsubmit="return confirm('Bu ürünü silmek istediğinizden emin misiniz?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="btn-action-minimal btn-delete-minimal">
+                                        <i class="fas fa-trash"></i>
+                                        Sil
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state-minimal">
+                <div class="empty-icon-minimal">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3 class="empty-title-minimal">Henüz ürün bulunmuyor</h3>
+                <p class="empty-description-minimal">İlk ürününüzü ekleyerek başlayın ve ürün kataloğunuzu oluşturun.</p>
+                <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-minimal">
+                    <i class="fas fa-plus me-2"></i>İlk Ürünü Ekle
+                </a>
+            </div>
+        }
+    </div>
+</div> 

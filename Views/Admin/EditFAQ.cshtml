@@ -1,0 +1,74 @@
+@model manyasligida.Models.FAQ
+@{
+    ViewData["Title"] = "SSS Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">SSS Düzenle</h1>
+            <p class="page-subtitle">Sıkça sorulan soruyu güncelleyin</p>
+        </div>
+        <a href="@Url.Action("FAQ", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-edit me-2"></i>SSS Düzenle</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditFAQ" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            
+            <div class="mb-3">
+                <label asp-for="Question" class="form-label">Soru *</label>
+                <input asp-for="Question" class="form-control" placeholder="Soru metni" required>
+                <span asp-validation-for="Question" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Answer" class="form-label">Cevap *</label>
+                <textarea asp-for="Answer" class="form-control" rows="5" placeholder="Cevap metni" required></textarea>
+                <span asp-validation-for="Answer" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Category" class="form-label">Kategori</label>
+                <input asp-for="Category" class="form-control" placeholder="Örn: Genel, Sipariş, Teslimat">
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="DisplayOrder" class="form-label">Sıralama</label>
+                        <input asp-for="DisplayOrder" class="form-control" type="number" placeholder="0">
+                        <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                            <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="@Url.Action("FAQ", "Admin")" class="btn btn-secondary">
+                    <i class="fas fa-times me-2"></i>İptal
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Güncelle
+                </button>
+            </div>
+        </form>
+    </div>
+</div> 

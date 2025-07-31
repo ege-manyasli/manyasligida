@@ -19,4 +19,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\blog\" />
+    <Folder Include="wwwroot\uploads\gallery\" />
+    <Folder Include="wwwroot\uploads\products\" />
+  </ItemGroup>
+
 </Project>

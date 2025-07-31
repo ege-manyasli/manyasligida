@@ -30,10 +30,20 @@ namespace manyasligida.Controllers
                     .Take(8)
                     .ToListAsync();
 
+                // Eğer popüler ürün yoksa, son eklenen ürünleri getir
+                if (!popularProducts.Any())
+                {
+                    popularProducts = await _context.Products
+                        .Where(p => p.IsActive)
+                        .OrderByDescending(p => p.CreatedAt)
+                        .Take(8)
+                        .ToListAsync();
+                }
+
                 // Son blog yazılarını getir
                 var recentBlogs = await _context.Blogs
                     .Where(b => b.IsActive)
-                    .OrderByDescending(b => b.PublishedAt)
+                    .OrderByDescending(b => b.CreatedAt)
                     .Take(3)
                     .ToListAsync();
 
@@ -44,9 +54,36 @@ namespace manyasligida.Controllers
                     .Take(6)
                     .ToListAsync();
 
+                // İstatistikler
+                var totalProducts = await _context.Products.Where(p => p.IsActive).CountAsync();
+                var totalOrders = await _context.Orders.CountAsync();
+                var totalUsers = await _context.Users.Where(u => u.IsActive).CountAsync();
+                var totalBlogs = await _context.Blogs.Where(b => b.IsActive).CountAsync();
+
+                // Site ayarları (varsayılan değerler)
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.PopularProducts = popularProducts;
                 ViewBag.RecentBlogs = recentBlogs;
                 ViewBag.Categories = categories;
+                ViewBag.Stats = new
+                {
+                    TotalProducts = totalProducts,
+                    TotalOrders = totalOrders,
+                    TotalUsers = totalUsers,
+                    TotalBlogs = totalBlogs
+                };
+                ViewBag.SiteSettings = siteSettings;
 
                 return View();
             }

@@ -60,6 +60,19 @@ namespace manyasligida.Controllers
 
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
 
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategoryId = categoryId;
                 ViewBag.SearchTerm = searchTerm;
@@ -69,11 +82,37 @@ namespace manyasligida.Controllers
                 ViewBag.TotalProducts = totalProducts;
                 ViewBag.PageSize = pageSize;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.SiteSettings = siteSettings;
 
                 return View(products);
             }
             catch (Exception ex)
             {
+                // Ensure ViewBag.Categories is always set to prevent null reference exception
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SelectedCategoryId = categoryId;
+                ViewBag.SearchTerm = searchTerm;
+                ViewBag.SortBy = sortBy;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = 0;
+                ViewBag.TotalProducts = 0;
+                ViewBag.PageSize = pageSize;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.SiteSettings = siteSettings;
+                
                 TempData["Error"] = "Ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
@@ -119,14 +158,48 @@ namespace manyasligida.Controllers
                     .Take(4)
                     .ToListAsync();
 
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.RelatedProducts = relatedProducts;
                 ViewBag.PopularProducts = popularProducts;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
 
                 return View(product);
             }
             catch (Exception ex)
             {
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                
                 TempData["Error"] = "Ürün detayları yüklenirken bir hata oluştu: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
@@ -165,6 +238,21 @@ namespace manyasligida.Controllers
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
                 var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.Category = category;
                 ViewBag.SortBy = sortBy;
                 ViewBag.CurrentPage = page;
@@ -172,11 +260,30 @@ namespace manyasligida.Controllers
                 ViewBag.TotalProducts = totalProducts;
                 ViewBag.PageSize = pageSize;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
 
                 return View(products);
             }
             catch (Exception ex)
             {
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                
                 TempData["Error"] = "Kategori yüklenirken bir hata oluştu: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
@@ -215,6 +322,21 @@ namespace manyasligida.Controllers
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
                 var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.SearchTerm = q;
                 ViewBag.SortBy = sortBy;
                 ViewBag.CurrentPage = page;
@@ -222,11 +344,30 @@ namespace manyasligida.Controllers
                 ViewBag.TotalProducts = totalProducts;
                 ViewBag.PageSize = pageSize;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
 
                 return View(products);
             }
             catch (Exception ex)
             {
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                
                 TempData["Error"] = "Arama yapılırken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
@@ -244,11 +385,46 @@ namespace manyasligida.Controllers
                     .ThenByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                
                 return View(featuredProducts);
             }
             catch (Exception ex)
             {
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                
                 TempData["Error"] = "Öne çıkan ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
@@ -265,11 +441,46 @@ namespace manyasligida.Controllers
                     .OrderByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                
                 return View(newProducts);
             }
             catch (Exception ex)
             {
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                
                 TempData["Error"] = "Yeni ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
@@ -287,11 +498,46 @@ namespace manyasligida.Controllers
                     .ThenByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                
+                // Site ayarları
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                
                 return View(onSaleProducts);
             }
             catch (Exception ex)
             {
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var siteSettings = new
+                {
+                    Phone = "+90 266 123 45 67",
+                    Email = "info@manyasligida.com",
+                    Address = "Manyas, Balıkesir",
+                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
+                    FacebookUrl = "#",
+                    InstagramUrl = "#",
+                    TwitterUrl = "#",
+                    YoutubeUrl = "#"
+                };
+                
+                ViewBag.Categories = categories;
+                ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                
                 TempData["Error"] = "İndirimli ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }

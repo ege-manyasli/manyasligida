@@ -1,38 +1,26 @@
-@model IEnumerable<manyasligida.Models.Blog>
+@model IEnumerable<manyasligida.Models.Product>
 @{
-    ViewData["Title"] = "Blog Yönetimi";
+    ViewData["Title"] = "Ürün Listesi";
     Layout = "_AdminLayout";
 }
 
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="page-title">Blog Yönetimi</h1>
-            <p class="page-subtitle">Blog yazılarını yönetin</p>
+            <h1 class="page-title">Ürün Listesi</h1>
+            <p class="page-subtitle">Tüm ürünleri görüntüleyin ve yönetin</p>
         </div>
-        <a href="@Url.Action("AddBlog", "Admin")" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Yeni Blog Yazısı
+        <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Yeni Ürün
         </a>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-blog me-2"></i>Blog Yazıları</h5>
+        <h5 class="mb-0"><i class="fas fa-box me-2"></i>Ürünler</h5>
     </div>
     <div class="card-body">
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
-            </div>
-        }
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-            </div>
-        }
         @if (Model != null && Model.Count() > 0)
         {
             <div class="table-responsive">
@@ -41,22 +29,23 @@
                         <tr>
                             <th>ID</th>
                             <th>Resim</th>
-                            <th>Başlık</th>
-                            <th>Özet</th>
+                            <th>Ürün Adı</th>
+                            <th>Kategori</th>
+                            <th>Fiyat</th>
                             <th>Durum</th>
                             <th>Tarih</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var blog in Model)
+                        @foreach (var product in Model)
                         {
                             <tr>
-                                <td>@blog.Id</td>
+                                <td>@product.Id</td>
                                 <td>
-                                    @if (!string.IsNullOrEmpty(blog.ImageUrl))
+                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
                                     {
-                                        <img src="@blog.ImageUrl" alt="@blog.Title" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                                        <img src="@product.ImageUrl" alt="@product.Name" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
                                     }
                                     else
                                     {
@@ -66,13 +55,23 @@
                                     }
                                 </td>
                                 <td>
-                                    <strong>@blog.Title</strong>
+                                    <div>
+                                        <strong>@product.Name</strong>
+                                        <br>
+                                        <small class="text-muted">@product.Weight</small>
+                                    </div>
+                                </td>
+                                <td>@product.Category?.Name</td>
+                                <td>
+                                    <strong class="text-primary">₺@product.Price.ToString("0.00")</strong>
+                                    @if (product.OldPrice > product.Price)
+                                    {
+                                        <br>
+                                        <small class="text-muted text-decoration-line-through">₺@product.OldPrice?.ToString("0.00")</small>
+                                    }
                                 </td>
                                 <td>
-                                    <small class="text-muted">@(blog.Summary?.Length > 50 ? blog.Summary.Substring(0, 50) + "..." : blog.Summary)</small>
-                                </td>
-                                <td>
-                                    @if (blog.IsActive)
+                                    @if (product.IsActive)
                                     {
                                         <span class="badge bg-success">Aktif</span>
                                     }
@@ -81,15 +80,14 @@
                                         <span class="badge bg-danger">Pasif</span>
                                     }
                                 </td>
-                                <td>@blog.CreatedAt.ToString("dd.MM.yyyy")</td>
+                                <td>@product.CreatedAt.ToString("dd.MM.yyyy")</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="@Url.Action("EditBlog", "Admin", new { id = blog.Id })" class="btn btn-sm btn-outline-primary">
+                                        <a href="@Url.Action("EditProduct", "Admin", new { id = product.Id })" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form asp-action="DeleteBlog" method="post" style="display: inline;" onsubmit="return confirm('Bu blog yazısını silmek istediğinizden emin misiniz?')">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@blog.Id" />
+                                        <form asp-action="DeleteProduct" method="post" style="display: inline;" onsubmit="return confirm('Bu ürünü silmek istediğinizden emin misiniz?')">
+                                            <input type="hidden" name="id" value="@product.Id" />
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -105,9 +103,9 @@
         else
         {
             <div class="text-center py-5">
-                <i class="fas fa-blog fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">Henüz blog yazısı bulunmuyor</h5>
-                <p class="text-muted">İlk blog yazınızı eklemek için yukarıdaki butonu kullanın.</p>
+                <i class="fas fa-box fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Henüz ürün bulunmuyor</h5>
+                <p class="text-muted">İlk ürününüzü eklemek için yukarıdaki butonu kullanın.</p>
             </div>
         }
     </div>

@@ -1,0 +1,65 @@
+@model IEnumerable<manyasligida.Models.Gallery>
+@{
+    ViewData["Title"] = "Galeri Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Galeri Yönetimi</h1>
+            <p class="page-subtitle">Galeri öğelerini yönetin</p>
+        </div>
+        <a href="@Url.Action("AddGallery", "Admin")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Yeni Galeri Öğesi
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-images me-2"></i>Galeri Öğeleri</h5>
+    </div>
+    <div class="card-body">
+        @if (Model != null && Model.Count() > 0)
+        {
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-4 col-lg-3 mb-4">
+                        <div class="card h-100">
+                            <img src="@item.ImageUrl" class="card-img-top" alt="@item.Title" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title">@item.Title</h6>
+                                <p class="card-text small text-muted">@item.Description</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">@item.CreatedAt.ToString("dd.MM.yyyy")</small>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("EditGallery", "Admin", new { id = item.Id })" class="btn btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form asp-action="DeleteGallery" method="post" style="display: inline;" onsubmit="return confirm('Bu galeri öğesini silmek istediğinizden emin misiniz?')">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Henüz galeri öğesi bulunmuyor</h5>
+                <p class="text-muted">İlk galeri öğenizi eklemek için yukarıdaki butonu kullanın.</p>
+            </div>
+        }
+    </div>
+</div> 

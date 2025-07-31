@@ -1,0 +1,98 @@
+@model manyasligida.Models.Gallery
+@{
+    ViewData["Title"] = "Galeri Öğesi Ekle";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Galeri Öğesi Ekle</h1>
+            <p class="page-subtitle">Yeni galeri öğesi ekleyin</p>
+        </div>
+        <a href="@Url.Action("Gallery", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Yeni Galeri Öğesi</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddGallery" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Başlık</label>
+                        <input asp-for="Title" class="form-control" placeholder="Galeri öğesi başlığı" required>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Galeri öğesi açıklaması"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Galeri Resmi</label>
+                        <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" required>
+                        <div class="form-text">Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maksimum dosya boyutu: 5MB</div>
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div id="imagePreview" class="d-none">
+                            <img id="previewImg" src="" alt="Önizleme" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="DisplayOrder" class="form-label">Görüntüleme Sırası</label>
+                        <input asp-for="DisplayOrder" class="form-control" type="number" value="0">
+                        <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                            <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a href="@Url.Action("Gallery", "Admin")" class="btn btn-outline-secondary">İptal</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Resim önizleme fonksiyonu
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.classList.add('d-none');
+        }
+    });
+</script> 

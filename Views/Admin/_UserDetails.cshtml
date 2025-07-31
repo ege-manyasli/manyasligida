@@ -1,0 +1,126 @@
+@model manyasligida.Models.User
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Ad Soyad:</label>
+            <p class="mb-0">@Model.FirstName @Model.LastName</p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">E-posta:</label>
+            <p class="mb-0">
+                @Model.Email
+                @if (Model.EmailConfirmed)
+                {
+                    <i class="fas fa-check-circle text-success ms-1" title="E-posta onaylandı"></i>
+                }
+            </p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Telefon:</label>
+            <p class="mb-0">@Model.Phone</p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Rol:</label>
+            <p class="mb-0">
+                @if (Model.IsAdmin)
+                {
+                    <span class="badge bg-danger">Admin</span>
+                }
+                else
+                {
+                    <span class="badge bg-info">Kullanıcı</span>
+                }
+            </p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Kayıt Tarihi:</label>
+            <p class="mb-0">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Son Giriş:</label>
+            <p class="mb-0">
+                @if (Model.LastLoginDate.HasValue)
+                {
+                    <span>@Model.LastLoginDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                }
+                else
+                {
+                    <span class="text-muted">Hiç giriş yapmamış</span>
+                }
+            </p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Durum:</label>
+            <p class="mb-0">
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success">Aktif</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Pasif</span>
+                }
+            </p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Toplam Sipariş:</label>
+            <p class="mb-0">
+                <span class="badge bg-primary">@(Model.Orders?.Count ?? 0)</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+@if (Model.Orders != null && Model.Orders.Count > 0)
+{
+    <hr>
+    <h6 class="mb-3">Son Siparişler</h6>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Sipariş No</th>
+                    <th>Tarih</th>
+                    <th>Tutar</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate).Take(5))
+                {
+                    <tr>
+                        <td>#@order.Id</td>
+                        <td>@order.OrderDate.ToString("dd.MM.yyyy")</td>
+                        <td>₺@order.TotalAmount.ToString("0.00")</td>
+                        <td>
+                            @{
+                                var statusClass = order.OrderStatus switch
+                                {
+                                    "Pending" => "bg-warning",
+                                    "Confirmed" => "bg-info",
+                                    "Shipped" => "bg-primary",
+                                    "Delivered" => "bg-success",
+                                    "Cancelled" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                                var statusText = order.OrderStatus switch
+                                {
+                                    "Pending" => "Beklemede",
+                                    "Confirmed" => "Onaylandı",
+                                    "Shipped" => "Kargoda",
+                                    "Delivered" => "Teslim Edildi",
+                                    "Cancelled" => "İptal Edildi",
+                                    _ => order.OrderStatus
+                                };
+                            }
+                            <span class="badge @statusClass">@statusText</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+} 
