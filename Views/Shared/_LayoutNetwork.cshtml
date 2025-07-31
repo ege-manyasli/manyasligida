@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arkel | Data Center Temperature</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ArkelStatus.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <script>
+        setInterval(function () {
+            location.reload();
+        }, 300000);
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .header-container {
+            width: 100vw;
+            text-align: center;
+            padding: 36px 0 18px 0;
+            background: #fff;
+            color: #3BA55C;
+            border-radius: 0 0 18px 18px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 16px rgba(59,165,92,0.08);
+        }
+        .header-container .logo {
+            max-width: 220px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px 32px 16px;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            background: #fff;
+            padding: 10px 0;
+            text-align: center;
+            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.07);
+            z-index: 1000;
+            font-size: 1rem;
+        }
+        @@media (max-width: 900px) {
+            .main-content {
+                max-width: 100vw;
+                padding: 0 2vw 18px 2vw;
+            }
+            .header-container {
+                padding: 24px 0 10px 0;
+            }
+            .header-container .logo {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-container">
+        <img src="/images/logotype-dark.png" alt="Brand Logo" class="logo">
+        <h1 style="font-size:1.7rem; font-weight:700; margin: 0; color:#3BA55C;">Sunucu Odası Sıcaklık Takibi</h1>
+        <div style="font-size:1.05rem; font-weight:400; opacity:0.85; color:#222;">Anlık sıcaklık değerleri ve geçmiş grafikler</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - Arkel Elektrik Elektronik San ve Tic A.Ş.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html> 

@@ -1,0 +1,212 @@
+/* 2025 Modern E-Ticaret Teması */
+:root {
+    --primary: #0d6efd;
+    --secondary: #ff3b3b;
+    --accent: #3CB815;
+    --bg-main: #f7f8fc;
+    --bg-card: #fff;
+    --bg-footer: #23272b;
+    --text-main: #222;
+    --text-light: #fff;
+    --border-radius: 1.2rem;
+    --transition: 0.25s cubic-bezier(.4,0,.2,1);
+    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+    --bg-main: #181a1b;
+    --bg-card: #23272b;
+    --bg-footer: #111;
+    --text-main: #f7f8fc;
+    --text-light: #fff;
+    --shadow: 0 2px 16px rgba(0,0,0,0.18);
+}
+html, body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', 'Open Sans', Arial, sans-serif;
+    transition: background 0.3s, color 0.3s;
+}
+.card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: none;
+    transition: box-shadow var(--transition), background var(--transition);
+}
+.card:hover {
+    box-shadow: 0 4px 32px rgba(13,110,253,0.10);
+    background: linear-gradient(120deg, var(--bg-card) 80%, #e9f1ff 100%);
+}
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    border-radius: 2rem;
+    font-weight: 600;
+    transition: background var(--transition), color var(--transition);
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: #0056b3;
+    color: #fff;
+}
+.btn-outline-primary {
+    border-radius: 2rem;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    transition: background var(--transition), color var(--transition);
+}
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: #fff;
+}
+input, select, textarea {
+    border-radius: 1.2rem;
+    border: 1px solid #e0e0e0;
+    padding: 0.6rem 1.1rem;
+    transition: border var(--transition), box-shadow var(--transition);
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px #e9f1ff;
+    outline: none;
+}
+.badge {
+    border-radius: 1rem;
+    font-size: 0.85em;
+    padding: 0.3em 0.8em;
+    font-weight: 600;
+}
+.alert {
+    border-radius: 1.2rem;
+    box-shadow: var(--shadow);
+    border: none;
+}
+.grid {
+    display: grid;
+    gap: 2rem;
+}
+@media (min-width: 768px) {
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 767.98px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+/* Navbar & Footer */
+.navbar-modern {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow);
+    border-radius: 0 0 1.5rem 1.5rem;
+    transition: background 0.3s;
+}
+[data-theme="dark"] .navbar-modern {
+    background: rgba(35,39,43,0.95);
+}
+.footer-modern {
+    background: linear-gradient(90deg, var(--bg-footer) 60%, var(--primary) 100%);
+    color: var(--text-light);
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+}
+.btn-social {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #fff;
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+    transition: background 0.2s, color 0.2s;
+    font-size: 1.2rem;
+}
+.btn-social:hover {
+    background: #fff;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+/* Animasyonlar */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: none; }
+}
+.fade-in-up {
+    animation: fadeInUp 0.7s cubic-bezier(.4,0,.2,1) both;
+}
+/* Back to top */
+.back-to-top {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    background: var(--primary);
+    color: #fff;
+    transition: background 0.2s, color 0.2s;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+.back-to-top:hover {
+    background: #fff;
+    color: var(--primary);
+}
+/* Sepet Badge */
+.cart-badge {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    background: var(--secondary);
+    color: #fff;
+    font-size: 0.75rem;
+    border-radius: 50%;
+    padding: 0.15em 0.5em;
+    min-width: 1.2em;
+    text-align: center;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+/* Ürün Kartı */
+.product-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    transition: box-shadow var(--transition), transform var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.product-card:hover {
+    box-shadow: 0 8px 32px rgba(13,110,253,0.13);
+    transform: translateY(-6px) scale(1.02);
+}
+.product-card img {
+    max-width: 100%;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+}
+.product-card:hover img {
+    transform: scale(1.05) rotate(-2deg);
+}
+.product-card .price {
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.product-card .old-price {
+    color: #888;
+    text-decoration: line-through;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+.product-card .btn {
+    margin-top: 1rem;
+}

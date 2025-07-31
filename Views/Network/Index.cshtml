@@ -1,0 +1,215 @@
+@{
+    Layout = "~/Views/Shared/_LayoutNetwork.cshtml";
+}
+
+<style>
+.charts-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 48px;
+    padding: 48px 24px 64px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.chart-container {
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 4px 24px rgba(59,165,92,0.10);
+    padding: 40px 32px 32px 32px;
+    width: 480px;
+    min-width: 320px;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1.5px solid #e0e0e0;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    text-align: center;
+}
+
+.chart-container:hover {
+    box-shadow: 0 12px 40px rgba(59,165,92,0.16);
+    border-color: #3BA55C;
+}
+
+.chart-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #3BA55C;
+    margin-bottom: 28px;
+    letter-spacing: 0.3px;
+}
+
+.temperature-display {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #222;
+    margin-top: 32px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px 36px;
+    box-shadow: 0 2px 8px rgba(59,165,92,0.09);
+    border: 2px solid #e0e0e0;
+    display: inline-block;
+    min-width: 240px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+canvas {
+    width: 100% !important;
+    height: 260px !important;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1.5px solid #e0e0e0;
+}
+
+    @@media (max-width: 1100px) {
+    .charts-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+        padding: 24px 2vw 32px 2vw;
+    }
+    .chart-container {
+        width: 98vw;
+        min-width: unset;
+        max-width: 600px;
+        min-height: 340px;
+        padding: 24px 8px 24px 8px;
+    }
+    .temperature-display {
+        font-size: 1.4rem;
+        padding: 10px 10px;
+        min-width: 120px;
+        margin-top: 18px;
+    }
+    .chart-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    canvas {
+        height: 180px !important;
+        border-radius: 8px;
+    }
+}
+</style>
+
+<div class="charts-container">
+    <div class="chart-container">
+        <div class="chart-title">Network Cabinet Temperature</div>
+        <canvas id="chartserver1"></canvas>
+        <div id="temperatureDisplay1" class="temperature-display">Data Center Temperature: 0°C</div>
+    </div>
+    <div class="chart-container">
+        <div class="chart-title">Server Cabinet Temperature</div>
+        <canvas id="chartserver2"></canvas>
+        <div id="temperatureDisplay2" class="temperature-display">Alt Sensor Temperature: 0°C</div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartConfig1 = {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Network Cabinet Temperature",
+                data: [],
+                backgroundColor: "rgba(255, 193, 7, 0.15)",
+                pointRadius: 0,
+                borderColor: "#ffc107",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.35
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return `Sıcaklık: ${context.parsed.y.toFixed(2)}°C`;
+                        }
+                    }
+                }
+            },
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 42,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    };
+
+    const chartConfig2 = JSON.parse(JSON.stringify(chartConfig1));
+    chartConfig2.data.datasets[0].label = "Server Cabinet Temperature";
+    const ctx1 = document.getElementById("chartserver1").getContext("2d");
+    const ctx2 = document.getElementById("chartserver2").getContext("2d");
+    const myChart1 = new Chart(ctx1, chartConfig1);
+    const myChart2 = new Chart(ctx2, chartConfig2);
+
+    async function fetchDataAndUpdateCharts() {
+        try {
+            const response = await fetch("/api/sensor-data");
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const sensor1Value = parseFloat(data.Sensor1 ?? data.sensor1);
+            const sensor2Value = parseFloat(data.Sensor2 ?? data.sensor2);
+
+            if (!isNaN(sensor1Value)) {
+                const now = new Date();
+                const currentTime = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                chartConfig1.data.labels.push(currentTime);
+                chartConfig1.data.datasets[0].data.push(sensor1Value);
+                if (chartConfig1.data.labels.length > 30) {
+                    chartConfig1.data.labels.shift();
+                    chartConfig1.data.datasets[0].data.shift();
+                }
+                myChart1.update();
+                document.getElementById("temperatureDisplay1").textContent = `Network Cabinet Temperature: ${sensor1Value.toFixed(2)}°C`;
+            }
+
+            if (!isNaN(sensor2Value)) {
+                const now = new Date();
+                const currentTime = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                chartConfig2.data.labels.push(currentTime);
+                chartConfig2.data.datasets[0].data.push(sensor2Value);
+                if (chartConfig2.data.labels.length > 30) {
+                    chartConfig2.data.labels.shift();
+                    chartConfig2.data.datasets[0].data.shift();
+                }
+                myChart2.update();
+                document.getElementById("temperatureDisplay2").textContent = `Server Cabinet Temperature: ${sensor2Value.toFixed(2)}°C`;
+            }
+        } catch (error) {
+            document.getElementById("temperatureDisplay1").textContent = "Veri alınamadı";
+            document.getElementById("temperatureDisplay2").textContent = "Veri alınamadı";
+        }
+    }
+
+    function initializeCharts() {
+        fetchDataAndUpdateCharts();
+        setInterval(fetchDataAndUpdateCharts, 3000); // 3 saniyede bir güncelle
+    }
+
+    initializeCharts();
+</script>
+} 

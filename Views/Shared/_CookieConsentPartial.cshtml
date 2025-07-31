@@ -1,0 +1,83 @@
+<div id="cookieConsent" class="position-fixed bottom-0 start-0 w-100 shadow-lg" style="z-index: 99999; display: none; background: rgba(255,255,255,0.85); color: #222; border-radius: 1rem 1rem 0 0; font-size: 1rem;">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 py-3">
+        <div class="mb-2 mb-md-0" style="line-height: 1.5;">
+            Sitemiz, deneyiminizi iyileştirmek ve hizmetlerimizi geliştirmek için çerezler kullanır. Detaylar için <a href="/KVKK/Gizlilik" class="text-primary text-decoration-underline">Gizlilik Politikası</a>'nı inceleyin.
+        </div>
+        <div class="d-flex gap-2">
+            <button id="customizeCookie" class="btn btn-outline-primary btn-sm rounded-pill px-3">Kişiselleştir</button>
+            <button id="rejectCookie" class="btn btn-outline-danger btn-sm rounded-pill px-3">Reddet</button>
+            <button id="acceptCookie" class="btn btn-primary btn-sm rounded-pill px-3">Kabul Et</button>
+        </div>
+    </div>
+</div>
+<!-- Kişiselleştir Modalı -->
+<div class="modal fade" id="cookieModal" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cookieModalLabel">Çerez Tercihleri</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body">
+        <form id="cookieSettingsForm">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="necessary" id="cookieNecessary" checked disabled>
+            <label class="form-check-label" for="cookieNecessary">
+              Zorunlu Çerezler <span class="text-muted small">(Site için gereklidir)</span>
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="analytics" id="cookieAnalytics">
+            <label class="form-check-label" for="cookieAnalytics">
+              Analitik Çerezler <span class="text-muted small">(Site kullanımını analiz eder)</span>
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="ads" id="cookieAds">
+            <label class="form-check-label" for="cookieAds">
+              Pazarlama Çerezleri <span class="text-muted small">(Kişiselleştirilmiş reklamlar için)</span>
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Vazgeç</button>
+        <button type="button" class="btn btn-primary btn-sm rounded-pill" id="saveCookieSettings">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    function hideCookieBar() {
+        document.getElementById('cookieConsent').style.display = 'none';
+    }
+    function showCookieBar() {
+        document.getElementById('cookieConsent').style.display = 'block';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem('cookieAccepted')) {
+            showCookieBar();
+        }
+        document.getElementById('acceptCookie').onclick = function() {
+            localStorage.setItem('cookieAccepted', 'all');
+            hideCookieBar();
+        };
+        document.getElementById('rejectCookie').onclick = function() {
+            localStorage.setItem('cookieAccepted', 'necessary');
+            hideCookieBar();
+        };
+        document.getElementById('customizeCookie').onclick = function() {
+            var modal = new bootstrap.Modal(document.getElementById('cookieModal'));
+            modal.show();
+        };
+        document.getElementById('saveCookieSettings').onclick = function() {
+            let analytics = document.getElementById('cookieAnalytics').checked;
+            let ads = document.getElementById('cookieAds').checked;
+            let settings = { necessary: true, analytics: analytics, ads: ads };
+            localStorage.setItem('cookieAccepted', JSON.stringify(settings));
+            hideCookieBar();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('cookieModal'));
+            modal.hide();
+        };
+    });
+</script> 

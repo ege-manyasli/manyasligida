@@ -1,0 +1,49 @@
+@using manyasligida.Models
+@* @model List<UrunModel> *@
+@{
+    var urunler = new[] {
+        new { Id = 1, Ad = "Tam Yağlı Ser Ezine Peyniri", Fiyat = 450, Resim = "img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg", Aciklama = "Doğal inek sütünden, tam yağlı, Ezine tipi beyaz peynir.", Gramaj = "600 Gr" },
+        new { Id = 2, Ad = "Mihaliç Kelle Peyniri", Fiyat = 250, Resim = "img/mihalic-peyniri-350-gr.-122f.jpg", Aciklama = "Orta tuzlu, geleneksel Mihaliç kelle peyniri.", Gramaj = "500 Gr" },
+        new { Id = 3, Ad = "Çörek Otlu Sepet Peyniri", Fiyat = 250, Resim = "img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg", Aciklama = "Çörek otlu, aromatik sepet peyniri.", Gramaj = "500 Gr" },
+        new { Id = 4, Ad = "Taze Kaşar", Fiyat = 250, Resim = "img/taze-kasar-peyniri-1000-gr.-63a593.jpg", Aciklama = "Taze kaşar peyniri, yumuşak ve lezzetli.", Gramaj = "500 Gr" },
+        new { Id = 5, Ad = "Acı Biberli Sepet Peyniri", Fiyat = 250, Resim = "img/biberli-sepet-peyniri-350-gr.-2e1f.jpg", Aciklama = "Acı biberli, hafif baharatlı sepet peyniri.", Gramaj = "500 Gr" },
+        new { Id = 6, Ad = "Eski Kars Kaşarı", Fiyat = 250, Resim = "img/eski-kasar-peyniri-300-g.-6a1-d2.jpg", Aciklama = "Olgunlaştırılmış eski Kars kaşarı.", Gramaj = "500 Gr" },
+        new { Id = 7, Ad = "Dil Peyniri", Fiyat = 250, Resim = "img/dil-peyniri-400-gr.-5f1a.jpg", Aciklama = "Lifli, kolay ayrılan dil peyniri.", Gramaj = "500 Gr" },
+        new { Id = 8, Ad = "Orta Tuzlu Mihaliç Peyniri", Fiyat = 250, Resim = "img/mihalic-peyniri-350-gr.-122f.jpg", Aciklama = "Orta tuzlu, geleneksel Mihaliç peyniri.", Gramaj = "500 Gr" }
+    };
+}
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px; margin-left:auto; margin-right:auto;">
+            <h1 class="display-5 mb-3">Tüm Ürünlerimiz</h1>
+        </div>
+        <div class="row g-4">
+            @foreach (var urun in urunler)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="product-item rounded-4 shadow-sm h-100">
+                        <div class="position-relative bg-light overflow-hidden">
+                            <img class="img-fluid w-100" src="/@urun.Resim" alt="@urun.Ad">
+                        </div>
+                        <div class="text-center p-4">
+                            <a class="d-block h5 mb-2" href="/Urunler/Detay/@urun.Id">@urun.Ad</a>
+                            <span class="text-primary me-1">@urun.Fiyat₺</span>
+                            <span class="text-body text-decoration">@urun.Gramaj</span>
+                        </div>
+                        <div class="d-flex border-top">
+                            <small class="w-50 text-center border-end py-2">
+                                <a class="text-body" href="/Urunler/Detay/@urun.Id"><i class="fa fa-eye text-primary me-2"></i>Ürüne Git</a>
+                            </small>
+                            <small class="w-50 text-center py-2">
+                                <form asp-controller="Urunler" asp-action="SepeteEkle" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@urun.Id" />
+                                    <button type="submit" class="btn btn-link text-body p-0"><i class="fa fa-shopping-bag text-primary me-2"></i>Sepete Ekle</button>
+                                </form>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div> 

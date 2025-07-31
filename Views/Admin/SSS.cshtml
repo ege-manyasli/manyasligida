@@ -1,0 +1,32 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "SSS Yönetimi";
+    var sssler = new[] {
+        new { Id = 1, Soru = "Kargo süresi nedir?", Cevap = "Siparişleriniz 2 iş günü içinde kargoya verilir." },
+        new { Id = 2, Soru = "Ürünler helal mi?", Cevap = "Tüm ürünlerimiz helal sertifikalıdır." }
+    };
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>SSS</h2>
+        <a href="/Admin/SSSEkle" class="btn btn-primary btn-sm rounded-pill">+ Soru Ekle</a>
+    </div>
+    <table class="table table-bordered bg-white shadow-sm">
+        <thead>
+            <tr><th>Soru</th><th>Cevap</th><th>İşlemler</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var s in sssler)
+        {
+            <tr>
+                <td>@s.Soru</td>
+                <td>@s.Cevap</td>
+                <td>
+                    <a href="/Admin/SSSGuncelle/@s.Id" class="btn btn-outline-info btn-sm">Düzenle</a>
+                    <a href="/Admin/SSSSil/@s.Id" class="btn btn-outline-danger btn-sm">Sil</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div> 

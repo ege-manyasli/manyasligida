@@ -1,0 +1,195 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Panel";
+    var servers = new[]
+    {
+        new { Id = 1, Title = "Arkel Cloud LB-1", ViewBagName = "ServerStatusesArkelCloudLB1" },
+        new { Id = 2, Title = "Arkel Cloud LB-2", ViewBagName = "ServerStatusesArkelCloudLB2" },
+        new { Id = 3, Title = "Arkel Cloud Proxy-1", ViewBagName = "ServerStatusesArkelCloudProxy1" },
+        new { Id = 4, Title = "Arkel Cloud Proxy-2", ViewBagName = "ServerStatusesArkelCloudProxy2" },
+        new { Id = 5, Title = "Arkel Web Server", ViewBagName = "ServerStatusesArkelWebServer" },
+        new { Id = 6, Title = "AX AOS Server", ViewBagName = "ServerStatusesAXAOSServer" },
+        new { Id = 7, Title = "AX SQL Server", ViewBagName = "ServerStatusesAXSQLServer" },
+        new { Id = 8, Title = "PBX Server", ViewBagName = "ServerStatusesPBXServer" },
+        new { Id = 9, Title = "EXC Server", ViewBagName = "ServerStatusesEXCServer" }
+    };
+}
+
+<style>
+    #chartDiv {
+        max-width: 950px;
+        height: 95px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    .header-container {
+        max-width: 100% !important;
+        text-align: center;
+        padding: 50px 0;
+        box-sizing: border-box;
+        width: 100% !important;
+    }
+    #brandingLogo {
+        display: none;
+    }
+    .chart-info-container {
+        max-width: 950px;
+        margin: 20px auto;
+        border: 1px solid #aaa;
+        border-radius: 3px;
+        padding: 15px;
+    }
+    .chart-container {
+        max-width: 950px;
+        height: 50px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    .uptime-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+        color: #7a7a7a;
+        margin-top: 8px;
+    }
+</style>
+
+<div class="container" style="display: flex; justify-content: center;">
+    <div class="card bg-success border-success text-white-50 mb-3" style="margin-bottom: 20px; -webkit-box-shadow: 0 2px 3px #e6e8eb; box-shadow: 0 2px 3px #e6e8eb; border: none; width: 75%;">
+        <div class="card-body text-white" style="font-weight: bold;">
+            Tüm Sistemler Çalışıyor.
+        </div>
+    </div>
+</div>
+
+@foreach (var server in servers)
+{
+    <div class="chart-info-container">
+        <div id="chartDiv_@server.Id"></div>
+        <div class="uptime-info">
+            <span>90 days ago</span>
+            <span>----------------------------------------------------</span>
+            <span id="uptimePercentage_@server.Id"></span>
+            <span>----------------------------------------------------------</span>
+            <span>Today</span>
+        </div>
+    </div>
+}
+
+<script src="~/dist/js/jscharting.js"></script>
+<script src="~/dist/js/modules/types.js"></script>
+
+<script type="text/javascript">
+    var statuses = ['UP', 'DOWN', 'NO DATA'];
+    var palette = ['#3BA55C', '#ff0000', '#b3bac5'];
+    var statuses1 = ['No interruptions were recorded on this day.', 'Some servers are down!', 'There is no data for today.'];
+
+    // Sunucu bilgilerini JS dizisine aktar
+    var servers = [
+        { id: 1, title: "Arkel Cloud LB-1", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudLB1) },
+        { id: 2, title: "Arkel Cloud LB-2", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudLB2) },
+        { id: 3, title: "Arkel Cloud Proxy-1", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudProxy1) },
+        { id: 4, title: "Arkel Cloud Proxy-2", data: @Html.Raw(ViewBag.ServerStatusesArkelCloudProxy2) },
+        { id: 5, title: "Arkel Web Server", data: @Html.Raw(ViewBag.ServerStatusesArkelWebServer) },
+        { id: 6, title: "AX AOS Server", data: @Html.Raw(ViewBag.ServerStatusesAXAOSServer) },
+        { id: 7, title: "AX SQL Server", data: @Html.Raw(ViewBag.ServerStatusesAXSQLServer) },
+        { id: 8, title: "PBX Server", data: @Html.Raw(ViewBag.ServerStatusesPBXServer) },
+        { id: 9, title: "EXC Server", data: @Html.Raw(ViewBag.ServerStatusesEXCServer) }
+    ];
+
+    // Tüm chartları döngüyle render et
+    servers.forEach(function(server) {
+        renderChart(
+            'chartDiv_' + server.id,
+            'uptimePercentage_' + server.id,
+            makeSeries(server.data.slice(-90)),
+            server.title
+        );
+    });
+
+    // Son durum kontrolü
+    var allServersUp = servers.every(function(server) {
+        var lastStatus = server.data[server.data.length - 1].status;
+        return lastStatus !== 1;
+    });
+
+    updateStatusCard(allServersUp ? 0 : 1);
+
+    function updateStatusCard(status) {
+        var statusCard = document.querySelector('.card');
+        var statusMessage = status === 0 ? "All servers are up" : "Some servers are down!";
+        var cardBody = statusCard.querySelector('.card-body');
+        if (status === 0) {
+            statusCard.classList.remove('bg-danger', 'border-danger');
+            statusCard.classList.add('bg-success', 'border-success');
+        } else {
+            statusCard.classList.remove('bg-success', 'border-success');
+            statusCard.classList.add('bg-danger', 'border-danger');
+        }
+        cardBody.innerHTML = statusMessage;
+    }
+
+    function renderChart(chartId, uptimeId, series, title) {
+        JSC.chart(chartId, {
+            type: 'heatmap solid',
+            height: 75,
+            title_label_text: title,
+            title_label_style: {
+                fontWeight: '600',
+                color: 'black',
+                fontFamily: 'proxima-nova", "Helvetica Neue", Helvetica, Arial, Sans-Serif'
+            },
+            debug: false,
+            legend: {
+                margin_top: -26,
+                position: 'inside top right',
+                defaultEntry: { icon_width: 10 }
+            },
+            palette: {
+                pointValue: function (p) {
+                    return p.options('z');
+                },
+                ranges: makePaletteRanges(palette)
+            },
+            yAxis_visible: false,
+            xAxis: {
+                scale_type: 'time',
+                visible: false
+            },
+            defaultSeries_shape_innerPadding: 0.15,
+            defaultPoint: {
+                outline_width: 0,
+                tooltip: '{%xValue:date} <br>Status: <b>%status</b>'
+            },
+            series: series,
+            logo_visible: false
+        });
+        var lastUptimePercentage = series[0].points[series[0].points.length - 1].attributes_status.split('%')[1];
+        document.getElementById(uptimeId).innerHTML = lastUptimePercentage + "% uptime";
+    }
+
+    function makeSeries(data) {
+        return [
+            {
+                points: data.map(function (item) {
+                    return {
+                        x: new Date(item.date),
+                        y: 'System',
+                        z: item.status,
+                        attributes_status: statuses1[item.status] + ' - %' + item.uptime
+                    };
+                })
+            }
+        ];
+    }
+
+    function makePaletteRanges(palette) {
+        return palette.map(function (item, i) {
+            return {
+                value: i,
+                color: item,
+                legendEntry_value: statuses[i]
+            };
+        });
+    }
+</script> 

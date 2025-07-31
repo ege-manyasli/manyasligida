@@ -1,0 +1,15 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Video Ekle";
+}
+<div class="container py-4">
+    <h2>Video Ekle</h2>
+    <form>
+        <div class="mb-3">
+            <label class="form-label">Video Dosyası</label>
+            <input type="file" class="form-control" />
+        </div>
+        <button class="btn btn-primary rounded-pill">Yükle</button>
+        <a href="/Admin/Videolar" class="btn btn-outline-secondary rounded-pill ms-2">İptal</a>
+    </form>
+</div> 

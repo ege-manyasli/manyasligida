@@ -1,0 +1,32 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Blog Yönetimi";
+    var bloglar = new[] {
+        new { Id = 1, Baslik = "Peynirin Faydaları", Tarih = "2024-06-01" },
+        new { Id = 2, Baslik = "Kahvaltı Kültürü", Tarih = "2024-05-20" }
+    };
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Bloglar</h2>
+        <a href="/Admin/BlogEkle" class="btn btn-primary btn-sm rounded-pill">+ Blog Ekle</a>
+    </div>
+    <table class="table table-bordered bg-white shadow-sm">
+        <thead>
+            <tr><th>Başlık</th><th>Tarih</th><th>İşlemler</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var b in bloglar)
+        {
+            <tr>
+                <td>@b.Baslik</td>
+                <td>@b.Tarih</td>
+                <td>
+                    <a href="/Admin/BlogGuncelle/@b.Id" class="btn btn-outline-info btn-sm">Düzenle</a>
+                    <a href="/Admin/BlogSil/@b.Id" class="btn btn-outline-danger btn-sm">Sil</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div> 
