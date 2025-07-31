@@ -1,0 +1,392 @@
+@model IEnumerable<manyasligida.Models.Gallery>
+@{
+    ViewData["Title"] = "Galeri - Manyaslı Gıda";
+}
+
+<!-- Page Header -->
+<section class="page-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 120px 0 80px;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h1 class="text-white fw-bold mb-3">Galeri</h1>
+                <p class="text-white lead">Üretim sürecimizden ve ürünlerimizden kareler</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="section-padding">
+    <div class="container">
+        <!-- Filter Buttons -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <div class="gallery-filter" data-aos="fade-up">
+                    <button class="filter-btn active" data-filter="all">Tümü</button>
+                    <button class="filter-btn" data-filter="production">Üretim</button>
+                    <button class="filter-btn" data-filter="products">Ürünler</button>
+                    <button class="filter-btn" data-filter="facility">Tesis</button>
+                    <button class="filter-btn" data-filter="team">Ekip</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="row g-4">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-4 col-md-6 gallery-item" data-category="@item.Category?.ToLower()" data-aos="fade-up">
+                        <div class="gallery-card">
+                            <div class="gallery-image">
+                                <img src="@item.ImageUrl" alt="@item.Title" class="img-fluid">
+                                <div class="gallery-overlay">
+                                    <div class="gallery-content">
+                                        <h5>@item.Title</h5>
+                                        <p>@item.Description</p>
+                                        <button class="btn btn-light btn-sm" onclick="openLightbox('@item.ImageUrl', '@item.Title', '@item.Description')">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Default Gallery Items -->
+                <div class="col-lg-4 col-md-6 gallery-item" data-category="production" data-aos="fade-up">
+                    <div class="gallery-card">
+                        <div class="gallery-image">
+                            <img src="~/img/about.jpg" alt="Üretim Süreci" class="img-fluid">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h5>Üretim Süreci</h5>
+                                    <p>Geleneksel yöntemlerle peynir üretimi</p>
+                                    <button class="btn btn-light btn-sm" onclick="openLightbox('/img/about.jpg', 'Üretim Süreci', 'Geleneksel yöntemlerle peynir üretimi')">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 gallery-item" data-category="products" data-aos="fade-up">
+                    <div class="gallery-card">
+                        <div class="gallery-image">
+                            <img src="~/img/product-1.jpg" alt="Peynir Çeşitleri" class="img-fluid">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h5>Peynir Çeşitleri</h5>
+                                    <p>Zengin ürün çeşitliliğimiz</p>
+                                    <button class="btn btn-light btn-sm" onclick="openLightbox('/img/product-1.jpg', 'Peynir Çeşitleri', 'Zengin ürün çeşitliliğimiz')">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 gallery-item" data-category="facility" data-aos="fade-up">
+                    <div class="gallery-card">
+                        <div class="gallery-image">
+                            <img src="~/img/product-2.jpg" alt="Modern Tesis" class="img-fluid">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h5>Modern Tesis</h5>
+                                    <p>Hijyenik üretim ortamı</p>
+                                    <button class="btn btn-light btn-sm" onclick="openLightbox('/img/product-2.jpg', 'Modern Tesis', 'Hijyenik üretim ortamı')">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 gallery-item" data-category="team" data-aos="fade-up">
+                    <div class="gallery-card">
+                        <div class="gallery-image">
+                            <img src="~/img/product-3.jpg" alt="Uzman Ekip" class="img-fluid">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h5>Uzman Ekip</h5>
+                                    <p>Deneyimli üretim ekibimiz</p>
+                                    <button class="btn btn-light btn-sm" onclick="openLightbox('/img/product-3.jpg', 'Uzman Ekip', 'Deneyimli üretim ekibimiz')">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 gallery-item" data-category="products" data-aos="fade-up">
+                    <div class="gallery-card">
+                        <div class="gallery-image">
+                            <img src="~/img/product-4.jpg" alt="Kalite Kontrol" class="img-fluid">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h5>Kalite Kontrol</h5>
+                                    <p>Sıkı kalite kontrol süreçleri</p>
+                                    <button class="btn btn-light btn-sm" onclick="openLightbox('/img/product-4.jpg', 'Kalite Kontrol', 'Sıkı kalite kontrol süreçleri')">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 gallery-item" data-category="production" data-aos="fade-up">
+                    <div class="gallery-card">
+                        <div class="gallery-image">
+                            <img src="~/img/product-5.jpg" alt="Geleneksel Yöntemler" class="img-fluid">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h5>Geleneksel Yöntemler</h5>
+                                    <p>Nesillerden gelen bilgi birikimi</p>
+                                    <button class="btn btn-light btn-sm" onclick="openLightbox('/img/product-5.jpg', 'Geleneksel Yöntemler', 'Nesillerden gelen bilgi birikimi')">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="lightbox-modal" id="lightboxModal">
+    <div class="lightbox-content">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImage" src="" alt="">
+        <div class="lightbox-caption">
+            <h4 id="lightboxTitle"></h4>
+            <p id="lightboxDescription"></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .gallery-filter {
+        margin-bottom: 2rem;
+    }
+
+    .filter-btn {
+        background: none;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        padding: 10px 20px;
+        margin: 0 5px;
+        border-radius: 25px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .gallery-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+    }
+
+    .gallery-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 30px rgba(255, 107, 53, 0.2);
+    }
+
+    .gallery-image {
+        position: relative;
+        overflow: hidden;
+        height: 300px;
+    }
+
+    .gallery-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-card:hover .gallery-image img {
+        transform: scale(1.1);
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 107, 53, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-card:hover .gallery-overlay {
+        opacity: 1;
+    }
+
+    .gallery-content {
+        text-align: center;
+        color: white;
+        padding: 1rem;
+    }
+
+    .gallery-content h5 {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .gallery-content p {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Lightbox Styles */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .lightbox-content {
+        position: relative;
+        margin: auto;
+        padding: 20px;
+        width: 90%;
+        max-width: 800px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .lightbox-close {
+        color: white;
+        font-size: 35px;
+        font-weight: bold;
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        cursor: pointer;
+        z-index: 10000;
+    }
+
+    .lightbox-close:hover {
+        color: var(--primary-color);
+    }
+
+    #lightboxImage {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .lightbox-caption {
+        text-align: center;
+        color: white;
+        margin-top: 1rem;
+    }
+
+    .lightbox-caption h4 {
+        margin-bottom: 0.5rem;
+        color: var(--accent-color);
+    }
+
+    /* Hide filtered items */
+    .gallery-item.hidden {
+        display: none;
+    }
+</style>
+
+<script>
+    // Gallery filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Filter gallery items
+                galleryItems.forEach(item => {
+                    const category = item.getAttribute('data-category');
+                    if (filter === 'all' || category === filter) {
+                        item.classList.remove('hidden');
+                        item.style.animation = 'fadeIn 0.5s ease';
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    });
+
+    // Lightbox functionality
+    function openLightbox(imageSrc, title, description) {
+        document.getElementById('lightboxImage').src = imageSrc;
+        document.getElementById('lightboxTitle').textContent = title;
+        document.getElementById('lightboxDescription').textContent = description;
+        document.getElementById('lightboxModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightboxModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close lightbox when clicking outside
+    document.getElementById('lightboxModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLightbox();
+        }
+    });
+
+    // Close lightbox with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+
+    // Add fadeIn animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+</script> 

@@ -1,0 +1,289 @@
+@model IEnumerable<manyasligida.Models.FAQ>
+@{
+    ViewData["Title"] = "Sık Sorulan Sorular - Manyaslı Gıda";
+}
+
+<!-- Page Header -->
+<section class="page-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 120px 0 80px;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h1 class="text-white fw-bold mb-3">Sık Sorulan Sorular</h1>
+                <p class="text-white lead">En çok merak edilen sorular ve cevapları</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="faq-container" data-aos="fade-up">
+                        @foreach (var faq in Model)
+                        {
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h5>@faq.Question</h5>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>@faq.Answer</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <!-- Default FAQ Items -->
+                    <div class="faq-container" data-aos="fade-up">
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Ürünleriniz tamamen doğal mı?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Evet, tüm ürünlerimiz %100 doğal sütten üretilmektedir. Katkı maddesi, koruyucu veya yapay aroma kullanmıyoruz. Geleneksel yöntemlerle, atalarımızdan öğrendiğimiz tariflerle üretim yapıyoruz.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Ürünlerinizde hangi sertifikalar var?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Ürünlerimiz ISO 22000, HACCP ve Helal sertifikalarına sahiptir. Ayrıca Tarım ve Orman Bakanlığı'ndan gerekli tüm izinleri almış bulunmaktayız.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Kargo ile ürün gönderiyor musunuz?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Evet, Türkiye'nin her yerine kargo ile ürün gönderiyoruz. Özel soğuk zincir paketleme sistemi ile ürünleriniz taze ve güvenli şekilde ulaştırılır.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Minimum sipariş tutarı var mı?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Minimum sipariş tutarımız 100 TL'dir. Bu tutarın altındaki siparişler için kargo ücreti alınmaktadır.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Ürünlerin raf ömrü ne kadar?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Ürünlerimizin raf ömrü türüne göre değişmektedir. Beyaz peynirler 3-4 ay, kaşar peynirleri 6-8 ay, özel peynirler 2-3 ay süreyle taze kalır. Soğuk zincirde saklanması önemlidir.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Toplu siparişler için indirim var mı?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Evet, 500 TL üzeri siparişlerde %10, 1000 TL üzeri siparişlerde %15 indirim uygulanmaktadır. Kurumsal müşterilerimiz için özel fiyatlandırma da mevcuttur.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>İade ve değişim politikası nasıl?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Ürün tesliminden itibaren 24 saat içinde kalite sorunu olan ürünler için iade kabul ediyoruz. Müşteri memnuniyeti bizim için çok önemlidir.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                <h5>Mağazanızda ürünlerinizi görebilir miyim?</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Evet, Manyas'taki mağazamızda tüm ürünlerimizi görebilir ve tadabilirsiniz. Ayrıca üretim tesisimizi de ziyaret edebilirsiniz. Randevu için bizimle iletişime geçebilirsiniz.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact CTA Section -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h2 class="section-title">Başka Sorularınız mı Var?</h2>
+                <p class="text-muted mb-4">Burada cevabını bulamadığınız sorular için bizimle iletişime geçebilirsiniz.</p>
+                <a href="@Url.Action("Index", "Contact")" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>İletişime Geçin
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .faq-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(255, 107, 53, 0.15);
+    }
+
+    .faq-question {
+        padding: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .faq-question:hover {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    }
+
+    .faq-question h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .faq-question i {
+        transition: transform 0.3s ease;
+        font-size: 1.2rem;
+    }
+
+    .faq-question.active i {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        padding: 0 1.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .faq-answer.active {
+        padding: 1.5rem;
+        max-height: 200px;
+    }
+
+    .faq-answer p {
+        margin: 0;
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+
+    /* Animation for FAQ items */
+    .faq-item {
+        animation: slideInUp 0.5s ease forwards;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .faq-item:nth-child(1) { animation-delay: 0.1s; }
+    .faq-item:nth-child(2) { animation-delay: 0.2s; }
+    .faq-item:nth-child(3) { animation-delay: 0.3s; }
+    .faq-item:nth-child(4) { animation-delay: 0.4s; }
+    .faq-item:nth-child(5) { animation-delay: 0.5s; }
+    .faq-item:nth-child(6) { animation-delay: 0.6s; }
+    .faq-item:nth-child(7) { animation-delay: 0.7s; }
+    .faq-item:nth-child(8) { animation-delay: 0.8s; }
+
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .faq-question h5 {
+            font-size: 1rem;
+        }
+        
+        .faq-question,
+        .faq-answer.active {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<script>
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const answer = faqItem.querySelector('.faq-answer');
+        const icon = element.querySelector('i');
+        
+        // Close all other FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            if (item !== faqItem) {
+                item.querySelector('.faq-question').classList.remove('active');
+                item.querySelector('.faq-answer').classList.remove('active');
+            }
+        });
+        
+        // Toggle current FAQ item
+        element.classList.toggle('active');
+        answer.classList.toggle('active');
+        
+        // Smooth scroll to the opened FAQ
+        if (answer.classList.contains('active')) {
+            setTimeout(() => {
+                faqItem.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 300);
+        }
+    }
+
+    // Add keyboard support
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            const activeElement = document.activeElement;
+            if (activeElement.classList.contains('faq-question')) {
+                e.preventDefault();
+                toggleFAQ(activeElement);
+            }
+        }
+    });
+</script> 

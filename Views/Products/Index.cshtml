@@ -1,3 +1,4 @@
+@model IEnumerable<manyasligida.Models.Product>
 @{
     ViewData["Title"] = "Ürünlerimiz - Manyaslı Gıda";
 }
@@ -14,337 +15,183 @@
     </div>
 </section>
 
-<!-- Products Section -->
-<section class="section-padding">
+<!-- Search and Filter Section -->
+<section class="section-padding bg-light">
     <div class="container">
-        <!-- Filter Section -->
-        <div class="row mb-5">
+        <div class="row">
+            <!-- Search Bar -->
+            <div class="col-lg-6 mb-4">
+                <form method="get" action="@Url.Action("Search", "Products")" class="search-form">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Ürün ara..." value="@ViewBag.SearchTerm">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Sort Options -->
+            <div class="col-lg-6 mb-4">
+                <select class="form-select" id="sortSelect" onchange="changeSort(this.value)">
+                    <option value="name" @(ViewBag.SortBy == "name" ? "selected" : "")>İsme Göre</option>
+                    <option value="price" @(ViewBag.SortBy == "price" ? "selected" : "")>Fiyat (Düşük-Yüksek)</option>
+                    <option value="price_desc" @(ViewBag.SortBy == "price_desc" ? "selected" : "")>Fiyat (Yüksek-Düşük)</option>
+                    <option value="new" @(ViewBag.SortBy == "new" ? "selected" : "")>En Yeni</option>
+                    <option value="popular" @(ViewBag.SortBy == "popular" ? "selected" : "")>Popüler</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="row">
             <div class="col-12">
                 <div class="filter-section text-center" data-aos="fade-up">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary active" data-filter="all">Tümü</button>
-                        <button type="button" class="btn btn-outline-primary" data-filter="beyaz">Beyaz Peynir</button>
-                        <button type="button" class="btn btn-outline-primary" data-filter="kasar">Kaşar Peyniri</button>
-                        <button type="button" class="btn btn-outline-primary" data-filter="ozel">Özel Peynirler</button>
+                        <a href="@Url.Action("Index", "Products")" class="btn @(ViewBag.SelectedCategoryId == null ? "btn-primary" : "btn-outline-primary")">Tümü</a>
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <a href="@Url.Action("Index", "Products", new { categoryId = category.Id })" 
+                               class="btn @(ViewBag.SelectedCategoryId == category.Id ? "btn-primary" : "btn-outline-primary")">
+                                @category.Name
+                            </a>
+                        }
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Products Grid -->
-        <div class="row g-4">
-            <!-- Product 1 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100" data-category="beyaz">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/ezine-tipi-sert-beyaz-peynir-650-gr.-52d9.jpg" class="card-img-top" alt="Ezine Peyniri">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 1 })" class="btn btn-primary">İncele</a>
-                        </div>
-                        <div class="product-badge">Popüler</div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Ezine Peyniri</h5>
-                        <p class="text-muted">Doğal inek sütünden, tam yağlı, Ezine tipi beyaz peynir</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">600 Gr</span>
-                            <span class="badge bg-info">Tam Yağlı</span>
-                        </div>
-                        <div class="price mt-3">₺45.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(24)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200" data-category="kasar">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg" class="card-img-top" alt="Taze Kaşar">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 2 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Taze Kaşar</h5>
-                        <p class="text-muted">Taze kaşar peyniri, yumuşak ve lezzetli</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">1000 Gr</span>
-                            <span class="badge bg-info">Taze</span>
-                        </div>
-                        <div class="price mt-3">₺35.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(18)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300" data-category="beyaz">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="card-img-top" alt="Mihaliç Peyniri">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 3 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Mihaliç Peyniri</h5>
-                        <p class="text-muted">Orta tuzlu, geleneksel Mihaliç kelle peyniri</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">500 Gr</span>
-                            <span class="badge bg-info">Geleneksel</span>
-                        </div>
-                        <div class="price mt-3">₺28.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="far fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(15)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400" data-category="ozel">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg" class="card-img-top" alt="Çörek Otlu Peynir">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 4 })" class="btn btn-primary">İncele</a>
-                        </div>
-                        <div class="product-badge">Yeni</div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Çörek Otlu Sepet Peyniri</h5>
-                        <p class="text-muted">Çörek otlu, aromatik sepet peyniri</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">500 Gr</span>
-                            <span class="badge bg-info">Aromatik</span>
-                        </div>
-                        <div class="price mt-3">₺32.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(12)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 5 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="500" data-category="ozel">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/biberli-sepet-peyniri-350-gr.-2e1f.jpg" class="card-img-top" alt="Acı Biberli Peynir">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 5 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Acı Biberli Sepet Peyniri</h5>
-                        <p class="text-muted">Acı biberli, hafif baharatlı sepet peyniri</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">500 Gr</span>
-                            <span class="badge bg-danger">Baharatlı</span>
-                        </div>
-                        <div class="price mt-3">₺30.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="far fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(8)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 6 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="600" data-category="kasar">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/eski-kasar-peyniri-300-g.-6a1-d2.jpg" class="card-img-top" alt="Eski Kars Kaşarı">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 6 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Eski Kars Kaşarı</h5>
-                        <p class="text-muted">Olgunlaştırılmış eski Kars kaşarı</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">500 Gr</span>
-                            <span class="badge bg-warning">Olgun</span>
-                        </div>
-                        <div class="price mt-3">₺42.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(20)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 7 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="700" data-category="ozel">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/dil-peyniri-400-gr.-5f1a.jpg" class="card-img-top" alt="Dil Peyniri">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 7 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Dil Peyniri</h5>
-                        <p class="text-muted">Lifli, kolay ayrılan dil peyniri</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">500 Gr</span>
-                            <span class="badge bg-info">Lifli</span>
-                        </div>
-                        <div class="price mt-3">₺25.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="far fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(10)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 8 -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="800" data-category="beyaz">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="card-img-top" alt="Orta Tuzlu Mihaliç">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 8 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Orta Tuzlu Mihaliç</h5>
-                        <p class="text-muted">Orta tuzlu, geleneksel Mihaliç peyniri</p>
-                        <div class="product-info">
-                            <span class="badge bg-success me-2">500 Gr</span>
-                            <span class="badge bg-info">Orta Tuzlu</span>
-                        </div>
-                        <div class="price mt-3">₺26.00</div>
-                        <div class="rating mt-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <span class="ms-2 text-muted">(16)</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Load More Button -->
-        <div class="text-center mt-5" data-aos="fade-up">
-            <button class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-plus me-2"></i>Daha Fazla Ürün Yükle
-            </button>
         </div>
     </div>
 </section>
 
+<!-- Products Section -->
+<section class="section-padding">
+    <div class="container">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h3>Aradığınız kriterlere uygun ürün bulunamadı</h3>
+                <p class="text-muted">Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.</p>
+                <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Tüm Ürünleri Gör</a>
+            </div>
+        }
+        else
+        {
+            <!-- Products Grid -->
+            <div class="row g-4">
+                @foreach (var product in Model)
+                {
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(100 * (Model.ToList().IndexOf(product) + 1))">
+                        <div class="card product-card h-100">
+                            <div class="product-image">
+                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                                <div class="product-overlay">
+                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-primary">İncele</a>
+                                </div>
+                                @if (product.IsPopular)
+                                {
+                                    <div class="product-badge popular">Popüler</div>
+                                }
+                                @if (product.IsNew)
+                                {
+                                    <div class="product-badge new">Yeni</div>
+                                }
+                                @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
+                                {
+                                    <div class="product-badge discount">%@(((product.OldPrice.Value - product.Price) / product.OldPrice.Value * 100).ToString("0")) İndirim</div>
+                                }
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">@product.Name</h5>
+                                <p class="text-muted">@(product.Description?.Length > 80 ? product.Description.Substring(0, 80) + "..." : product.Description)</p>
+                                <div class="product-info">
+                                    <span class="badge bg-success me-2">@product.Weight</span>
+                                    <span class="badge bg-info">@product.FatContent</span>
+                                </div>
+                                <div class="price mt-3">
+                                    @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
+                                    {
+                                        <span class="old-price text-muted text-decoration-line-through">₺@product.OldPrice.Value.ToString("0.00")</span>
+                                    }
+                                    <span class="current-price fw-bold text-primary">₺@product.Price.ToString("0.00")</span>
+                                </div>
+                                <div class="rating mt-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <span class="ms-2 text-muted">(24)</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 text-center">
+                                <button class="btn btn-primary w-100 add-to-cart" data-product-id="@product.Id">
+                                    <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Load More Button -->
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <button class="btn btn-outline-primary btn-lg" id="loadMoreBtn">
+                        <i class="fas fa-plus me-2"></i>Daha Fazla Ürün Yükle
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
 <style>
-    .page-header {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .filter-section .btn-group .btn {
+    .search-form .input-group {
         border-radius: 25px;
-        margin: 0 5px;
-        padding: 8px 20px;
-        font-weight: 500;
+        overflow: hidden;
+        box-shadow: var(--shadow);
     }
 
-    .filter-section .btn-group .btn.active {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
+    .search-form .form-control {
+        border: none;
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+
+    .search-form .btn {
+        border-radius: 0 25px 25px 0;
+        padding: 15px 25px;
+    }
+
+    .filter-section .btn-group {
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+    .filter-section .btn {
+        border: none;
+        padding: 12px 24px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .filter-section .btn:hover {
+        transform: translateY(-2px);
     }
 
     .product-card {
-        transition: all 0.3s ease;
         border: none;
+        border-radius: var(--border-radius);
         box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        overflow: hidden;
     }
 
     .product-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 8px 30px rgba(139, 69, 19, 0.2);
+        box-shadow: 0 8px 30px rgba(255, 107, 53, 0.2);
     }
 
     .product-image {
@@ -368,9 +215,9 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(139, 69, 19, 0.8);
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 107, 53, 0.9);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -384,76 +231,125 @@
 
     .product-badge {
         position: absolute;
-        top: 10px;
-        right: 10px;
-        background: var(--accent-color);
-        color: var(--text-dark);
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 0.8rem;
+        top: 15px;
+        left: 15px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
         font-weight: 600;
+        color: white;
         z-index: 2;
     }
 
+    .product-badge.popular {
+        background: var(--success-color);
+    }
+
+    .product-badge.new {
+        background: var(--accent-color);
+        color: var(--text-dark);
+    }
+
+    .product-badge.discount {
+        background: var(--danger-color);
+    }
+
     .price {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
+        font-size: 18px;
     }
 
-    .product-info {
-        margin-top: 10px;
+    .old-price {
+        font-size: 14px;
+        margin-right: 8px;
     }
 
-    .rating {
-        font-size: 0.9rem;
+    .current-price {
+        font-size: 20px;
     }
 
-    .card-footer {
-        padding: 1rem;
-    }
-
-    .card-footer .btn {
+    .add-to-cart {
         border-radius: 25px;
+        padding: 12px 24px;
         font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .add-to-cart:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    #loadMoreBtn {
+        border-radius: 25px;
+        padding: 15px 40px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    #loadMoreBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
     }
 </style>
 
 <script>
-    // Filter functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterButtons = document.querySelectorAll('[data-filter]');
-        const products = document.querySelectorAll('[data-category]');
+    function changeSort(value) {
+        const url = new URL(window.location);
+        url.searchParams.set('sortBy', value);
+        window.location.href = url.toString();
+    }
 
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const filter = this.getAttribute('data-filter');
-                
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
-                this.classList.add('active');
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const originalText = this.innerHTML;
+            
+            // Show loading state
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ekleniyor...';
+            this.disabled = true;
 
-                // Show/hide products based on filter
-                products.forEach(product => {
-                    if (filter === 'all' || product.getAttribute('data-category') === filter) {
-                        product.style.display = 'block';
-                        product.style.animation = 'fadeIn 0.5s ease';
-                    } else {
-                        product.style.display = 'none';
-                    }
-                });
+            // Send AJAX request
+            fetch('/Products/AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `productId=${productId}&quantity=1`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerHTML = '<i class="fas fa-check me-2"></i>Eklendi!';
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-success');
+                    
+                    // Show success message
+                    showNotification(data.message, 'success');
+                } else {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+                showNotification('Bir hata oluştu', 'error');
             });
         });
     });
 
-    // Add fadeIn animation
-    const style = document.createElement('style');
-    style.textContent = `
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    `;
-    document.head.appendChild(style);
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
 </script> 
