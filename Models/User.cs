@@ -43,6 +43,9 @@ namespace manyasligida.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         
+        // Google OAuth
+        public string? GoogleId { get; set; }
+        
         // Navigation properties
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<Cart> Carts { get; set; } = new List<Cart>();

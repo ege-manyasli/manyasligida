@@ -22,6 +22,7 @@ namespace manyasligida.Data
         public DbSet<FAQ> FAQs { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<Video> Videos { get; set; }
+        public DbSet<EmailVerification> EmailVerifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,0 +1,182 @@
+@model manyasligida.Models.EmailVerificationViewModel
+@{
+    ViewData["Title"] = "E-posta Doğrulama - Manyaslı Gıda";
+}
+
+<!-- Page Header -->
+<section class="page-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 120px 0 80px;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h1 class="text-white fw-bold mb-3">E-posta Doğrulama</h1>
+                <p class="text-white-50 mb-0">Hesabınızı doğrulamak için e-posta adresinize gönderilen kodu girin</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Email Verification Section -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card shadow-lg border-0" data-aos="fade-up">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="verification-icon mb-3">
+                                <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: var(--primary-color);"></i>
+                            </div>
+                            <h2 class="fw-bold text-dark mb-2">E-posta Doğrulama</h2>
+                            <p class="text-muted">@Model.Email adresine gönderilen 6 haneli doğrulama kodunu girin</p>
+                        </div>
+
+                        @if (TempData["ResendSuccess"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                @TempData["ResendSuccess"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        @if (TempData["ResendError"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                @TempData["ResendError"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <form asp-action="VerifyEmail" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                            <input asp-for="Email" type="hidden" />
+
+                            <div class="mb-4">
+                                <label asp-for="VerificationCode" class="form-label fw-bold">
+                                    <i class="fas fa-key me-2"></i>Doğrulama Kodu
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="fas fa-key text-muted"></i>
+                                    </span>
+                                    <input asp-for="VerificationCode" id="verificationCodeInput" class="form-control border-start-0 text-center" 
+                                           placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 0.5rem;" />
+                                </div>
+                                <span asp-validation-for="VerificationCode" class="text-danger small"></span>
+                            </div>
+
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-check-circle me-2"></i>Doğrula
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="text-muted mb-3">Kod gelmedi mi?</p>
+                                <form asp-action="ResendVerificationCode" method="post" style="display: inline;">
+                                    <input type="hidden" name="email" value="@Model.Email" />
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="fas fa-redo me-2"></i>Yeniden Gönder
+                                    </button>
+                                </form>
+                            </div>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <p class="text-muted mb-3">Zaten hesabınız var mı?</p>
+                            <a href="@Url.Action("Login", "Account")" class="btn btn-outline-secondary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Card -->
+                <div class="card mt-4 border-0 bg-light" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold mb-2">Önemli Bilgiler</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <i class="fas fa-clock text-muted me-2"></i>
+                                        Doğrulama kodu 10 dakika geçerlidir
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-envelope text-muted me-2"></i>
+                                        E-posta adresinizi kontrol edin
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-spam text-muted me-2"></i>
+                                        Spam klasörünü de kontrol edin
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-redo text-muted me-2"></i>
+                                        Kod gelmezse "Yeniden Gönder" butonunu kullanın
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .verification-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .verification-icon i {
+        color: white !important;
+        font-size: 2rem !important;
+    }
+
+    #verificationCodeInput {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+    }
+
+    #verificationCodeInput:focus {
+        box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
+        border-color: var(--primary-color);
+    }
+</style>
+
+<script>
+    // Doğrulama kodu input'u için otomatik odaklanma
+    document.addEventListener('DOMContentLoaded', function() {
+        const verificationInput = document.getElementById('verificationCodeInput');
+        if (verificationInput) {
+            verificationInput.focus();
+        }
+
+        // Sadece sayı girişine izin ver
+        verificationInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // 6 karakter girildiğinde otomatik submit
+        verificationInput.addEventListener('keyup', function(e) {
+            if (this.value.length === 6) {
+                this.form.submit();
+            }
+        });
+    });
+</script>

@@ -2,29 +2,47 @@
 @{
     ViewData["Title"] = "Ürünlerimiz - Manyaslı Gıda";
 }
-<section class="page-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 120px 0 80px;">
-    <div class="container text-center">
-        <h1 class="text-white fw-bold mb-3">Ürünlerimiz</h1>
-        <p class="text-white lead">Manyas'ın bereketli topraklarından sofralarınıza uzanan doğal lezzetler</p>
+<section class="page-header" style="background: var(--gradient-primary); padding: 140px 0 100px; position: relative; overflow: hidden;">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <h1 class="text-white fw-bold mb-4" style="font-size: 3.5rem; text-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+            <i class="fas fa-box-open me-3"></i>Ürünlerimiz
+        </h1>
+        <p class="text-white lead mb-0" style="font-size: 1.25rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+            Manyas'ın bereketli topraklarından sofralarınıza uzanan doğal lezzetler
+        </p>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="position-absolute top-0 left-0 w-100 h-100" style="z-index: 1;">
+        <div class="position-absolute" style="top: 20%; left: 10%; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
+        <div class="position-absolute" style="top: 60%; right: 15%; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 8s ease-in-out infinite reverse;"></div>
+        <div class="position-absolute" style="bottom: 30%; left: 20%; width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 7s ease-in-out infinite;"></div>
     </div>
 </section>
 
 <section class="section-padding bg-light">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-lg-6">
+        <!-- Modern Search and Filter Section -->
+        <div class="row mb-5">
+            <div class="col-lg-8">
                 <form method="get" action="@Url.Action("Search", "Products")" class="search-form">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control form-control-lg" placeholder="Ürün ara..." value="@ViewBag.SearchTerm">
-                        <button class="btn btn-primary btn-lg" type="submit">
+                    <div class="input-group input-group-lg shadow-sm">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control border-start-0 ps-0" 
+                               placeholder="Ürün ara..." value="@ViewBag.SearchTerm"
+                               style="border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;">
+                        <button class="btn btn-primary px-4" type="submit" 
+                                style="border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;">
                             <i class="fas fa-search me-2"></i>Ara
                         </button>
                     </div>
                 </form>
             </div>
-            <div class="col-lg-6">
-                <select class="form-select form-select-lg" id="sortSelect" onchange="changeSort(this.value)">
-                    <option value="name">İsme Göre</option>
+            <div class="col-lg-4">
+                <select class="form-select form-select-lg shadow-sm" id="sortSelect" onchange="changeSort(this.value)">
+                    <option value="name">İsme Göre Sırala</option>
                     <option value="price">Fiyat (Düşük-Yüksek)</option>
                     <option value="price_desc">Fiyat (Yüksek-Düşük)</option>
                     <option value="new">En Yeni</option>
@@ -33,18 +51,20 @@
             </div>
         </div>
 
-        <div class="row mb-4">
+        <!-- Modern Category Filter -->
+        <div class="row mb-5">
             <div class="col-12">
-                <div class="filter-section text-center" data-aos="fade-up">
-                    <div class="btn-group flex-nowrap overflow-auto" role="group">
-                        <a href="@Url.Action("Index", "Products")" class="btn @(ViewBag.SelectedCategoryId == null ? "btn-primary" : "btn-outline-primary") btn-lg">
+                <div class="filter-section" data-aos="fade-up">
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="@Url.Action("Index", "Products")" 
+                           class="btn @(ViewBag.SelectedCategoryId == null ? "btn-primary" : "btn-outline-primary") btn-lg px-4 py-3 rounded-pill shadow-sm">
                             <i class="fas fa-th-large me-2"></i>Tümü
                         </a>
                         @foreach (var category in ViewBag.Categories)
                         {
                             <a href="@Url.Action("Index", "Products", new { categoryId = category.Id })"
-                               class="btn @(ViewBag.SelectedCategoryId == category.Id ? "btn-primary" : "btn-outline-primary") btn-lg">
-                                @category.Name
+                               class="btn @(ViewBag.SelectedCategoryId == category.Id ? "btn-primary" : "btn-outline-primary") btn-lg px-4 py-3 rounded-pill shadow-sm">
+                                <i class="fas fa-tag me-2"></i>@category.Name
                             </a>
                         }
                     </div>
@@ -54,11 +74,13 @@
 
         @if (!Model.Any())
         {
-            <div class="text-center py-5">
-                <img src="~/images/no-results.svg" alt="No results" style="max-height:200px;" class="mb-3" />
-                <h3 class="mb-3">Aradığınız kriterlere uygun ürün bulunamadı</h3>
-                <p class="text-muted mb-4">Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.</p>
-                <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-lg">
+            <div class="text-center py-5" data-aos="fade-up">
+                <div class="mb-4">
+                    <i class="fas fa-search" style="font-size: 4rem; color: var(--text-muted);"></i>
+                </div>
+                <h3 class="mb-3 fw-bold">Aradığınız kriterlere uygun ürün bulunamadı</h3>
+                <p class="text-muted mb-4 lead">Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.</p>
+                <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-modern btn-lg">
                     <i class="fas fa-th-large me-2"></i>Tüm Ürünleri Gör
                 </a>
             </div>
@@ -68,59 +90,54 @@
             <div class="row g-4">
                 @foreach (var product in Model)
                 {
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(100 * (Model.ToList().IndexOf(product) + 1))">
-                        <div class="card product-card h-100 border-0 shadow-sm">
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="card product-card h-100">
                             <div class="product-image position-relative">
                                 <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                                @if (product.IsPopular)
-                                {
-                                    <span class="badge bg-warning position-absolute top-0 start-0 m-2">Popüler</span>
-                                }
-                                @if (product.IsNew)
-                                {
-                                    <span class="badge bg-success position-absolute top-0 start-0 m-2">Yeni</span>
-                                }
-                                @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
-                                {
-                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">İndirim</span>
-                                }
+                                
+
+
+                                
+                                <!-- Product Overlay -->
                                 <div class="product-overlay">
                                     <div class="overlay-content">
-                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-light btn-sm mb-2">
-                                            <i class="fas fa-eye me-1"></i>İncele
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-light">
+                                            <i class="fas fa-eye me-2"></i>İncele
                                         </a>
-                                        <button class="btn btn-primary btn-sm" onclick="addToCart(@product.Id)">
-                                            <i class="fas fa-shopping-cart me-1"></i>Sepete Ekle
+                                        <button class="btn btn-primary" onclick="addToCart(@product.Id)" data-product-id="@product.Id">
+                                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    @if (product.Category != null)
-                                    {
-                                        <span class="badge bg-light text-dark">@product.Category.Name</span>
-                                    }
-                                </div>
-                                <h6 class="card-title fw-bold mb-2">@product.Name</h6>
-                                <p class="card-text text-muted small mb-2">@product.Weight</p>
+                                <!-- Product Title -->
+                                <h5 class="card-title fw-bold mb-2">@product.Name</h5>
+                                
+                                <!-- Product Weight -->
+                                <p class="card-text text-muted mb-2">
+                                    <i class="fas fa-weight-hanging me-1"></i>@product.Weight
+                                </p>
+                                
+                                <!-- Price Section -->
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
+                                    <div class="price-section">
                                         <span class="product-price">₺@product.Price.ToString("0.00")</span>
-                                        @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
-                                        {
-                                            <span class="product-old-price ms-2">₺@product.OldPrice?.ToString("0.00")</span>
-                                        }
                                     </div>
-                                    <span class="badge bg-primary">@product.FatContent</span>
+                                    <span class="badge bg-primary px-2 py-1 rounded-pill">
+                                        <i class="fas fa-percentage me-1"></i>@product.FatContent
+                                    </span>
                                 </div>
+                                
+                                <!-- Action Buttons -->
                                 <div class="mt-auto">
                                     <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="addToCart(@product.Id)">
-                                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                        <button class="btn btn-primary btn-sm" onclick="addToCart(@product.Id)" data-product-id="@product.Id">
+                                            <i class="fas fa-shopping-cart me-1"></i>Sepete Ekle
                                         </button>
-                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-outline-primary">
-                                            <i class="fas fa-info-circle me-2"></i>Detayları Gör
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-info-circle me-1"></i>Detayları Gör
                                         </a>
                                     </div>
                                 </div>
@@ -134,12 +151,30 @@
             {
                 <div class="row mt-5">
                     <div class="col-12">
-                        <nav aria-label="Sayfalama">
-                            <ul class="pagination justify-content-center">
+                        <nav aria-label="Sayfalama" class="d-flex justify-content-center">
+                            <ul class="pagination pagination-lg">
+                                @if (ViewBag.CurrentPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link rounded-pill me-2" href="@Url.Action("Index", "Products", new { page = ViewBag.CurrentPage - 1, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                }
+                                
                                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
                                 {
                                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                        <a class="page-link" href="@Url.Action("Index", "Products", new { page = i, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">@i</a>
+                                        <a class="page-link rounded-pill mx-1" href="@Url.Action("Index", "Products", new { page = i, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">@i</a>
+                                    </li>
+                                }
+                                
+                                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link rounded-pill ms-2" href="@Url.Action("Index", "Products", new { page = ViewBag.CurrentPage + 1, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
                                     </li>
                                 }
                             </ul>
@@ -153,33 +188,40 @@
 
 <style>
     .product-card {
-        transition: all 0.3s ease-in-out;
         border-radius: 18px;
         background: #fff;
         box-shadow: 0 6px 15px rgba(0,0,0,0.07);
+        border: none;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .product-card .card-body {
+        padding: 1.25rem;
     }
 
         .product-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            transform: translateY(-5px);
         }
 
     .product-image {
-        height: 260px;
+        height: 280px;
         overflow: hidden;
         position: relative;
+        border-radius: 18px 18px 0 0;
     }
 
         .product-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s ease;
+            transition: transform 0.3s ease;
         }
 
-    .product-card:hover .product-image img {
-        transform: scale(1.1);
-    }
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
 
     .product-overlay {
         position: absolute;
@@ -192,7 +234,6 @@
         align-items: center;
         justify-content: center;
         opacity: 0;
-        transition: opacity 0.3s ease;
     }
 
     .product-card:hover .product-overlay {
@@ -204,16 +245,12 @@
     }
 
     .product-price {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         font-weight: 700;
         color: #e74c3c;
     }
 
-    .product-old-price {
-        text-decoration: line-through;
-        color: #bdc3c7;
-        font-size: 0.95rem;
-    }
+
 
     .filter-section .btn-group {
         flex-wrap: nowrap;

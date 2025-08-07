@@ -13,5 +13,8 @@ namespace manyasligida.Services
         Task<bool> IsCurrentUserAdminAsync();
         void SetCurrentUser(User user);
         void Logout();
+        Task<bool> SendVerificationCodeAsync(string email);
+        Task<bool> VerifyEmailAsync(string email, string code);
+        Task<bool> ResendVerificationCodeAsync(string email);
     }
 }

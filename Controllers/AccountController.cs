@@ -60,6 +60,10 @@ namespace manyasligida.Controllers
                     ModelState.AddModelError("", "E-posta veya şifre hatalı.");
                 }
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
             catch (Exception)
             {
                 ModelState.AddModelError("", "Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
@@ -101,8 +105,8 @@ namespace manyasligida.Controllers
                 var user = await _authService.RegisterAsync(model);
                 if (user != null)
                 {
-                    TempData["RegisterSuccess"] = "Kayıt işleminiz başarıyla tamamlandı! Şimdi giriş yapabilirsiniz.";
-                    return RedirectToAction(nameof(Login));
+                    TempData["RegisterSuccess"] = "Kayıt işleminiz başarıyla tamamlandı! E-posta adresinize gönderilen doğrulama kodunu kullanarak hesabınızı doğrulayın.";
+                    return RedirectToAction(nameof(VerifyEmail), new { email = user.Email });
                 }
                 else
                 {
@@ -182,6 +186,78 @@ namespace manyasligida.Controllers
 
             ViewBag.CartItemCount = _cartService.GetCartItemCount();
             return View("Profile", user);
+        }
+
+        // GET: Account/VerifyEmail
+        public IActionResult VerifyEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var model = new EmailVerificationViewModel
+            {
+                Email = email
+            };
+
+            return View(model);
+        }
+
+        // POST: Account/VerifyEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyEmail(EmailVerificationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var isVerified = await _authService.VerifyEmailAsync(model.Email, model.VerificationCode);
+                if (isVerified)
+                {
+                    TempData["EmailVerificationSuccess"] = "E-posta adresiniz başarıyla doğrulandı! Şimdi giriş yapabilirsiniz.";
+                    return RedirectToAction(nameof(Login));
+                }
+                else
+                {
+                    ModelState.AddModelError("VerificationCode", "Doğrulama kodu hatalı veya süresi dolmuş.");
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+            }
+
+            return View(model);
+        }
+
+        // POST: Account/ResendVerificationCode
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendVerificationCode(string email)
+        {
+            try
+            {
+                var isSent = await _authService.ResendVerificationCodeAsync(email);
+                if (isSent)
+                {
+                    TempData["ResendSuccess"] = "Yeni doğrulama kodu e-posta adresinize gönderildi.";
+                }
+                else
+                {
+                    TempData["ResendError"] = "Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["ResendError"] = "Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
+            }
+
+            return RedirectToAction(nameof(VerifyEmail), new { email });
         }
     }
 } 
