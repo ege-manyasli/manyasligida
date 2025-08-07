@@ -1,14 +1,14 @@
 @model manyasligida.Models.Video
 @{
-    ViewData["Title"] = "Video Ekle";
+    ViewData["Title"] = "Video Düzenle";
     Layout = "_AdminLayout";
 }
 
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="page-title">Video Ekle</h1>
-            <p class="page-subtitle">Yeni video ekleyin</p>
+            <h1 class="page-title">Video Düzenle</h1>
+            <p class="page-subtitle">@Model.Title</p>
         </div>
         <a href="@Url.Action("Videos", "Admin")" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-2"></i>Geri Dön
@@ -31,7 +31,11 @@
     </div>
 }
 
-<form asp-action="AddVideo" method="post" enctype="multipart/form-data">
+<form asp-action="EditVideo" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="CreatedAt" type="hidden" />
+    <input asp-for="ViewCount" type="hidden" />
+    
     <div class="row">
         <div class="col-lg-8">
             <div class="card">
@@ -90,7 +94,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
-                        <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox">
                         <label asp-for="IsActive" class="form-check-label">Aktif</label>
                         <div class="form-text">Video yayında mı?</div>
                     </div>
@@ -109,8 +113,46 @@
                 </div>
                 <div class="card-body">
                     <div id="videoPreview" class="text-center text-muted">
-                        <i class="fas fa-video fa-2x mb-2"></i>
-                        <p>Video URL'si girildiğinde önizleme görünecek</p>
+                        @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                        {
+                            <iframe src="@Model.VideoUrl" width="100%" height="150" frameborder="0" allowfullscreen></iframe>
+                        }
+                        else
+                        {
+                            <i class="fas fa-video fa-2x mb-2"></i>
+                            <p>Video URL'si girildiğinde önizleme görünecek</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>İstatistikler</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="stat-box">
+                                <h4 class="text-primary">@Model.ViewCount.ToString("N0")</h4>
+                                <small class="text-muted">Görüntülenme</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box">
+                                @if (Model.Duration > 0)
+                                {
+                                    var minutes = Model.Duration / 60;
+                                    var seconds = Model.Duration % 60;
+                                    <h4 class="text-info">@minutes:@seconds.ToString("00")</h4>
+                                }
+                                else
+                                {
+                                    <h4 class="text-muted">-:-</h4>
+                                }
+                                <small class="text-muted">Süre</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,7 +166,7 @@
                     <i class="fas fa-times me-2"></i>İptal
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i>Video Ekle
+                    <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
                 </button>
             </div>
         </div>
@@ -150,4 +192,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script> 
+</script>
+
+<style>
+.stat-box {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+    margin-bottom: 0.5rem;
+}
+</style>

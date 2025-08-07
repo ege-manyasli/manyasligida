@@ -176,11 +176,12 @@
                             <!-- Terms and Conditions -->
                             <div class="mb-4 mt-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                    <input asp-for="AcceptTerms" class="form-check-input" type="checkbox" id="termsCheck" required>
                                     <label class="form-check-label" for="termsCheck">
-                                        <a href="@Url.Action("Index", "KVKK")" target="_blank" class="text-primary">Kullanım şartlarını</a> ve 
+                                        <a href="@Url.Action("Index", "KVKK")" target="_blank" class="text-primary">Kullanım şartlarını</a> ve
                                         <a href="@Url.Action("Gizlilik", "KVKK")" target="_blank" class="text-primary">gizlilik politikasını</a> kabul ediyorum
                                     </label>
+                                    <span asp-validation-for="AcceptTerms" class="text-danger small"></span>
                                 </div>
                             </div>
 
@@ -258,16 +259,16 @@
         overflow: hidden;
     }
 
-    .page-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        opacity: 0.3;
-    }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
 
     .register-icon {
         width: 80px;
@@ -280,10 +281,10 @@
         margin: 0 auto;
     }
 
-    .register-icon i {
-        font-size: 2.5rem;
-        color: white;
-    }
+        .register-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
 
     .card {
         border-radius: var(--border-radius-lg);
@@ -302,10 +303,10 @@
         transition: all 0.3s ease;
     }
 
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-    }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+        }
 
     .input-group .form-control:focus {
         border-left-color: #dee2e6;
@@ -318,10 +319,10 @@
         transition: all 0.3s ease;
     }
 
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-    }
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+        }
 
     textarea.form-control {
         resize: vertical;
@@ -341,16 +342,16 @@
         box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
     }
 
-    .btn-primary:hover:not(:disabled) {
-        background: linear-gradient(135deg, #c0392b 0%, var(--primary-color) 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
-    }
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #c0392b 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
 
-    .btn-primary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
     .btn-outline-primary {
         border: 2px solid var(--primary-color);
@@ -358,12 +359,12 @@
         background: transparent;
     }
 
-    .btn-outline-primary:hover {
-        background: var(--primary-color);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
-    }
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
 
     .form-check-input:checked {
         background-color: var(--primary-color);
@@ -393,25 +394,73 @@
         .card-body {
             padding: 2rem !important;
         }
-        
+
         .register-icon {
             width: 60px;
             height: 60px;
         }
-        
-        .register-icon i {
-            font-size: 2rem;
-        }
+
+            .register-icon i {
+                font-size: 2rem;
+            }
     }
 
     @@media (max-width: 576px) {
         .card-body {
             padding: 1.5rem !important;
         }
-        
+
         .btn {
             padding: 10px 20px;
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const termsCheck = document.getElementById('termsCheck');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const toggleSubmit = () => {
+            submitBtn.disabled = !termsCheck.checked;
+            if (termsCheck.checked) {
+                submitBtn.classList.add('btn-modern');
+                submitBtn.classList.remove('opacity-50');
+            } else {
+                submitBtn.classList.remove('btn-modern');
+                submitBtn.classList.add('opacity-50');
+            }
+        };
+
+        // Initial state
+        toggleSubmit();
+
+        // Listen to checkbox changes
+        termsCheck.addEventListener('change', toggleSubmit);
+
+        // Enhanced form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            if (!termsCheck.checked) {
+                e.preventDefault();
+                termsCheck.focus();
+                showError('Lütfen kullanım şartlarını kabul edin.');
+            }
+        });
+
+        function showError(message) {
+            const existingAlert = document.querySelector('.custom-alert');
+            if (existingAlert) existingAlert.remove();
+
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger custom-alert mt-3';
+            alert.textContent = message;
+            document.querySelector('.card-body').prepend(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    });
+</script>
 

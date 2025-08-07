@@ -25,63 +25,191 @@
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
     <div class="col-xl-3 col-md-6">
-        <div class="stat-card bg-primary text-white">
-            <div class="stat-card-body">
+        <div class="stat-card bg-gradient bg-primary text-white modern-card">
+            <div class="stat-card-body position-relative">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="stat-number">@ViewBag.TotalProducts</h3>
-                        <p class="stat-label mb-0">Toplam Ürün</p>
+                        <h3 class="stat-number display-6 fw-bold mb-1">@ViewBag.TotalProducts</h3>
+                        <p class="stat-label mb-0 text-white-50">Toplam Ürün</p>
+                        <small class="change-indicator text-white-75">
+                            <i class="fas fa-arrow-up me-1"></i>+12% bu ay
+                        </small>
                     </div>
-                    <div class="stat-icon">
-                        <i class="fas fa-box fa-2x"></i>
+                    <div class="stat-icon-modern">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-gradient bg-success text-white modern-card">
+            <div class="stat-card-body position-relative">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number display-6 fw-bold mb-1">@ViewBag.TotalOrders</h3>
+                        <p class="stat-label mb-0 text-white-50">Toplam Sipariş</p>
+                        <small class="change-indicator text-white-75">
+                            <i class="fas fa-arrow-up me-1"></i>+8% bu ay
+                        </small>
+                    </div>
+                    <div class="stat-icon-modern">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-gradient bg-warning text-white modern-card">
+            <div class="stat-card-body position-relative">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number display-6 fw-bold mb-1">@ViewBag.TotalUsers</h3>
+                        <p class="stat-label mb-0 text-white-50">Kayıtlı Kullanıcı</p>
+                        <small class="change-indicator text-white-75">
+                            <i class="fas fa-arrow-up me-1"></i>+15% bu ay
+                        </small>
+                    </div>
+                    <div class="stat-icon-modern">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-gradient bg-danger text-white modern-card">
+            <div class="stat-card-body position-relative">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stat-number display-6 fw-bold mb-1">@ViewBag.UnreadMessages</h3>
+                        <p class="stat-label mb-0 text-white-50">Okunmamış Mesaj</p>
+                        <small class="change-indicator text-white-75">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Yeni mesajlar
+                        </small>
+                    </div>
+                    <div class="stat-icon-modern">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Dashboard Widgets -->
+<div class="row mb-4">
+    <!-- Quick Actions Widget -->
+    <div class="col-lg-4 mb-4">
+        <div class="card modern-widget h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-bolt me-2 text-primary"></i>Hızlı İşlemler
+                </h5>
+                <div class="quick-actions">
+                    <a href="@Url.Action("AddProduct", "Admin")" class="quick-action-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Yeni Ürün</span>
+                    </a>
+                    <a href="@Url.Action("Orders", "Admin")" class="quick-action-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Siparişler</span>
+                    </a>
+                    <a href="@Url.Action("Messages", "Admin")" class="quick-action-btn">
+                        <i class="fas fa-envelope"></i>
+                        <span>Mesajlar</span>
+                    </a>
+                    <a href="@Url.Action("Reports", "Admin")" class="quick-action-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Raporlar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Widget -->
+    <div class="col-lg-4 mb-4">
+        <div class="card modern-widget h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-clock me-2 text-info"></i>Son Aktiviteler
+                </h5>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon bg-success">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-1 fw-semibold">Yeni sipariş alındı</p>
+                            <small class="text-muted">2 dakika önce</small>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon bg-primary">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-1 fw-semibold">Yeni üye kaydı</p>
+                            <small class="text-muted">15 dakika önce</small>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon bg-warning">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-1 fw-semibold">Stok uyarısı</p>
+                            <small class="text-muted">1 saat önce</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card bg-success text-white">
-            <div class="stat-card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="stat-number">@ViewBag.TotalOrders</h3>
-                        <p class="stat-label mb-0">Toplam Sipariş</p>
+
+    <!-- System Status Widget -->
+    <div class="col-lg-4 mb-4">
+        <div class="card modern-widget h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-server me-2 text-success"></i>Sistem Durumu
+                </h5>
+                <div class="system-status">
+                    <div class="status-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Server Durumu</span>
+                            <span class="badge bg-success">Çevrimiçi</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 98%"></div>
+                        </div>
                     </div>
-                    <div class="stat-icon">
-                        <i class="fas fa-shopping-cart fa-2x"></i>
+                    <div class="status-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Veritabanı</span>
+                            <span class="badge bg-success">Aktif</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 96%"></div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card bg-warning text-white">
-            <div class="stat-card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="stat-number">@ViewBag.TotalUsers</h3>
-                        <p class="stat-label mb-0">Kayıtlı Kullanıcı</p>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="fas fa-users fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card bg-danger text-white">
-            <div class="stat-card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="stat-number">@ViewBag.UnreadMessages</h3>
-                        <p class="stat-label mb-0">Okunmamış Mesaj</p>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="fas fa-envelope fa-2x"></i>
+                    <div class="status-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Disk Kullanımı</span>
+                            <span class="badge bg-warning">75%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-warning" style="width: 75%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -92,7 +220,7 @@
 <!-- Revenue Card -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card revenue-card">
+        <div class="card modern-card revenue-card">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-6">
@@ -215,7 +343,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Recent Messages -->
     <div class="col-lg-4">
         <div class="card">
@@ -328,9 +456,9 @@
         transition: transform 0.3s ease;
     }
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-    }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
 
     .stat-number {
         font-size: 2.5rem;
@@ -398,17 +526,17 @@
         transition: background-color 0.3s ease;
     }
 
-    .message-item:last-child {
-        border-bottom: none;
-    }
+        .message-item:last-child {
+            border-bottom: none;
+        }
 
-    .message-item:hover {
-        background-color: #f8f9fa;
-    }
+        .message-item:hover {
+            background-color: #f8f9fa;
+        }
 
-    .message-item.unread {
-        background-color: #fff3cd;
-    }
+        .message-item.unread {
+            background-color: #fff3cd;
+        }
 
     .message-avatar {
         margin-right: 1rem;
@@ -443,9 +571,9 @@
         transition: all 0.3s ease;
     }
 
-    .btn:hover {
-        transform: translateY(-2px);
-    }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
 
     .badge {
         border-radius: 20px;
@@ -456,16 +584,16 @@
         .dashboard-header {
             padding: 1.5rem;
         }
-        
+
         .stat-number {
             font-size: 2rem;
         }
-        
+
         .message-item {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .message-actions {
             margin-left: 0;
             margin-top: 1rem;

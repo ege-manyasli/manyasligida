@@ -21,6 +21,7 @@ namespace manyasligida.Data
         public DbSet<Gallery> Galleries { get; set; }
         public DbSet<FAQ> FAQs { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<Video> Videos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -265,6 +266,49 @@ namespace manyasligida.Data
                     Description = "Geniş ürün yelpazemiz", 
                     ImageUrl = "/img/product-3.jpg", 
                     IsActive = true, 
+                    CreatedAt = new DateTime(2024, 1, 1) 
+                }
+            );
+
+            // Videos
+            modelBuilder.Entity<Video>().HasData(
+                new Video { 
+                    Id = 1, 
+                    Title = "Peynir Üretim Süreci", 
+                    Description = "Manyas'ta geleneksel peynir üretim sürecimizi detaylı olarak anlatan video", 
+                    VideoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ", 
+                    ThumbnailUrl = "/img/video-thumb-1.jpg", 
+                    Duration = 180, 
+                    ViewCount = 1250,
+                    IsActive = true, 
+                    IsFeatured = true,
+                    DisplayOrder = 1,
+                    CreatedAt = new DateTime(2024, 1, 1) 
+                },
+                new Video { 
+                    Id = 2, 
+                    Title = "Kalite Kontrol Süreçleri", 
+                    Description = "Ürünlerimizin kalite kontrolünde uyguladığımız standartlar", 
+                    VideoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ", 
+                    ThumbnailUrl = "/img/video-thumb-2.jpg", 
+                    Duration = 240, 
+                    ViewCount = 890,
+                    IsActive = true, 
+                    IsFeatured = false,
+                    DisplayOrder = 2,
+                    CreatedAt = new DateTime(2024, 1, 1) 
+                },
+                new Video { 
+                    Id = 3, 
+                    Title = "Müşteri Görüşleri", 
+                    Description = "Müşterilerimizin deneyimleri ve ürünlerimiz hakkındaki düşünceleri", 
+                    VideoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ", 
+                    ThumbnailUrl = "/img/video-thumb-3.jpg", 
+                    Duration = 150, 
+                    ViewCount = 654,
+                    IsActive = true, 
+                    IsFeatured = false,
+                    DisplayOrder = 3,
                     CreatedAt = new DateTime(2024, 1, 1) 
                 }
             );

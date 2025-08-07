@@ -1,3 +1,4 @@
+@model List<manyasligida.Models.Video>
 @{
     ViewData["Title"] = "Video Yönetimi";
     Layout = "_AdminLayout";
@@ -7,23 +8,185 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1 class="page-title">Video Yönetimi</h1>
-            <p class="page-subtitle">Videoları yönetin</p>
+            <p class="page-subtitle">Videoları yönetin ve görüntüleyin</p>
         </div>
         <a href="@Url.Action("AddVideo", "Admin")" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Yeni Video
+            <i class="fas fa-plus me-2"></i>Yeni Video Ekle
         </a>
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-video me-2"></i>Videolar</h5>
+        <h5 class="mb-0"><i class="fas fa-video me-2"></i>Videolar (@Model.Count)</h5>
     </div>
     <div class="card-body">
-        <div class="text-center py-5">
-            <i class="fas fa-video fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">Video yönetimi yakında eklenecek</h5>
-            <p class="text-muted">Video yönetimi özelliği geliştirme aşamasındadır.</p>
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Görsel</th>
+                            <th>Başlık</th>
+                            <th>Açıklama</th>
+                            <th>Süre</th>
+                            <th>Görüntülenme</th>
+                            <th>Öne Çıkarılmış</th>
+                            <th>Durum</th>
+                            <th>Sıra</th>
+                            <th>Tarih</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var video in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(video.ThumbnailUrl))
+                                    {
+                                        <img src="@video.ThumbnailUrl" alt="@video.Title" class="img-thumbnail" style="width: 60px; height: 40px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 40px;">
+                                            <i class="fas fa-video text-muted"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@video.Title</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(video.Description))
+                                    {
+                                        <span class="text-muted">@(video.Description.Length > 50 ? video.Description.Substring(0, 50) + "..." : video.Description)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (video.Duration > 0)
+                                    {
+                                        var minutes = video.Duration / 60;
+                                        var seconds = video.Duration % 60;
+                                        <span class="badge bg-info">@minutes:@seconds.ToString("00")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@video.ViewCount.ToString("N0")</span>
+                                </td>
+                                <td>
+                                    @if (video.IsFeatured)
+                                    {
+                                        <span class="badge bg-warning"><i class="fas fa-star me-1"></i>Öne Çıkarılmış</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (video.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">@video.DisplayOrder</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@video.CreatedAt.ToString("dd.MM.yyyy")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@video.VideoUrl" target="_blank" class="btn btn-sm btn-outline-info" title="İzle">
+                                            <i class="fas fa-play"></i>
+                                        </a>
+                                        <a href="@Url.Action("EditVideo", new { id = video.Id })" class="btn btn-sm btn-outline-primary" title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Sil" 
+                                                onclick="deleteVideo(@video.Id, '@video.Title')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-video fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Henüz video eklenmemiş</h5>
+                <p class="text-muted">İlk videonuzu eklemek için yukarıdaki "Yeni Video Ekle" butonunu kullanın.</p>
+                <a href="@Url.Action("AddVideo", "Admin")" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>İlk Videonuzu Ekleyin
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Silme Onay Modal'ı -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Video Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu videoyu silmek istediğinizden emin misiniz?</p>
+                <p><strong id="videoTitle"></strong></p>
+                <p class="text-danger"><small>Bu işlem geri alınamaz!</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <form id="deleteForm" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </form>
+            </div>
         </div>
     </div>
-</div> 
+</div>
+
+<script>
+function deleteVideo(id, title) {
+    document.getElementById('videoTitle').textContent = title;
+    document.getElementById('deleteForm').action = '@Url.Action("DeleteVideo", "Admin")/' + id;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script> 

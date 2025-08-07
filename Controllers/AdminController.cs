@@ -80,6 +80,7 @@ namespace manyasligida.Controllers
             var totalOrders = await _context.Orders.CountAsync();
             var totalBlogs = await _context.Blogs.CountAsync();
             var totalGalleries = await _context.Galleries.CountAsync();
+            var totalVideos = await _context.Videos.CountAsync();
             var unreadMessages = await _context.ContactMessages.Where(m => !m.IsRead).CountAsync();
             var totalRevenue = await _context.Orders.Where(o => o.OrderStatus == "Delivered").SumAsync(o => o.TotalAmount);
 
@@ -89,6 +90,7 @@ namespace manyasligida.Controllers
             ViewBag.TotalOrders = totalOrders;
             ViewBag.TotalBlogs = totalBlogs;
             ViewBag.TotalGalleries = totalGalleries;
+            ViewBag.TotalVideos = totalVideos;
             ViewBag.UnreadMessages = unreadMessages;
             ViewBag.TotalRevenue = totalRevenue;
 
@@ -985,9 +987,20 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Video listesi için placeholder - gerçek uygulamada Video modeli olmalı
-            ViewBag.Videos = new List<object>(); // Placeholder
-            return View();
+            try
+            {
+                var videos = await _context.Videos
+                    .OrderBy(v => v.DisplayOrder)
+                    .ThenByDescending(v => v.CreatedAt)
+                    .ToListAsync();
+
+                return View(videos);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Videolar yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<Video>());
+            }
         }
 
         // GET: Admin/AddVideo
@@ -1004,14 +1017,139 @@ namespace manyasligida.Controllers
         // POST: Admin/AddVideo
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddVideoPost()
+        public async Task<IActionResult> AddVideo(Video video)
         {
             if (!IsAdmin())
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            TempData["Success"] = "Video başarıyla eklendi.";
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    video.CreatedAt = DateTime.Now;
+                    video.IsActive = true;
+                    video.ViewCount = 0;
+
+                    _context.Videos.Add(video);
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Video başarıyla eklendi.";
+                    return RedirectToAction(nameof(Videos));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Video eklenirken bir hata oluştu: " + ex.Message);
+                }
+            }
+
+            return View(video);
+        }
+
+        // GET: Admin/EditVideo/5
+        public async Task<IActionResult> EditVideo(int id)
+        {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var video = await _context.Videos.FindAsync(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            return View(video);
+        }
+
+        // POST: Admin/EditVideo/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditVideo(int id, Video video)
+        {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (id != video.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingVideo = await _context.Videos.FindAsync(id);
+                    if (existingVideo == null)
+                    {
+                        return NotFound();
+                    }
+
+                    existingVideo.Title = video.Title;
+                    existingVideo.Description = video.Description;
+                    existingVideo.VideoUrl = video.VideoUrl;
+                    existingVideo.ThumbnailUrl = video.ThumbnailUrl;
+                    existingVideo.Duration = video.Duration;
+                    existingVideo.IsActive = video.IsActive;
+                    existingVideo.IsFeatured = video.IsFeatured;
+                    existingVideo.DisplayOrder = video.DisplayOrder;
+                    existingVideo.UpdatedAt = DateTime.Now;
+
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Video başarıyla güncellendi.";
+                    return RedirectToAction(nameof(Videos));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!VideoExists(video.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Video güncellenirken bir hata oluştu: " + ex.Message);
+                }
+            }
+
+            return View(video);
+        }
+
+        // POST: Admin/DeleteVideo/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteVideo(int id)
+        {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var video = await _context.Videos.FindAsync(id);
+            if (video != null)
+            {
+                try
+                {
+                    _context.Videos.Remove(video);
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Video başarıyla silindi.";
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Video silinirken bir hata oluştu: " + ex.Message;
+                }
+            }
+
             return RedirectToAction(nameof(Videos));
         }
 
@@ -1413,6 +1551,11 @@ namespace manyasligida.Controllers
         private bool FAQExists(int id)
         {
             return _context.FAQs.Any(e => e.Id == id);
+        }
+
+        private bool VideoExists(int id)
+        {
+            return _context.Videos.Any(e => e.Id == id);
         }
     }
 } 
