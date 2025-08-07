@@ -14,15 +14,23 @@ namespace manyasligida.Controllers
         private readonly ApplicationDbContext _context;
         private readonly CartService _cartService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IAuthService _authService;
 
-        public AdminController(ApplicationDbContext context, CartService cartService, IFileUploadService fileUploadService)
+        public AdminController(ApplicationDbContext context, CartService cartService, IFileUploadService fileUploadService, IAuthService authService)
         {
             _context = context;
             _cartService = cartService;
             _fileUploadService = fileUploadService;
+            _authService = authService;
         }
 
         // Admin kontrolü
+        private async Task<bool> IsAdminAsync()
+        {
+            return await _authService.IsCurrentUserAdminAsync();
+        }
+
+        // Sync admin check for backward compatibility
         private bool IsAdmin()
         {
             var isAdmin = HttpContext.Session.GetString("IsAdmin");
@@ -32,9 +40,10 @@ namespace manyasligida.Controllers
         // GET: Admin/Login
         public IActionResult Login()
         {
+            // Eğer zaten admin girişi yapılmışsa dashboard'a yönlendir
             if (IsAdmin())
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             return View();
         }
@@ -42,33 +51,38 @@ namespace manyasligida.Controllers
         // POST: Admin/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string password)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            // Admin şifresi (gerçek uygulamada bu şifre güvenli bir şekilde saklanmalıdır)
-            const string ADMIN_PASSWORD = "admin123";
-
-            if (password == ADMIN_PASSWORD)
+            if (!ModelState.IsValid)
             {
-                var adminUser = await _context.Users.FirstOrDefaultAsync(u => u.IsAdmin);
-                if (adminUser != null)
-                {
-                    HttpContext.Session.SetString("UserId", adminUser.Id.ToString());
-                    HttpContext.Session.SetString("UserName", $"{adminUser.FirstName} {adminUser.LastName}");
-                    HttpContext.Session.SetString("UserEmail", adminUser.Email);
-                    HttpContext.Session.SetString("IsAdmin", "True");
-
-                    return RedirectToAction(nameof(Index));
-                }
+                return View(model);
             }
 
-            ViewBag.Error = "Geçersiz şifre!";
-            return View();
+            try
+            {
+                var user = await _authService.LoginAsync(model.Email, model.Password);
+                if (user != null && user.IsAdmin)
+                {
+                    TempData["LoginSuccess"] = "Admin paneline başarıyla giriş yaptınız!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Admin yetkisi bulunmayan kullanıcı.");
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+            }
+
+            return View(model);
         }
 
-        // GET: Admin/Index
+        // GET: Admin/Index (Ana admin sayfası)
         public async Task<IActionResult> Index()
         {
-            if (!IsAdmin())
+            if (!await IsAdminAsync())
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -123,6 +137,8 @@ namespace manyasligida.Controllers
             return View();
         }
 
+
+
         // GET: Admin/Products
         public async Task<IActionResult> Products()
         {
@@ -133,29 +149,15 @@ namespace manyasligida.Controllers
 
             try
             {
-                // Debug: Log the query
-                System.Diagnostics.Debug.WriteLine("Loading products from database...");
-                
                 var products = await _context.Products
                     .Include(p => p.Category)
                     .OrderByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
-                // Debug: Log the results
-                System.Diagnostics.Debug.WriteLine($"Found {products.Count} products in database");
-                foreach (var product in products)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Product: {product.Name} (ID: {product.Id}, Category: {product.Category?.Name})");
-                }
-
                 return View(products);
             }
             catch (Exception ex)
             {
-                // Debug: Log the exception
-                System.Diagnostics.Debug.WriteLine($"Exception in Products action: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Exception Stack Trace: {ex.StackTrace}");
-                
                 TempData["Error"] = "Ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
@@ -169,27 +171,35 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-            
-            // Eğer hiç kategori yoksa, varsayılan kategoriler oluştur
-            if (!categories.Any())
+            try
             {
-                var defaultCategories = new List<Category>
-                {
-                    new Category { Name = "Beyaz Peynir", Description = "Beyaz peynir çeşitleri", IsActive = true, DisplayOrder = 1 },
-                    new Category { Name = "Kaşar Peyniri", Description = "Kaşar peyniri çeşitleri", IsActive = true, DisplayOrder = 2 },
-                    new Category { Name = "Özel Peynirler", Description = "Özel peynir çeşitleri", IsActive = true, DisplayOrder = 3 }
-                };
-
-                _context.Categories.AddRange(defaultCategories);
-                await _context.SaveChangesAsync();
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
                 
-                categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-            }
-            
-            ViewBag.Categories = categories;
+                // Eğer hiç kategori yoksa, varsayılan kategoriler oluştur
+                if (!categories.Any())
+                {
+                    var defaultCategories = new List<Category>
+                    {
+                        new Category { Name = "Beyaz Peynir", Description = "Beyaz peynir çeşitleri", IsActive = true, DisplayOrder = 1 },
+                        new Category { Name = "Kaşar Peyniri", Description = "Kaşar peyniri çeşitleri", IsActive = true, DisplayOrder = 2 },
+                        new Category { Name = "Özel Peynirler", Description = "Özel peynir çeşitleri", IsActive = true, DisplayOrder = 3 }
+                    };
 
-            return View();
+                    _context.Categories.AddRange(defaultCategories);
+                    await _context.SaveChangesAsync();
+                    
+                    categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                }
+                
+                ViewBag.Categories = categories;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Sayfa yüklenirken bir hata oluştu: " + ex.Message;
+                return RedirectToAction("Products");
+            }
         }
 
         // POST: Admin/AddProduct
@@ -202,24 +212,9 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Debug: Log the incoming product data
-            System.Diagnostics.Debug.WriteLine($"Product Name: {product.Name}");
-            System.Diagnostics.Debug.WriteLine($"Product Price: {product.Price}");
-            System.Diagnostics.Debug.WriteLine($"Product CategoryId: {product.CategoryId}");
-            System.Diagnostics.Debug.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
-
-            // Debug: Log ModelState errors
-            if (!ModelState.IsValid)
+            try
             {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    System.Diagnostics.Debug.WriteLine($"ModelState Error: {error.ErrorMessage}");
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
                     // Resim yükleme işlemi
                     if (imageFile != null && imageFile.Length > 0)
@@ -236,35 +231,31 @@ namespace manyasligida.Controllers
                         product.ImageUrl = imageUrl;
                     }
 
+                    // Ürün özelliklerini ayarla
                     product.CreatedAt = DateTime.Now;
                     product.IsActive = true;
-
-                    // Debug: Log before saving
-                    System.Diagnostics.Debug.WriteLine($"About to save product: {product.Name}");
+                    product.UpdatedAt = DateTime.Now;
 
                     _context.Products.Add(product);
                     await _context.SaveChangesAsync();
 
-                    // Debug: Log after saving
-                    System.Diagnostics.Debug.WriteLine($"Product saved successfully with ID: {product.Id}");
-
                     TempData["Success"] = "Ürün başarıyla eklendi.";
                     return RedirectToAction(nameof(Products));
                 }
-                catch (Exception ex)
+                else
                 {
-                    // Debug: Log the exception details
-                    System.Diagnostics.Debug.WriteLine($"Exception in AddProduct: {ex.Message}");
-                    System.Diagnostics.Debug.WriteLine($"Exception Stack Trace: {ex.StackTrace}");
-                    
-                    ModelState.AddModelError("", "Ürün eklenirken bir hata oluştu: " + ex.Message);
+                    var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                    ViewBag.Categories = categories;
+                    return View(product);
                 }
             }
-
-            var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-            ViewBag.Categories = categories;
-
-            return View(product);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Ürün eklenirken bir hata oluştu: " + ex.Message);
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                ViewBag.Categories = categories;
+                return View(product);
+            }
         }
 
         // GET: Admin/EditProduct/5
@@ -275,16 +266,25 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
+                var product = await _context.Products.FindAsync(id);
+                if (product == null)
+                {
+                    TempData["Error"] = "Ürün bulunamadı.";
+                    return RedirectToAction(nameof(Products));
+                }
+
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                ViewBag.Categories = categories;
+
+                return View(product);
             }
-
-            var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-            ViewBag.Categories = categories;
-
-            return View(product);
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Ürün yüklenirken bir hata oluştu: " + ex.Message;
+                return RedirectToAction(nameof(Products));
+            }
         }
 
         // POST: Admin/EditProduct/5
@@ -297,20 +297,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (id != product.Id)
+            try
             {
-                return NotFound();
-            }
+                if (id != product.Id)
+                {
+                    TempData["Error"] = "Ürün ID'si uyuşmuyor.";
+                    return RedirectToAction(nameof(Products));
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
                     // Mevcut ürünü getir
                     var existingProduct = await _context.Products.FindAsync(id);
                     if (existingProduct == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Ürün bulunamadı.";
+                        return RedirectToAction(nameof(Products));
                     }
 
                     // Yeni resim yüklendiyse
@@ -340,36 +342,31 @@ namespace manyasligida.Controllers
                         product.ImageUrl = existingProduct.ImageUrl;
                     }
 
+                    // Ürün özelliklerini güncelle
                     product.UpdatedAt = DateTime.Now;
                     product.CreatedAt = existingProduct.CreatedAt; // Mevcut oluşturma tarihini koru
 
-                    _context.Update(product);
+                    // Mevcut ürünü güncelle
+                    _context.Entry(existingProduct).CurrentValues.SetValues(product);
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Ürün başarıyla güncellendi.";
                     return RedirectToAction(nameof(Products));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Ürün güncellenirken bir hata oluştu: " + ex.Message);
+                    var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                    ViewBag.Categories = categories;
+                    return View(product);
                 }
             }
-
-            var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-            ViewBag.Categories = categories;
-
-            return View(product);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Ürün güncellenirken bir hata oluştu: " + ex.Message);
+                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                ViewBag.Categories = categories;
+                return View(product);
+            }
         }
 
         // POST: Admin/DeleteProduct/5
@@ -382,10 +379,10 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            try
             {
-                try
+                var product = await _context.Products.FindAsync(id);
+                if (product != null)
                 {
                     // Ürün resmini sil
                     if (!string.IsNullOrEmpty(product.ImageUrl))
@@ -399,10 +396,14 @@ namespace manyasligida.Controllers
 
                     TempData["Success"] = "Ürün başarıyla silindi.";
                 }
-                catch (Exception ex)
+                else
                 {
-                    TempData["Error"] = "Ürün silinirken bir hata oluştu: " + ex.Message;
+                    TempData["Error"] = "Ürün bulunamadı.";
                 }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Ürün silinirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Products));
@@ -495,13 +496,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog == null)
+            try
             {
-                return NotFound();
-            }
+                var blog = await _context.Blogs.FindAsync(id);
+                if (blog == null)
+                {
+                    TempData["Error"] = "Blog yazısı bulunamadı.";
+                    return RedirectToAction(nameof(Blog));
+                }
 
-            return View(blog);
+                return View(blog);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Blog yazısı yüklenirken bir hata oluştu: " + ex.Message;
+                return RedirectToAction(nameof(Blog));
+            }
         }
 
         // POST: Admin/EditBlog/5
@@ -514,20 +524,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (id != blog.Id)
+            try
             {
-                return NotFound();
-            }
+                if (id != blog.Id)
+                {
+                    TempData["Error"] = "Blog ID'si uyuşmuyor.";
+                    return RedirectToAction(nameof(Blog));
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
                     // Mevcut blog'u getir
                     var existingBlog = await _context.Blogs.FindAsync(id);
                     if (existingBlog == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Blog yazısı bulunamadı.";
+                        return RedirectToAction(nameof(Blog));
                     }
 
                     // Yeni resim yüklendiyse
@@ -555,33 +567,27 @@ namespace manyasligida.Controllers
                         blog.ImageUrl = existingBlog.ImageUrl;
                     }
 
+                    // Blog özelliklerini güncelle
                     blog.UpdatedAt = DateTime.Now;
                     blog.CreatedAt = existingBlog.CreatedAt; // Mevcut oluşturma tarihini koru
 
-                    _context.Update(blog);
+                    // Mevcut blog'u güncelle
+                    _context.Entry(existingBlog).CurrentValues.SetValues(blog);
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Blog yazısı başarıyla güncellendi.";
                     return RedirectToAction(nameof(Blog));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!BlogExists(blog.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Blog yazısı güncellenirken bir hata oluştu: " + ex.Message);
+                    return View(blog);
                 }
             }
-
-            return View(blog);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Blog yazısı güncellenirken bir hata oluştu: " + ex.Message);
+                return View(blog);
+            }
         }
 
         // POST: Admin/DeleteBlog/5
@@ -699,13 +705,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var gallery = await _context.Galleries.FindAsync(id);
-            if (gallery == null)
+            try
             {
-                return NotFound();
-            }
+                var gallery = await _context.Galleries.FindAsync(id);
+                if (gallery == null)
+                {
+                    TempData["Error"] = "Galeri öğesi bulunamadı.";
+                    return RedirectToAction(nameof(Gallery));
+                }
 
-            return View(gallery);
+                return View(gallery);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Galeri öğesi yüklenirken bir hata oluştu: " + ex.Message;
+                return RedirectToAction(nameof(Gallery));
+            }
         }
 
         // POST: Admin/EditGallery/5
@@ -718,20 +733,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (id != gallery.Id)
+            try
             {
-                return NotFound();
-            }
+                if (id != gallery.Id)
+                {
+                    TempData["Error"] = "Galeri ID'si uyuşmuyor.";
+                    return RedirectToAction(nameof(Gallery));
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
                     // Mevcut galeri öğesini getir
                     var existingGallery = await _context.Galleries.FindAsync(id);
                     if (existingGallery == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Galeri öğesi bulunamadı.";
+                        return RedirectToAction(nameof(Gallery));
                     }
 
                     // Yeni resim yüklendiyse
@@ -759,33 +776,27 @@ namespace manyasligida.Controllers
                         gallery.ImageUrl = existingGallery.ImageUrl;
                     }
 
+                    // Galeri özelliklerini güncelle
                     gallery.UpdatedAt = DateTime.Now;
                     gallery.CreatedAt = existingGallery.CreatedAt; // Mevcut oluşturma tarihini koru
 
-                    _context.Update(gallery);
+                    // Mevcut galeri öğesini güncelle
+                    _context.Entry(existingGallery).CurrentValues.SetValues(gallery);
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Galeri öğesi başarıyla güncellendi.";
                     return RedirectToAction(nameof(Gallery));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!GalleryExists(gallery.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Galeri öğesi güncellenirken bir hata oluştu: " + ex.Message);
+                    return View(gallery);
                 }
             }
-
-            return View(gallery);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Galeri öğesi güncellenirken bir hata oluştu: " + ex.Message);
+                return View(gallery);
+            }
         }
 
         // POST: Admin/DeleteGallery/5
@@ -883,13 +894,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var faq = await _context.FAQs.FindAsync(id);
-            if (faq == null)
+            try
             {
-                return NotFound();
-            }
+                var faq = await _context.FAQs.FindAsync(id);
+                if (faq == null)
+                {
+                    TempData["Error"] = "SSS öğesi bulunamadı.";
+                    return RedirectToAction(nameof(FAQ));
+                }
 
-            return View(faq);
+                return View(faq);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "SSS öğesi yüklenirken bir hata oluştu: " + ex.Message;
+                return RedirectToAction(nameof(FAQ));
+            }
         }
 
         // POST: Admin/EditFAQ/5
@@ -902,48 +922,44 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (id != faq.Id)
+            try
             {
-                return NotFound();
-            }
+                if (id != faq.Id)
+                {
+                    TempData["Error"] = "SSS ID'si uyuşmuyor.";
+                    return RedirectToAction(nameof(FAQ));
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
                     var existingFAQ = await _context.FAQs.FindAsync(id);
                     if (existingFAQ == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "SSS öğesi bulunamadı.";
+                        return RedirectToAction(nameof(FAQ));
                     }
 
+                    // FAQ özelliklerini güncelle
                     faq.UpdatedAt = DateTime.Now;
-                    faq.CreatedAt = existingFAQ.CreatedAt;
+                    faq.CreatedAt = existingFAQ.CreatedAt; // Mevcut oluşturma tarihini koru
 
-                    _context.Update(faq);
+                    // Mevcut FAQ'yu güncelle
+                    _context.Entry(existingFAQ).CurrentValues.SetValues(faq);
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "SSS öğesi başarıyla güncellendi.";
                     return RedirectToAction(nameof(FAQ));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!FAQExists(faq.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "SSS öğesi güncellenirken bir hata oluştu: " + ex.Message);
+                    return View(faq);
                 }
             }
-
-            return View(faq);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "SSS öğesi güncellenirken bir hata oluştu: " + ex.Message);
+                return View(faq);
+            }
         }
 
         // POST: Admin/DeleteFAQ/5
@@ -1055,13 +1071,22 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var video = await _context.Videos.FindAsync(id);
-            if (video == null)
+            try
             {
-                return NotFound();
-            }
+                var video = await _context.Videos.FindAsync(id);
+                if (video == null)
+                {
+                    TempData["Error"] = "Video bulunamadı.";
+                    return RedirectToAction(nameof(Videos));
+                }
 
-            return View(video);
+                return View(video);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Video yüklenirken bir hata oluştu: " + ex.Message;
+                return RedirectToAction(nameof(Videos));
+            }
         }
 
         // POST: Admin/EditVideo/5
@@ -1074,21 +1099,24 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (id != video.Id)
+            try
             {
-                return NotFound();
-            }
+                if (id != video.Id)
+                {
+                    TempData["Error"] = "Video ID'si uyuşmuyor.";
+                    return RedirectToAction(nameof(Videos));
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
                     var existingVideo = await _context.Videos.FindAsync(id);
                     if (existingVideo == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Video bulunamadı.";
+                        return RedirectToAction(nameof(Videos));
                     }
 
+                    // Video özelliklerini güncelle
                     existingVideo.Title = video.Title;
                     existingVideo.Description = video.Description;
                     existingVideo.VideoUrl = video.VideoUrl;
@@ -1104,24 +1132,16 @@ namespace manyasligida.Controllers
                     TempData["Success"] = "Video başarıyla güncellendi.";
                     return RedirectToAction(nameof(Videos));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!VideoExists(video.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Video güncellenirken bir hata oluştu: " + ex.Message);
+                    return View(video);
                 }
             }
-
-            return View(video);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Video güncellenirken bir hata oluştu: " + ex.Message);
+                return View(video);
+            }
         }
 
         // POST: Admin/DeleteVideo/5
@@ -1167,7 +1187,8 @@ namespace manyasligida.Controllers
 
             // Ürün sayılarını hesapla
             var productCounts = await _context.Products
-                .GroupBy(p => p.CategoryId)
+                .Where(p => p.CategoryId.HasValue)
+                .GroupBy(p => p.CategoryId!.Value)
                 .Select(g => new { CategoryId = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.CategoryId, x => x.Count);
 
@@ -1214,17 +1235,18 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (ModelState.IsValid)
                 {
                     var existingCategory = await _context.Categories.FindAsync(category.Id);
                     if (existingCategory == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Kategori bulunamadı.";
+                        return RedirectToAction(nameof(Categories));
                     }
 
-                    // Update existing entity properties instead of using _context.Update()
+                    // Kategori özelliklerini güncelle
                     existingCategory.Name = category.Name;
                     existingCategory.Description = category.Description;
                     existingCategory.DisplayOrder = category.DisplayOrder;
@@ -1235,14 +1257,14 @@ namespace manyasligida.Controllers
 
                     TempData["Success"] = "Kategori başarıyla güncellendi.";
                 }
-                catch (Exception ex)
+                else
                 {
-                    TempData["Error"] = "Kategori güncellenirken bir hata oluştu: " + ex.Message;
+                    TempData["Error"] = "Kategori güncellenirken bir hata oluştu.";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["Error"] = "Kategori güncellenirken bir hata oluştu.";
+                TempData["Error"] = "Kategori güncellenirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Categories));
@@ -1334,23 +1356,36 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order != null)
+            try
             {
-                order.OrderStatus = status;
-                
-                if (status == "Shipped")
+                var order = await _context.Orders.FindAsync(orderId);
+                if (order != null)
                 {
-                    order.ShippedDate = DateTime.Now;
+                    // Sipariş durumunu güncelle
+                    order.OrderStatus = status;
+                    
+                    if (status == "Shipped")
+                    {
+                        order.ShippedDate = DateTime.Now;
+                    }
+                    else if (status == "Delivered")
+                    {
+                        order.DeliveredDate = DateTime.Now;
+                    }
+
+                    order.UpdatedAt = DateTime.Now;
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Sipariş durumu başarıyla güncellendi.";
                 }
-                else if (status == "Delivered")
+                else
                 {
-                    order.DeliveredDate = DateTime.Now;
+                    TempData["Error"] = "Sipariş bulunamadı.";
                 }
-
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Sipariş durumu güncellendi.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Sipariş durumu güncellenirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Orders));
@@ -1405,16 +1440,29 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var message = await _context.ContactMessages.FindAsync(messageId);
-            if (message != null)
+            try
             {
-                message.IsReplied = true;
-                message.RepliedAt = DateTime.Now;
-                message.ReplyMessage = replyMessage;
+                var message = await _context.ContactMessages.FindAsync(messageId);
+                if (message != null)
+                {
+                    // Mesaj yanıtını güncelle
+                    message.IsReplied = true;
+                    message.RepliedAt = DateTime.Now;
+                    message.ReplyMessage = replyMessage;
+                    message.UpdatedAt = DateTime.Now;
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Yanıt gönderildi.";
+                    TempData["Success"] = "Yanıt başarıyla gönderildi.";
+                }
+                else
+                {
+                    TempData["Error"] = "Mesaj bulunamadı.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Yanıt gönderilirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Messages));
@@ -1465,17 +1513,18 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (ModelState.IsValid)
                 {
                     var existingUser = await _context.Users.FindAsync(user.Id);
                     if (existingUser == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Kullanıcı bulunamadı.";
+                        return RedirectToAction(nameof(Users));
                     }
 
-                    // Sadece belirli alanları güncelle
+                    // Kullanıcı özelliklerini güncelle
                     existingUser.FirstName = user.FirstName;
                     existingUser.LastName = user.LastName;
                     existingUser.Email = user.Email;
@@ -1484,19 +1533,18 @@ namespace manyasligida.Controllers
                     existingUser.IsActive = user.IsActive;
                     existingUser.UpdatedAt = DateTime.Now;
 
-                    _context.Update(existingUser);
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Kullanıcı başarıyla güncellendi.";
                 }
-                catch (Exception ex)
+                else
                 {
-                    TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu: " + ex.Message;
+                    TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu.";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu.";
+                TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Users));
@@ -1512,11 +1560,12 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
+            try
             {
-                try
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
                 {
+                    // Kullanıcı durumunu güncelle
                     user.IsActive = isActive;
                     user.UpdatedAt = DateTime.Now;
 
@@ -1524,10 +1573,14 @@ namespace manyasligida.Controllers
 
                     TempData["Success"] = $"Kullanıcı başarıyla {(isActive ? "aktif" : "pasif")} yapıldı.";
                 }
-                catch (Exception ex)
+                else
                 {
-                    TempData["Error"] = "Kullanıcı durumu güncellenirken bir hata oluştu: " + ex.Message;
+                    TempData["Error"] = "Kullanıcı bulunamadı.";
                 }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Kullanıcı durumu güncellenirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Users));

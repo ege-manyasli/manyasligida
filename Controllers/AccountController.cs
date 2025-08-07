@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace manyasligida.Controllers
 {
@@ -12,17 +10,20 @@ namespace manyasligida.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly CartService _cartService;
+        private readonly IAuthService _authService;
 
-        public AccountController(ApplicationDbContext context, CartService cartService)
+        public AccountController(ApplicationDbContext context, CartService cartService, IAuthService authService)
         {
             _context = context;
             _cartService = cartService;
+            _authService = authService;
         }
 
         // GET: Account/Login
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
-            if (HttpContext.Session.GetString("UserId") != null)
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser != null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -34,24 +35,24 @@ namespace manyasligida.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var hashedPassword = HashPassword(model.Password);
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == hashedPassword && u.IsActive);
+                return View(model);
+            }
 
+            try
+            {
+                var user = await _authService.LoginAsync(model.Email, model.Password);
                 if (user != null)
                 {
-                    HttpContext.Session.SetString("UserId", user.Id.ToString());
-                    HttpContext.Session.SetString("UserName", $"{user.FirstName} {user.LastName}");
-                    HttpContext.Session.SetString("UserEmail", user.Email);
-                    HttpContext.Session.SetString("IsAdmin", user.IsAdmin.ToString());
-
-                    // Update last login
-                    user.LastLoginAt = DateTime.Now;
-                    await _context.SaveChangesAsync();
-
                     TempData["LoginSuccess"] = "Başarıyla giriş yaptınız!";
+                    
+                    // Admin ise admin panele yönlendir
+                    if (user.IsAdmin)
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+                    
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -59,14 +60,19 @@ namespace manyasligida.Controllers
                     ModelState.AddModelError("", "E-posta veya şifre hatalı.");
                 }
             }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+            }
 
             return View(model);
         }
 
         // GET: Account/Register
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            if (HttpContext.Session.GetString("UserId") != null)
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser != null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -78,36 +84,34 @@ namespace manyasligida.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
             {
                 // Check if email already exists
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-                if (existingUser != null)
+                if (await _authService.IsEmailExistsAsync(model.Email))
                 {
                     ModelState.AddModelError("Email", "Bu e-posta adresi zaten kullanılıyor.");
                     return View(model);
                 }
 
-                var user = new User
+                var user = await _authService.RegisterAsync(model);
+                if (user != null)
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    Phone = model.Phone,
-                    Password = HashPassword(model.Password),
-                    Address = model.Address,
-                    City = model.City,
-                    PostalCode = model.PostalCode,
-                    IsActive = true,
-                    IsAdmin = false,
-                    CreatedAt = DateTime.Now
-                };
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                TempData["RegisterSuccess"] = "Kayıt işleminiz başarıyla tamamlandı! Şimdi giriş yapabilirsiniz.";
-                return RedirectToAction(nameof(Login));
+                    TempData["RegisterSuccess"] = "Kayıt işleminiz başarıyla tamamlandı! Şimdi giriş yapabilirsiniz.";
+                    return RedirectToAction(nameof(Login));
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
             }
 
             return View(model);
@@ -116,7 +120,7 @@ namespace manyasligida.Controllers
         // GET: Account/Logout
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            _authService.Logout();
             TempData["LogoutSuccess"] = "Başarıyla çıkış yaptınız.";
             return RedirectToAction("Index", "Home");
         }
@@ -124,16 +128,10 @@ namespace manyasligida.Controllers
         // GET: Account/Profile
         public async Task<IActionResult> Profile()
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToAction(nameof(Login));
-            }
-
-            var user = await _context.Users.FindAsync(int.Parse(userId));
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Login));
             }
 
             // Get user's order history
@@ -152,42 +150,38 @@ namespace manyasligida.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(User model)
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
             {
                 return RedirectToAction(nameof(Login));
             }
 
-            var user = await _context.Users.FindAsync(int.Parse(userId));
-            if (user == null)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Phone = model.Phone;
-                user.Address = model.Address;
-                user.City = model.City;
-                user.PostalCode = model.PostalCode;
+                try
+                {
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Phone = model.Phone;
+                    user.Address = model.Address;
+                    user.City = model.City;
+                    user.PostalCode = model.PostalCode;
+                    user.UpdatedAt = DateTime.Now;
 
-                await _context.SaveChangesAsync();
-                TempData["ProfileUpdateSuccess"] = "Profil bilgileriniz güncellendi.";
+                    await _context.SaveChangesAsync();
+                    TempData["ProfileUpdateSuccess"] = "Profil bilgileriniz güncellendi.";
+                    
+                    // Session'daki kullanıcı adını güncelle
+                    _authService.SetCurrentUser(user);
+                }
+                catch (Exception)
+                {
+                    TempData["ProfileUpdateError"] = "Profil güncellenirken bir hata oluştu.";
+                }
             }
 
             ViewBag.CartItemCount = _cartService.GetCartItemCount();
             return View("Profile", user);
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
         }
     }
 } 

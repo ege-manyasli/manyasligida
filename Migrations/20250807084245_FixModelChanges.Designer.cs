@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using manyasligida.Data;
 
@@ -11,9 +12,11 @@ using manyasligida.Data;
 namespace manyasligida.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250807084245_FixModelChanges")]
+    partial class FixModelChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Blogs", (string)null);
+                    b.ToTable("Blogs");
 
                     b.HasData(
                         new
@@ -127,7 +130,7 @@ namespace manyasligida.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("manyasligida.Models.CartItem", b =>
@@ -164,7 +167,7 @@ namespace manyasligida.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("manyasligida.Models.Category", b =>
@@ -201,7 +204,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -286,7 +289,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContactMessages", (string)null);
+                    b.ToTable("ContactMessages");
                 });
 
             modelBuilder.Entity("manyasligida.Models.FAQ", b =>
@@ -322,7 +325,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FAQs", (string)null);
+                    b.ToTable("FAQs");
 
                     b.HasData(
                         new
@@ -393,7 +396,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Galleries", (string)null);
+                    b.ToTable("Galleries");
 
                     b.HasData(
                         new
@@ -519,7 +522,7 @@ namespace manyasligida.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("manyasligida.Models.OrderItem", b =>
@@ -557,7 +560,7 @@ namespace manyasligida.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("manyasligida.Models.Product", b =>
@@ -661,7 +664,7 @@ namespace manyasligida.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
@@ -878,7 +881,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -944,7 +947,7 @@ namespace manyasligida.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Videos", (string)null);
+                    b.ToTable("Videos");
 
                     b.HasData(
                         new

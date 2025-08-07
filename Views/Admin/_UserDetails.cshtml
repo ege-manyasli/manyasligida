@@ -42,9 +42,9 @@
         <div class="mb-3">
             <label class="form-label fw-bold">Son Giriş:</label>
             <p class="mb-0">
-                @if (Model.LastLoginDate.HasValue)
+                @if (Model.LastLoginAt.HasValue)
                 {
-                    <span>@Model.LastLoginDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                    <span>@Model.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
                 }
                 else
                 {

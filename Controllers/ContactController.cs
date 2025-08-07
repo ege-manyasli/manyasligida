@@ -43,7 +43,7 @@ namespace manyasligida.Controllers
                 
                 return View();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
@@ -86,9 +86,9 @@ namespace manyasligida.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError("", "Mesaj gönderilirken bir hata oluştu: " + ex.Message);
+                ModelState.AddModelError("", "Mesaj gönderilirken bir hata oluştu.");
             }
 
             var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();

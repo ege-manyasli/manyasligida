@@ -41,6 +41,9 @@ builder.Services.AddScoped<CartService>();
 // Add FileUploadService
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
+// Add AuthService
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

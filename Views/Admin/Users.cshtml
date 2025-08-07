@@ -77,9 +77,9 @@
                                 </td>
                                 <td>@user.CreatedAt.ToString("dd.MM.yyyy")</td>
                                 <td>
-                                    @if (user.LastLoginDate.HasValue)
+                                    @if (user.LastLoginAt.HasValue)
                                     {
-                                        <span>@user.LastLoginDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                                        <span>@user.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
                                     }
                                     else
                                     {

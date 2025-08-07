@@ -18,50 +18,81 @@ namespace manyasligida.Controllers
         }
 
         // GET: Cart/Index
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var cart = _cartService.GetCart();
-            var cartItems = new List<CartItemViewModel>();
-
-            foreach (var item in cart)
+            try
             {
-                var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
-                if (product != null)
+                var cart = _cartService.GetCart();
+                var cartItems = new List<CartItemViewModel>();
+
+                if (cart.Any())
                 {
-                    cartItems.Add(new CartItemViewModel
+                    var productIds = cart.Select(c => c.ProductId).ToList();
+                    var products = await _context.Products
+                        .Where(p => productIds.Contains(p.Id) && p.IsActive)
+                        .ToDictionaryAsync(p => p.Id, p => p);
+
+                    foreach (var item in cart)
                     {
-                        ProductId = item.ProductId,
-                        ProductName = product.Name,
-                        ProductImage = product.ImageUrl,
-                        UnitPrice = item.UnitPrice,
-                        Quantity = item.Quantity,
-                        TotalPrice = item.TotalPrice,
-                        Weight = product.Weight
-                    });
+                        if (products.TryGetValue(item.ProductId, out var product))
+                        {
+                            cartItems.Add(new CartItemViewModel
+                            {
+                                ProductId = item.ProductId,
+                                ProductName = product.Name,
+                                ProductImage = product.ImageUrl,
+                                UnitPrice = item.UnitPrice,
+                                Quantity = item.Quantity,
+                                TotalPrice = item.TotalPrice,
+                                Weight = product.Weight
+                            });
+                        }
+                    }
                 }
+
+                ViewBag.CartTotal = _cartService.GetCartTotal();
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
+
+                return View(cartItems);
             }
-
-            ViewBag.CartTotal = _cartService.GetCartTotal();
-            ViewBag.CartItemCount = _cartService.GetCartItemCount();
-
-            return View(cartItems);
+            catch (Exception)
+            {
+                TempData["Error"] = "Sepet yüklenirken bir hata oluştu.";
+                return View(new List<CartItemViewModel>());
+            }
         }
 
         // POST: Cart/AddToCart
         [HttpPost]
-        public IActionResult AddToCart(int productId, int quantity = 1)
+        public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
         {
             try
             {
-                var product = _context.Products.FirstOrDefault(p => p.Id == productId && p.IsActive);
+                if (quantity <= 0)
+                {
+                    return Json(new { success = false, message = "Geçersiz miktar." });
+                }
+
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
+                
                 if (product == null)
                 {
                     return Json(new { success = false, message = "Ürün bulunamadı." });
                 }
 
-                if (product.StockQuantity < quantity)
+                // Sepetteki mevcut miktarı kontrol et
+                var currentCart = _cartService.GetCart();
+                var existingItem = currentCart.FirstOrDefault(c => c.ProductId == productId);
+                var currentQuantityInCart = existingItem?.Quantity ?? 0;
+                var totalRequestedQuantity = currentQuantityInCart + quantity;
+
+                if (product.StockQuantity < totalRequestedQuantity)
                 {
-                    return Json(new { success = false, message = "Yeterli stok bulunmuyor." });
+                    return Json(new { 
+                        success = false, 
+                        message = $"Yeterli stok bulunmuyor. Mevcut stok: {product.StockQuantity}, Sepetinizde: {currentQuantityInCart}" 
+                    });
                 }
 
                 _cartService.AddToCart(product, quantity);
@@ -73,19 +104,37 @@ namespace manyasligida.Controllers
                     cartTotal = _cartService.GetCartTotal()
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+                return Json(new { success = false, message = "Bir hata oluştu." });
             }
         }
 
         // POST: Cart/UpdateQuantity
         [HttpPost]
-        public IActionResult UpdateQuantity(int productId, int quantity)
+        public async Task<IActionResult> UpdateQuantity(int productId, int quantity)
         {
             try
             {
-                var product = _context.Products.FirstOrDefault(p => p.Id == productId && p.IsActive);
+                if (quantity < 0)
+                {
+                    return Json(new { success = false, message = "Geçersiz miktar." });
+                }
+
+                if (quantity == 0)
+                {
+                    _cartService.RemoveFromCart(productId);
+                    return Json(new { 
+                        success = true, 
+                        message = "Ürün sepetten kaldırıldı.", 
+                        cartItemCount = _cartService.GetCartItemCount(),
+                        cartTotal = _cartService.GetCartTotal()
+                    });
+                }
+
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
+                
                 if (product == null)
                 {
                     return Json(new { success = false, message = "Ürün bulunamadı." });
@@ -93,7 +142,10 @@ namespace manyasligida.Controllers
 
                 if (quantity > product.StockQuantity)
                 {
-                    return Json(new { success = false, message = "Yeterli stok bulunmuyor." });
+                    return Json(new { 
+                        success = false, 
+                        message = $"Yeterli stok bulunmuyor. Mevcut stok: {product.StockQuantity}" 
+                    });
                 }
 
                 _cartService.UpdateQuantity(productId, quantity);
@@ -105,9 +157,9 @@ namespace manyasligida.Controllers
                     cartTotal = _cartService.GetCartTotal()
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+                return Json(new { success = false, message = "Bir hata oluştu." });
             }
         }
 

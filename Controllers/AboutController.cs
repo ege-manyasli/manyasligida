@@ -42,7 +42,7 @@ namespace manyasligida.Controllers
                 
                 return View();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
