@@ -779,12 +779,6 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Gallery" ? "active" : "")" href="@Url.Action("Gallery", "Admin")">
-                    <i class="fas fa-images"></i>
-                    <span>Galeri</span>
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && (ViewContext.RouteData.Values["Action"]?.ToString() == "Videos" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddVideo" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditVideo") ? "active" : "")" href="@Url.Action("Videos", "Admin")">
                     <i class="fas fa-video"></i>
                     <span>Videolar</span>

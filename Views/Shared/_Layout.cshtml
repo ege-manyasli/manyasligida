@@ -952,11 +952,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Gallery" ? "active" : "")" href="@Url.Action("Index", "Gallery")">
-                                <i class="fas fa-images me-1"></i>Galeri
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "FAQ" ? "active" : "")" href="@Url.Action("Index", "FAQ")">
                                 <i class="fas fa-question-circle me-1"></i>SSS
                             </a>
@@ -1042,7 +1037,6 @@
                     <ul class="list-unstyled">
                         <li><a href="@Url.Action("Index", "About")">Hakkımızda</a></li>
                         <li><a href="@Url.Action("Index", "Blog")">Blog</a></li>
-                        <li><a href="@Url.Action("Index", "Gallery")">Galeri</a></li>
                         <li><a href="@Url.Action("Index", "FAQ")">Sıkça Sorulan Sorular</a></li>
                     </ul>
                 </div>

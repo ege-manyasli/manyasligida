@@ -1373,7 +1373,6 @@ namespace manyasligida.Controllers
                         order.DeliveredDate = DateTime.Now;
                     }
 
-                    order.UpdatedAt = DateTime.Now;
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Sipariş durumu başarıyla güncellendi.";
@@ -1449,7 +1448,6 @@ namespace manyasligida.Controllers
                     message.IsReplied = true;
                     message.RepliedAt = DateTime.Now;
                     message.ReplyMessage = replyMessage;
-                    message.UpdatedAt = DateTime.Now;
 
                     await _context.SaveChangesAsync();
 
