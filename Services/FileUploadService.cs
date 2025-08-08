@@ -9,6 +9,8 @@ namespace manyasligida.Services
         Task<string> UploadImageAsync(IFormFile file, string folderName = "products");
         Task<bool> DeleteImageAsync(string imagePath);
         bool IsValidImage(IFormFile file);
+        Task<(int width, int height)> GetImageDimensionsAsync(IFormFile file);
+        Task<bool> IsResolutionSufficientAsync(IFormFile file, int minWidth, int minHeight);
     }
 
     public class FileUploadService : IFileUploadService
@@ -89,6 +91,26 @@ namespace manyasligida.Services
                 return false;
 
             return true;
+        }
+
+        public async Task<(int width, int height)> GetImageDimensionsAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return (0, 0);
+
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+            ms.Position = 0;
+
+            // System.Drawing.Common is available on Windows hosting
+            using var image = System.Drawing.Image.FromStream(ms, useEmbeddedColorManagement: false, validateImageData: true);
+            return (image.Width, image.Height);
+        }
+
+        public async Task<bool> IsResolutionSufficientAsync(IFormFile file, int minWidth, int minHeight)
+        {
+            var (w, h) = await GetImageDimensionsAsync(file);
+            return w >= minWidth && h >= minHeight;
         }
     }
 } 

@@ -10,11 +10,13 @@ namespace manyasligida.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly CartService _cartService;
+        private readonly ISiteSettingsService _siteSettingsService;
 
-        public FAQController(ApplicationDbContext context, CartService cartService)
+        public FAQController(ApplicationDbContext context, CartService cartService, ISiteSettingsService siteSettingsService)
         {
             _context = context;
             _cartService = cartService;
+            _siteSettingsService = siteSettingsService;
         }
 
         // GET: FAQ/Index
@@ -29,18 +31,7 @@ namespace manyasligida.Controllers
 
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
                 
-                // Site ayarları
-                var siteSettings = new
-                {
-                    Phone = "+90 266 123 45 67",
-                    Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
-                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
-                    FacebookUrl = "#",
-                    InstagramUrl = "#",
-                    TwitterUrl = "#",
-                    YoutubeUrl = "#"
-                };
+                var siteSettings = _siteSettingsService.Get();
 
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 ViewBag.Categories = categories;
@@ -51,17 +42,7 @@ namespace manyasligida.Controllers
             catch (Exception ex)
             {
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-                var siteSettings = new
-                {
-                    Phone = "+90 266 123 45 67",
-                    Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
-                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
-                    FacebookUrl = "#",
-                    InstagramUrl = "#",
-                    TwitterUrl = "#",
-                    YoutubeUrl = "#"
-                };
+                var siteSettings = _siteSettingsService.Get();
                 
                 ViewBag.Categories = categories;
                 ViewBag.SiteSettings = siteSettings;

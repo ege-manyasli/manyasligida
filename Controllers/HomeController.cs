@@ -13,10 +13,12 @@ namespace manyasligida.Controllers
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ISiteSettingsService _siteSettingsService;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(ApplicationDbContext context, ISiteSettingsService siteSettingsService)
         {
             _context = context;
+            _siteSettingsService = siteSettingsService;
         }
 
         public async Task<IActionResult> Index()
@@ -60,18 +62,7 @@ namespace manyasligida.Controllers
                 var totalUsers = await _context.Users.Where(u => u.IsActive).CountAsync();
                 var totalBlogs = await _context.Blogs.Where(b => b.IsActive).CountAsync();
 
-                // Site ayarları (varsayılan değerler)
-                var siteSettings = new
-                {
-                    Phone = "+90 266 123 45 67",
-                    Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
-                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
-                    FacebookUrl = "#",
-                    InstagramUrl = "#",
-                    TwitterUrl = "#",
-                    YoutubeUrl = "#"
-                };
+                var siteSettings = _siteSettingsService.Get();
 
                 ViewBag.PopularProducts = popularProducts;
                 ViewBag.RecentBlogs = recentBlogs;

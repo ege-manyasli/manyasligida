@@ -41,7 +41,7 @@ namespace manyasligida.Controllers
 
             // Ciro (teslim edilen siparişler)
             decimal revenue = await _context.Orders
-                .Where(o => o.OrderStatus == "Delivered" && o.OrderDate >= start && o.OrderDate <= end)
+                .Where(o => o.OrderStatus == ApplicationConstants.OrderStatus.Delivered && o.OrderDate >= start && o.OrderDate <= end)
                 .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
 
             decimal purchasesTotal = 0m;

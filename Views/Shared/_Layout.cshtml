@@ -36,52 +36,42 @@
             --primary-color: #0F172A; /* Deep Navy */
             --primary-dark: #0B1223;
             --primary-light: #1E293B;
-
             --secondary-color: #F59E0B; /* Amber */
             --secondary-dark: #B45309;
             --secondary-light: #FBBF24;
-
             --accent-color: #C2410C; /* Terracotta */
             --success-color: #16A34A;
             --info-color: #0284C7;
             --warning-color: #D97706;
             --danger-color: #DC2626;
-
             --dark-color: #111827;
             --light-color: #FFF8E7; /* Cream */
             --text-color: #1F2937;
             --text-muted: #6B7280;
             --text-light: #9CA3AF;
-
             --border-radius: 16px;
             --border-radius-sm: 8px;
             --border-radius-lg: 24px;
             --border-radius-xl: 32px;
             --border-radius-pill: 50px;
-
             --shadow: 0 4px 20px rgba(0,0,0,0.08);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
             --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
             --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
             --shadow-hover: 0 8px 30px rgba(0,0,0,0.15);
-
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-fast: all 0.15s ease;
             --transition-slow: all 0.5s ease;
             --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
             --gradient-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
             --gradient-secondary: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
             --gradient-accent: linear-gradient(135deg, #C2410C 0%, #EA580C 100%);
             --gradient-dark: linear-gradient(135deg, #0B1223 0%, #111827 100%);
-
             --shadow-primary: 0 8px 25px rgba(15, 23, 42, 0.25);
             --shadow-secondary: 0 8px 25px rgba(245, 158, 11, 0.25);
             --shadow-accent: 0 8px 25px rgba(194, 65, 12, 0.25);
-
             --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --font-secondary: 'JetBrains Mono', 'Courier New', monospace;
-
             --text-main: #1F2937;
             --bg-card: #FFFFFF;
             --bg-light: #FFF8E7;
@@ -359,8 +349,10 @@
                 transform: scale(1.1);
             }
 
-        /* Nav Right */
-        .nav-link.cart-link { overflow: visible; }
+            /* Nav Right */
+            .nav-link.cart-link {
+                overflow: visible;
+            }
 
         .nav-right {
             display: flex;
@@ -1898,15 +1890,15 @@
         // Show TempData messages
         @if (TempData["Success"] != null)
         {
-                    <text>showToast('@Html.Raw(TempData["Success"])', 'success');</text>
+                            <text>showToast('@Html.Raw(TempData["Success"])', 'success');</text>
         }
         @if (TempData["Error"] != null)
         {
-                    <text>showToast('@Html.Raw(TempData["Error"])', 'error');</text>
+                            <text>showToast('@Html.Raw(TempData["Error"])', 'error');</text>
         }
         @if (TempData["Info"] != null)
         {
-                    <text>showToast('@Html.Raw(TempData["Info"])', 'info');</text>
+                            <text>showToast('@Html.Raw(TempData["Info"])', 'info');</text>
         }
     </script>
 

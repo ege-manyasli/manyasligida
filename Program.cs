@@ -47,6 +47,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Add EmailService
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Add SiteSettingsService
+builder.Services.AddSingleton<ISiteSettingsService, SiteSettingsService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
