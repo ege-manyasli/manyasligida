@@ -19,6 +19,11 @@ namespace manyasligida.Services
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session == null)
                 return new List<CartItem>();
+            
+            // Session ID kontrolü ekle
+            var sessionId = session.GetString("SessionId");
+            if (string.IsNullOrEmpty(sessionId))
+                return new List<CartItem>();
                 
             var cartJson = session.GetString(CartSessionKey);
             

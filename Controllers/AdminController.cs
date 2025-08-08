@@ -43,7 +43,14 @@ namespace manyasligida.Controllers
         // Sync admin check for backward compatibility
         private bool IsAdmin()
         {
-            var isAdmin = HttpContext.Session.GetString("IsAdmin");
+            var session = HttpContext.Session;
+            var isAdmin = session.GetString("IsAdmin");
+            var sessionId = session.GetString("SessionId");
+            
+            // Session ID kontrolü ekle
+            if (string.IsNullOrEmpty(sessionId))
+                return false;
+                
             return isAdmin == "True";
         }
 

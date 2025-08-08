@@ -23,8 +23,11 @@ namespace manyasligida.Controllers
         // GET: Order/Index
         public async Task<IActionResult> Index()
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            var session = HttpContext.Session;
+            var userId = session.GetString("UserId");
+            var sessionId = session.GetString("SessionId");
+            
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(sessionId))
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -44,8 +47,11 @@ namespace manyasligida.Controllers
         // GET: Order/Checkout
         public async Task<IActionResult> Checkout()
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            var session = HttpContext.Session;
+            var userId = session.GetString("UserId");
+            var sessionId = session.GetString("SessionId");
+            
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(sessionId))
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -79,8 +85,11 @@ namespace manyasligida.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(OrderViewModel model)
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            var session = HttpContext.Session;
+            var userId = session.GetString("UserId");
+            var sessionId = session.GetString("SessionId");
+            
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(sessionId))
             {
                 return RedirectToAction("Login", "Account");
             }

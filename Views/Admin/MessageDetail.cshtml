@@ -1,0 +1,280 @@
+@model manyasligida.Models.ContactMessage
+@{
+    ViewData["Title"] = "Mesaj Detayı - Admin Panel";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Mesaj Detayı</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Messages", "Admin")">Mesajlar</a></li>
+                    <li class="breadcrumb-item active">Detay</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Messages", "Admin")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Geri
+            </a>
+            @if (!Model.IsReplied)
+            {
+                <button type="button" class="btn btn-primary" onclick="showReplyModal()">
+                    <i class="fas fa-reply me-1"></i>Yanıtla
+                </button>
+            }
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Message Content -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-envelope me-2"></i>Mesaj İçeriği
+                        </h5>
+                        <div class="d-flex gap-2">
+                            @if (!Model.IsRead)
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-envelope me-1"></i>Yeni
+                                </span>
+                            }
+                            else if (Model.IsReplied)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-reply me-1"></i>Yanıtlandı
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-envelope-open me-1"></i>Okundu
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Gönderen:</label>
+                            <p class="mb-0">@Model.Name</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">E-posta:</label>
+                            <p class="mb-0">
+                                <a href="mailto:@Model.Email" class="text-decoration-none">@Model.Email</a>
+                            </p>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Phone))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Telefon:</label>
+                                <p class="mb-0">
+                                    <a href="tel:@Model.Phone" class="text-decoration-none">@Model.Phone</a>
+                                </p>
+                            </div>
+                        </div>
+                    }
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Konu:</label>
+                            <p class="mb-0">@Model.Subject</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tarih:</label>
+                            <p class="mb-0">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mesaj:</label>
+                        <div class="border rounded p-3 bg-light">
+                            <p class="mb-0" style="white-space: pre-wrap;">@Model.Message</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.IsReplied)
+            {
+                <!-- Reply Content -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-reply me-2"></i>Yanıtınız
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Yanıt Tarihi:</label>
+                                <p class="mb-0">@Model.RepliedAt?.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Yanıtınız:</label>
+                            <div class="border rounded p-3 bg-success bg-opacity-10">
+                                <p class="mb-0" style="white-space: pre-wrap;">@Model.ReplyMessage</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Message Info -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Mesaj Bilgileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mesaj ID:</label>
+                        <p class="mb-0">#@Model.Id</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Durum:</label>
+                        <p class="mb-0">
+                            @if (!Model.IsRead)
+                            {
+                                <span class="badge bg-warning text-dark">Yeni</span>
+                            }
+                            else if (Model.IsReplied)
+                            {
+                                <span class="badge bg-success">Yanıtlandı</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Okundu</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Oluşturulma:</label>
+                        <p class="mb-0">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                    </div>
+                    @if (Model.IsReplied && Model.RepliedAt.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Yanıtlanma:</label>
+                            <p class="mb-0">@Model.RepliedAt.Value.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Hızlı İşlemler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="mailto:@Model.Email?subject=Re: @Model.Subject" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-1"></i>E-posta Gönder
+                        </a>
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <a href="tel:@Model.Phone" class="btn btn-outline-success">
+                                <i class="fas fa-phone me-1"></i>Ara
+                            </a>
+                        }
+                        @if (!Model.IsReplied)
+                        {
+                            <button type="button" class="btn btn-primary" onclick="showReplyModal()">
+                                <i class="fas fa-reply me-1"></i>Yanıtla
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="replyModalLabel">Mesajı Yanıtla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <form id="replyForm" method="post" action="@Url.Action("ReplyMessage", "Admin")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="messageId" value="@Model.Id" />
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Gönderen:</label>
+                            <input type="text" value="@Model.Name" class="form-control" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Konu:</label>
+                            <input type="text" value="@Model.Subject" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="replyMessage" class="form-label">Yanıtınız:</label>
+                        <textarea id="replyMessage" name="replyMessage" class="form-control" rows="6" 
+                                  placeholder="Yanıtınızı buraya yazın..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i>Yanıtı Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showReplyModal() {
+        const modal = new bootstrap.Modal(document.getElementById('replyModal'));
+        modal.show();
+    }
+    
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>

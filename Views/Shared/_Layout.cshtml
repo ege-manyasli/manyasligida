@@ -1903,5 +1903,8 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    
+    <!-- Cookie Consent -->
+    @await Html.PartialAsync("_CookieConsentPartial")
 </body>
 </html>

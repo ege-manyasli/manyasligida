@@ -59,6 +59,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.Name = ".ManyasliGida.Session";
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
 // Add HttpContextAccessor
@@ -116,7 +118,19 @@ app.UseResponseCaching();
 
 app.UseRouting();
 
-app.UseSession();
+// Configure session middleware with security
+app.UseSession(new SessionOptions
+{
+    IdleTimeout = TimeSpan.FromMinutes(30),
+    Cookie = new CookieBuilder
+    {
+        Name = ".ManyasliGida.Session",
+        HttpOnly = true,
+        IsEssential = true,
+        SecurePolicy = CookieSecurePolicy.SameAsRequest,
+        SameSite = SameSiteMode.Strict
+    }
+});
 
 app.UseAuthorization();
 

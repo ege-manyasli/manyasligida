@@ -101,8 +101,22 @@ namespace manyasligida.Services
             if (session == null) return null;
 
             var userIdString = session.GetString("UserId");
-            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            var sessionId = session.GetString("SessionId");
+            
+            if (string.IsNullOrEmpty(userIdString) || string.IsNullOrEmpty(sessionId) || !int.TryParse(userIdString, out int userId))
                 return null;
+
+            // Session'ın geçerliliğini kontrol et
+            var loginTimeString = session.GetString("LoginTime");
+            if (!string.IsNullOrEmpty(loginTimeString) && DateTime.TryParse(loginTimeString, out DateTime loginTime))
+            {
+                // 30 dakikadan eski session'ları geçersiz kıl
+                if (DateTime.UtcNow.Subtract(loginTime).TotalMinutes > 30)
+                {
+                    session.Clear();
+                    return null;
+                }
+            }
 
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsActive);
         }
@@ -118,16 +132,33 @@ namespace manyasligida.Services
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session == null) return;
 
+            // Önce session'ı temizle
+            session.Clear();
+            
+            // Yeni kullanıcı bilgilerini set et
             session.SetString("UserId", user.Id.ToString());
             session.SetString("UserName", user.FullName);
             session.SetString("UserEmail", user.Email);
             session.SetString("IsAdmin", user.IsAdmin.ToString());
+            session.SetString("LoginTime", DateTime.UtcNow.ToString("O"));
+            session.SetString("SessionId", Guid.NewGuid().ToString());
         }
 
         public void Logout()
         {
             var session = _httpContextAccessor.HttpContext?.Session;
-            session?.Clear();
+            if (session != null)
+            {
+                // Session'ı tamamen temizle
+                session.Clear();
+                
+                // Cookie'yi de temizle
+                var response = _httpContextAccessor.HttpContext?.Response;
+                if (response != null)
+                {
+                    response.Cookies.Delete(".ManyasliGida.Session");
+                }
+            }
         }
 
         private string GetSalt()
@@ -176,15 +207,22 @@ namespace manyasligida.Services
         {
             try
             {
+                // Email'i normalize et
+                email = email.ToLower().Trim();
+                code = code.Trim();
+
                 var verification = await _context.EmailVerifications
-                    .Where(ev => ev.Email == email && ev.VerificationCode == code && !ev.IsUsed && ev.ExpiresAt > DateTime.Now)
+                    .Where(ev => ev.Email.ToLower() == email && 
+                                ev.VerificationCode.Trim() == code && 
+                                !ev.IsUsed && 
+                                ev.ExpiresAt > DateTime.Now)
                     .FirstOrDefaultAsync();
 
                 if (verification == null)
                     return false;
 
                 // Kullanıcıyı bul ve email'i doğrula
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email);
                 if (user == null)
                     return false;
 
@@ -194,8 +232,10 @@ namespace manyasligida.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the exception for debugging
+                System.Diagnostics.Debug.WriteLine($"Email verification error: {ex.Message}");
                 return false;
             }
         }

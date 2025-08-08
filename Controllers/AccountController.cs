@@ -48,13 +48,8 @@ namespace manyasligida.Controllers
                 {
                     TempData["LoginSuccess"] = "Başarıyla giriş yaptınız!";
                     
-                    // Admin ise admin panele yönlendir
-                    if (user.IsAdmin)
-                    {
-                        return RedirectToAction("Index", "Admin");
-                    }
-                    
-                    return RedirectToAction("Index", "Home");
+                    // Tüm kullanıcılar profil sayfasına yönlendirilir
+                    return RedirectToAction("Profile", "Account");
                 }
                 else
                 {
@@ -235,6 +230,10 @@ namespace manyasligida.Controllers
 
             try
             {
+                // Model verilerini normalize et
+                model.Email = model.Email?.ToLower().Trim() ?? string.Empty;
+                model.VerificationCode = model.VerificationCode?.Trim() ?? string.Empty;
+
                 var isVerified = await _authService.VerifyEmailAsync(model.Email, model.VerificationCode);
                 if (isVerified)
                 {
@@ -243,11 +242,13 @@ namespace manyasligida.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("VerificationCode", "Doğrulama kodu hatalı veya süresi dolmuş.");
+                    ModelState.AddModelError("VerificationCode", "Doğrulama kodu hatalı veya süresi dolmuş. Lütfen tekrar deneyin.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // Log the exception for debugging
+                System.Diagnostics.Debug.WriteLine($"Email verification error in controller: {ex.Message}");
                 ModelState.AddModelError("", "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.");
             }
 
