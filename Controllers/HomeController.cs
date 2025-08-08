@@ -21,16 +21,36 @@ namespace manyasligida.Controllers
             _siteSettingsService = siteSettingsService;
         }
 
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
         public async Task<IActionResult> Index()
         {
             try
             {
-                // Popüler ürünleri getir (IsPopular = true olanlar)
-                var popularProducts = await _context.Products
+                // Optimize database queries by running them in parallel
+                var popularProductsTask = _context.Products
                     .Where(p => p.IsActive && p.IsPopular)
                     .OrderByDescending(p => p.CreatedAt)
                     .Take(8)
                     .ToListAsync();
+
+                var recentBlogsTask = _context.Blogs
+                    .Where(b => b.IsActive)
+                    .OrderByDescending(b => b.CreatedAt)
+                    .Take(3)
+                    .ToListAsync();
+
+                var categoriesTask = _context.Categories
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.DisplayOrder)
+                    .Take(6)
+                    .ToListAsync();
+
+                // Execute all queries in parallel
+                await Task.WhenAll(popularProductsTask, recentBlogsTask, categoriesTask);
+
+                var popularProducts = await popularProductsTask;
+                var recentBlogs = await recentBlogsTask;
+                var categories = await categoriesTask;
 
                 // Eğer popüler ürün yoksa, son eklenen ürünleri getir
                 if (!popularProducts.Any())
@@ -42,43 +62,35 @@ namespace manyasligida.Controllers
                         .ToListAsync();
                 }
 
-                // Son blog yazılarını getir
-                var recentBlogs = await _context.Blogs
-                    .Where(b => b.IsActive)
-                    .OrderByDescending(b => b.CreatedAt)
-                    .Take(3)
-                    .ToListAsync();
+                // Cache statistics for better performance
+                var statsTask = Task.Run(async () =>
+                {
+                    var totalProducts = await _context.Products.Where(p => p.IsActive).CountAsync();
+                    var totalOrders = await _context.Orders.CountAsync();
+                    var totalUsers = await _context.Users.Where(u => u.IsActive).CountAsync();
+                    var totalBlogs = await _context.Blogs.Where(b => b.IsActive).CountAsync();
 
-                // Kategorileri getir
-                var categories = await _context.Categories
-                    .Where(c => c.IsActive)
-                    .OrderBy(c => c.DisplayOrder)
-                    .Take(6)
-                    .ToListAsync();
-
-                // İstatistikler
-                var totalProducts = await _context.Products.Where(p => p.IsActive).CountAsync();
-                var totalOrders = await _context.Orders.CountAsync();
-                var totalUsers = await _context.Users.Where(u => u.IsActive).CountAsync();
-                var totalBlogs = await _context.Blogs.Where(b => b.IsActive).CountAsync();
+                    return new
+                    {
+                        TotalProducts = totalProducts,
+                        TotalOrders = totalOrders,
+                        TotalUsers = totalUsers,
+                        TotalBlogs = totalBlogs
+                    };
+                });
 
                 var siteSettings = _siteSettingsService.Get();
+                var stats = await statsTask;
 
                 ViewBag.PopularProducts = popularProducts;
                 ViewBag.RecentBlogs = recentBlogs;
                 ViewBag.Categories = categories;
-                ViewBag.Stats = new
-                {
-                    TotalProducts = totalProducts,
-                    TotalOrders = totalOrders,
-                    TotalUsers = totalUsers,
-                    TotalBlogs = totalBlogs
-                };
+                ViewBag.Stats = stats;
                 ViewBag.SiteSettings = siteSettings;
 
                 return View();
             }
-            catch
+            catch (Exception ex)
             {
                 // Log the error
                 ViewBag.ErrorMessage = "Veriler yüklenirken bir hata oluştu.";
@@ -86,11 +98,13 @@ namespace manyasligida.Controllers
             }
         }
 
+        [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)] // Cache for 10 minutes
         public IActionResult About()
         {
             return View();
         }
 
+        [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)] // Cache for 10 minutes
         public IActionResult Privacy()
         {
             return View();

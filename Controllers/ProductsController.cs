@@ -20,6 +20,7 @@ namespace manyasligida.Controllers
         }
 
         // GET: Products/Index
+        [ResponseCache(Duration = 180, Location = ResponseCacheLocation.Any)] // Cache for 3 minutes
         public async Task<IActionResult> Index(int? categoryId, string? searchTerm, string? sortBy, int page = 1, int pageSize = 12)
         {
             try
@@ -55,12 +56,18 @@ namespace manyasligida.Controllers
                     _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
                 };
 
-                // Sayfalama
-                var totalProducts = await query.CountAsync();
-                var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
-                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                // Optimize pagination with parallel execution
+                var totalProductsTask = query.CountAsync();
+                var productsTask = query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                await Task.WhenAll(totalProductsTask, productsTask, categoriesTask);
+
+                var totalProducts = await totalProductsTask;
+                var products = await productsTask;
+                var categories = await categoriesTask;
+
+                var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
                 var siteSettings = _siteSettingsService.Get();
 
@@ -79,28 +86,21 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                // Ensure ViewBag.Categories is always set to prevent null reference exception
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = _siteSettingsService.Get();
                 
                 ViewBag.Categories = categories;
-                ViewBag.SelectedCategoryId = categoryId;
-                ViewBag.SearchTerm = searchTerm;
-                ViewBag.SortBy = sortBy;
-                ViewBag.CurrentPage = page;
-                ViewBag.TotalPages = 0;
-                ViewBag.TotalProducts = 0;
-                ViewBag.PageSize = pageSize;
-                ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 ViewBag.SiteSettings = siteSettings;
+                ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 
                 TempData["Error"] = "Ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
         }
 
-        // GET: Products/Detail/5
-        public async Task<IActionResult> Detail(int id, string? slug = null)
+        // GET: Products/Detail/{id}
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
+        public async Task<IActionResult> Detail(int id)
         {
             try
             {
@@ -113,17 +113,8 @@ namespace manyasligida.Controllers
                     return NotFound();
                 }
 
-                // SEO için slug kontrolü
-                if (!string.IsNullOrEmpty(slug) && slug != product.Slug)
-                {
-                    return RedirectToAction(nameof(Detail), new { id = product.Id, slug = product.Slug });
-                }
-
-                // Ürün görüntülenme sayısını artır (opsiyonel)
-                // product.ViewCount++; // Eğer ViewCount alanı eklenecekse
-
-                // Benzer ürünler
-                var relatedProducts = await _context.Products
+                // Optimize related queries with parallel execution
+                var relatedProductsTask = _context.Products
                     .Where(p => p.CategoryId == product.CategoryId && 
                                p.Id != product.Id && 
                                p.IsActive)
@@ -132,16 +123,20 @@ namespace manyasligida.Controllers
                     .Take(4)
                     .ToListAsync();
 
-                // Popüler ürünler
-                var popularProducts = await _context.Products
+                var popularProductsTask = _context.Products
                     .Where(p => p.IsPopular && p.IsActive && p.Id != product.Id)
                     .OrderByDescending(p => p.CreatedAt)
                     .Take(4)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
+
+                await Task.WhenAll(relatedProductsTask, popularProductsTask, categoriesTask);
+
+                var relatedProducts = await relatedProductsTask;
+                var popularProducts = await popularProductsTask;
+                var categories = await categoriesTask;
                 
-                // Site ayarları
                 var siteSettings = _siteSettingsService.Get();
 
                 ViewBag.RelatedProducts = relatedProducts;
@@ -162,24 +157,24 @@ namespace manyasligida.Controllers
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 
                 TempData["Error"] = "Ürün detayları yüklenirken bir hata oluştu: " + ex.Message;
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
         }
 
-        // GET: Products/Category/5
+        // GET: Products/Category/{id}
+        [ResponseCache(Duration = 180, Location = ResponseCacheLocation.Any)] // Cache for 3 minutes
         public async Task<IActionResult> Category(int id, string? sortBy, int page = 1, int pageSize = 12)
         {
             try
             {
-                var category = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
-
+                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
                 if (category == null)
                 {
                     return NotFound();
                 }
 
                 var query = _context.Products
+                    .Include(p => p.Category)
                     .Where(p => p.CategoryId == id && p.IsActive);
 
                 // Sıralama
@@ -191,28 +186,24 @@ namespace manyasligida.Controllers
                     "name_desc" => query.OrderByDescending(p => p.Name),
                     "newest" => query.OrderByDescending(p => p.CreatedAt),
                     "popular" => query.OrderByDescending(p => p.IsPopular).ThenByDescending(p => p.CreatedAt),
+                    "featured" => query.OrderByDescending(p => p.IsFeatured).ThenByDescending(p => p.CreatedAt),
                     _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
                 };
 
-                // Sayfalama
-                var totalProducts = await query.CountAsync();
-                var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
-                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                // Optimize pagination
+                var totalProductsTask = query.CountAsync();
+                var productsTask = query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-                
-                // Site ayarları
-                var siteSettings = new
-                {
-                    Phone = "+90 266 123 45 67",
-                    Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
-                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
-                    FacebookUrl = "#",
-                    InstagramUrl = "#",
-                    TwitterUrl = "#",
-                    YoutubeUrl = "#"
-                };
+                await Task.WhenAll(totalProductsTask, productsTask, categoriesTask);
+
+                var totalProducts = await totalProductsTask;
+                var products = await productsTask;
+                var categories = await categoriesTask;
+
+                var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+
+                var siteSettings = _siteSettingsService.Get();
 
                 ViewBag.Category = category;
                 ViewBag.SortBy = sortBy;
@@ -245,26 +236,28 @@ namespace manyasligida.Controllers
                 ViewBag.SiteSettings = siteSettings;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 
-                TempData["Error"] = "Kategori yüklenirken bir hata oluştu: " + ex.Message;
-                return RedirectToAction(nameof(Index));
+                TempData["Error"] = "Kategori ürünleri yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<Product>());
             }
         }
 
         // GET: Products/Search
-        public async Task<IActionResult> Search(string q, string? sortBy, int page = 1, int pageSize = 12)
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)] // Cache for 1 minute
+        public async Task<IActionResult> Search(string? q, string? sortBy, int page = 1, int pageSize = 12)
         {
             try
             {
-                if (string.IsNullOrEmpty(q))
+                if (string.IsNullOrWhiteSpace(q))
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index");
                 }
 
                 var query = _context.Products
                     .Include(p => p.Category)
-                    .Where(p => p.IsActive && (p.Name.Contains(q) || 
-                                             (p.Description != null && p.Description.Contains(q)) ||
-                                             (p.Ingredients != null && p.Ingredients.Contains(q))));
+                    .Where(p => p.IsActive && 
+                               (p.Name.Contains(q) || 
+                                (p.Description != null && p.Description.Contains(q)) ||
+                                (p.Ingredients != null && p.Ingredients.Contains(q))));
 
                 // Sıralama
                 query = sortBy switch
@@ -275,28 +268,24 @@ namespace manyasligida.Controllers
                     "name_desc" => query.OrderByDescending(p => p.Name),
                     "newest" => query.OrderByDescending(p => p.CreatedAt),
                     "popular" => query.OrderByDescending(p => p.IsPopular).ThenByDescending(p => p.CreatedAt),
-                    _ => query.OrderByDescending(p => p.CreatedAt)
+                    "featured" => query.OrderByDescending(p => p.IsFeatured).ThenByDescending(p => p.CreatedAt),
+                    _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
                 };
 
-                // Sayfalama
-                var totalProducts = await query.CountAsync();
+                // Optimize pagination
+                var totalProductsTask = query.CountAsync();
+                var productsTask = query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
+
+                await Task.WhenAll(totalProductsTask, productsTask, categoriesTask);
+
+                var totalProducts = await totalProductsTask;
+                var products = await productsTask;
+                var categories = await categoriesTask;
+
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
-                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-                
-                // Site ayarları
-                var siteSettings = new
-                {
-                    Phone = "+90 266 123 45 67",
-                    Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
-                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
-                    FacebookUrl = "#",
-                    InstagramUrl = "#",
-                    TwitterUrl = "#",
-                    YoutubeUrl = "#"
-                };
+                var siteSettings = _siteSettingsService.Get();
 
                 ViewBag.SearchTerm = q;
                 ViewBag.SortBy = sortBy;
@@ -335,6 +324,7 @@ namespace manyasligida.Controllers
         }
 
         // GET: Products/Featured
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
         public async Task<IActionResult> Featured()
         {
             try
@@ -347,24 +337,13 @@ namespace manyasligida.Controllers
                     .ToListAsync();
 
                 var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-                
-                // Site ayarları
-                var siteSettings = new
-                {
-                    Phone = "+90 266 123 45 67",
-                    Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
-                    WorkingHours = "Pzt-Cmt: 08:00-18:00",
-                    FacebookUrl = "#",
-                    InstagramUrl = "#",
-                    TwitterUrl = "#",
-                    YoutubeUrl = "#"
-                };
+                var siteSettings = _siteSettingsService.Get();
 
+                ViewBag.FeaturedProducts = featuredProducts;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 ViewBag.Categories = categories;
                 ViewBag.SiteSettings = siteSettings;
-                
+
                 return View(featuredProducts);
             }
             catch (Exception ex)
