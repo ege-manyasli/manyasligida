@@ -778,6 +778,14 @@
                     <span>SSS</span>
                 </a>
             </li>
+            
+            <!-- Muhasebe -->
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Accounting" ? "active" : "")" href="@Url.Action("Index", "Accounting")">
+                    <i class="fas fa-calculator"></i>
+                    <span>Muhasebe</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && (ViewContext.RouteData.Values["Action"]?.ToString() == "Videos" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddVideo" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditVideo") ? "active" : "")" href="@Url.Action("Videos", "Admin")">
                     <i class="fas fa-video"></i>

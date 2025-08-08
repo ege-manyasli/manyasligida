@@ -213,9 +213,14 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="imageFile" class="form-label fw-bold">Yeni Ürün Resmi</label>
+                                    <label for="imageFile" class="form-label fw-bold">Yeni Ana Görsel</label>
                                     <input type="file" id="imageFile" name="imageFile" class="form-control form-control-modern" accept="image/*">
-                                    <div class="form-text">Yeni resim seçerseniz mevcut resim değiştirilecektir.</div>
+                                    <div class="form-text">Yeni ana görsel seçerseniz mevcut ana görsel değişir.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="galleryFiles" class="form-label fw-bold">Galeri Görselleri (ekle)</label>
+                                    <input type="file" id="galleryFiles" name="galleryFiles" class="form-control form-control-modern" accept="image/*" multiple>
                                 </div>
                                 
                                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
@@ -224,6 +229,22 @@
                                         <label class="form-label fw-bold">Mevcut Resim</label>
                                         <div class="current-image">
                                             <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" style="max-height: 150px;">
+                                        </div>
+                                    </div>
+                                }
+
+                                @{
+                                    var gallery = Model.GetImageUrls();
+                                }
+                                @if (gallery != null && gallery.Count > 0)
+                                {
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Galeri (önizleme)</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach (var url in gallery)
+                                            {
+                                                <img src="@url" class="rounded" style="height:70px; width:70px; object-fit:cover; border:1px solid #e2e8f0;" />
+                                            }
                                         </div>
                                     </div>
                                 }

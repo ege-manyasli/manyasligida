@@ -28,7 +28,7 @@
             <div class="col-lg-6 mb-4" data-aos="fade-right">
                 <div class="product-gallery">
                     <div class="main-image-container mb-3">
-                        <img id="mainImage" src="@Model.ImageUrl" class="main-image" alt="@Model.Name">
+                        <img id="mainImage" src="@Model.GetMainImageUrl()" class="main-image" alt="@Model.Name">
                         <div class="image-overlay">
                             <button class="btn btn-light btn-sm" onclick="openImageModal()">
                                 <i class="fas fa-expand"></i>
@@ -37,12 +37,18 @@
                     </div>
                     <div class="thumbnail-container">
                         <div class="thumbnail-images d-flex gap-2 flex-wrap">
-                            <img src="@Model.ImageUrl" class="thumbnail-img active" onclick="changeImage(this, '@Model.ImageUrl')" alt="@Model.Name">
-                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            @{
+                                var images = Model.GetImageUrls();
+                                if (images == null || images.Count == 0)
+                                {
+                                    images = new List<string> { Model.ImageUrl ?? "" };
+                                }
+                            }
+                            @for (int i = 0; i < images.Count; i++)
                             {
-                                <!-- Additional images can be added here dynamically -->
-                                <img src="@Model.ImageUrl" class="thumbnail-img" onclick="changeImage(this, '@Model.ImageUrl')" alt="@Model.Name - 2">
-                                <img src="@Model.ImageUrl" class="thumbnail-img" onclick="changeImage(this, '@Model.ImageUrl')" alt="@Model.Name - 3">
+                                var url = images[i];
+                                var active = i == 0 ? "active" : "";
+                                <img src="@url" class="thumbnail-img @active" onclick="changeImage(this, '@url')" alt="@Model.Name - @(i+1)">
                             }
                         </div>
                     </div>
@@ -460,7 +466,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center">
-                <img id="modalImage" src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name">
+                <img id="modalImage" src="@Model.GetMainImageUrl()" class="img-fluid" alt="@Model.Name">
             </div>
         </div>
     </div>

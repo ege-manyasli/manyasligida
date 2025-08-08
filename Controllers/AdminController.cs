@@ -205,7 +205,7 @@ namespace manyasligida.Controllers
         // POST: Admin/AddProduct
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddProduct(Product product, IFormFile? imageFile)
+        public async Task<IActionResult> AddProduct(Product product, IFormFile? imageFile, List<IFormFile>? galleryFiles)
         {
             if (!IsAdmin())
             {
@@ -216,7 +216,8 @@ namespace manyasligida.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // Resim yükleme işlemi
+                    // Resim yükleme işlemi (ana + galeri)
+                    var imageUrls = new List<string>();
                     if (imageFile != null && imageFile.Length > 0)
                     {
                         if (!_fileUploadService.IsValidImage(imageFile))
@@ -227,8 +228,30 @@ namespace manyasligida.Controllers
                             return View(product);
                         }
 
-                        var imageUrl = await _fileUploadService.UploadImageAsync(imageFile, "products");
-                        product.ImageUrl = imageUrl;
+                        var mainUrl = await _fileUploadService.UploadImageAsync(imageFile, "products");
+                        product.ImageUrl = mainUrl;
+                        imageUrls.Add(mainUrl);
+                    }
+
+                    if (galleryFiles != null && galleryFiles.Count > 0)
+                    {
+                        foreach (var gf in galleryFiles)
+                        {
+                            if (gf != null && gf.Length > 0 && _fileUploadService.IsValidImage(gf))
+                            {
+                                var url = await _fileUploadService.UploadImageAsync(gf, "products");
+                                if (!imageUrls.Contains(url)) imageUrls.Add(url);
+                            }
+                        }
+                    }
+
+                    if (imageUrls.Count > 0)
+                    {
+                        product.SetImageUrls(imageUrls);
+                        if (string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            product.ImageUrl = imageUrls.First();
+                        }
                     }
 
                     // Ürün özelliklerini ayarla
@@ -290,7 +313,7 @@ namespace manyasligida.Controllers
         // POST: Admin/EditProduct/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProduct(int id, Product product, IFormFile? imageFile)
+        public async Task<IActionResult> EditProduct(int id, Product product, IFormFile? imageFile, List<IFormFile>? galleryFiles)
         {
             if (!IsAdmin())
             {
@@ -315,7 +338,10 @@ namespace manyasligida.Controllers
                         return RedirectToAction(nameof(Products));
                     }
 
-                    // Yeni resim yüklendiyse
+                    // Görselleri birleştir (ana + galeri)
+                    var mergedImageUrls = existingProduct.GetImageUrls();
+
+                    // Yeni ana resim yüklendiyse
                     if (imageFile != null && imageFile.Length > 0)
                     {
                         if (!_fileUploadService.IsValidImage(imageFile))
@@ -326,20 +352,39 @@ namespace manyasligida.Controllers
                             return View(product);
                         }
 
-                        // Eski resmi sil
+                        // Eski ana resmi sil (diskten) ve listeden çıkar
                         if (!string.IsNullOrEmpty(existingProduct.ImageUrl))
                         {
                             await _fileUploadService.DeleteImageAsync(existingProduct.ImageUrl);
+                            mergedImageUrls = mergedImageUrls.Where(u => u != existingProduct.ImageUrl).ToList();
                         }
 
-                        // Yeni resmi yükle
-                        var imageUrl = await _fileUploadService.UploadImageAsync(imageFile, "products");
-                        product.ImageUrl = imageUrl;
+                        var newMainUrl = await _fileUploadService.UploadImageAsync(imageFile, "products");
+                        product.ImageUrl = newMainUrl;
+                        mergedImageUrls.Insert(0, newMainUrl);
                     }
                     else
                     {
-                        // Resim değişmediyse mevcut resmi koru
+                        // Resim değişmediyse mevcut ana resmi koru
                         product.ImageUrl = existingProduct.ImageUrl;
+                    }
+
+                    // Ek galeri resimleri
+                    if (galleryFiles != null && galleryFiles.Count > 0)
+                    {
+                        foreach (var gf in galleryFiles)
+                        {
+                            if (gf != null && gf.Length > 0 && _fileUploadService.IsValidImage(gf))
+                            {
+                                var url = await _fileUploadService.UploadImageAsync(gf, "products");
+                                if (!mergedImageUrls.Contains(url)) mergedImageUrls.Add(url);
+                            }
+                        }
+                    }
+
+                    if (mergedImageUrls.Count > 0)
+                    {
+                        product.SetImageUrls(mergedImageUrls);
                     }
 
                     // Ürün özelliklerini güncelle

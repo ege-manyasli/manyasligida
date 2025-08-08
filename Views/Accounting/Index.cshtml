@@ -1,0 +1,267 @@
+@model manyasligida.Models.AccountingDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Muhasebe";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title mb-1"><i class="fas fa-calculator me-2"></i>Muhasebe</h1>
+            <div class="page-subtitle">Seçilen tarihler arasında alış, gider ve kâr/zarar özeti</div>
+        </div>
+        <form method="get" class="d-flex align-items-end gap-2">
+            <div>
+                <label class="form-label">Başlangıç</label>
+                <input type="date" name="startDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+            </div>
+            <div>
+                <label class="form-label">Bitiş</label>
+                <input type="date" name="endDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+            </div>
+            <button class="btn btn-primary ms-1" type="submit"><i class="fas fa-filter me-2"></i>Filtrele</button>
+        </form>
+    </div>
+}</div>
+
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card modern-card revenue-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted">Ciro</div>
+                        <div class="h3 fw-bold">₺@Model.Revenue.ToString("N2")</div>
+                    </div>
+                    <div class="stat-icon-modern"><i class="fas fa-cash-register"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card modern-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted">Alış Maliyetleri</div>
+                        <div class="h3 fw-bold">₺@Model.PurchasesTotal.ToString("N2")</div>
+                    </div>
+                    <div class="stat-icon-modern"><i class="fas fa-truck-loading"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card modern-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted">Giderler</div>
+                        <div class="h3 fw-bold">₺@Model.ExpensesTotal.ToString("N2")</div>
+                    </div>
+                    <div class="stat-icon-modern"><i class="fas fa-receipt"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card modern-card @(Model.NetProfit >= 0 ? "border-success" : "border-danger")">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted">Net Kâr</div>
+                        <div class="h3 fw-bold @(Model.NetProfit >= 0 ? "text-success" : "text-danger")">₺@Model.NetProfit.ToString("N2")</div>
+                    </div>
+                    <div class="stat-icon-modern"><i class="fas fa-chart-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Alış Ekle</strong>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddPurchase" method="post" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-4">
+                        <label class="form-label">Tarih</label>
+                        <input name="Date" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tedarikçi</label>
+                        <input name="Supplier" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Kalem</label>
+                        <input name="Item" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Miktar</label>
+                        <input name="Quantity" type="number" step="0.001" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Birim</label>
+                        <input name="Unit" class="form-control" placeholder="kg, lt, adet" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Birim Fiyat</label>
+                        <input name="UnitPrice" type="number" step="0.01" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Not</label>
+                        <input name="Notes" class="form-control" />
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="btn btn-success" type="submit"><i class="fas fa-plus me-2"></i>Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Gider Ekle</strong>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddExpense" method="post" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-3">
+                        <label class="form-label">Tarih</label>
+                        <input name="Date" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Kategori</label>
+                        <input name="Category" class="form-control" placeholder="Kira, Fatura, Akaryakıt..." />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Açıklama</label>
+                        <input name="Description" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tutar</label>
+                        <input name="Amount" type="number" step="0.01" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ödeme Yöntemi</label>
+                        <input name="PaymentMethod" class="form-control" placeholder="Nakit, Havale, Kredi Kartı" />
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="btn btn-warning" type="submit"><i class="fas fa-plus me-2"></i>Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><strong>Alışlar</strong></div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Tedarikçi</th>
+                            <th>Kalem</th>
+                            <th class="text-end">Miktar</th>
+                            <th>Birim</th>
+                            <th class="text-end">Birim Fiyat</th>
+                            <th class="text-end">Toplam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.Purchases)
+                        {
+                            <tr>
+                                <td>@p.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@p.Supplier</td>
+                                <td>@p.Item</td>
+                                <td class="text-end">@p.Quantity.ToString("N3")</td>
+                                <td>@p.Unit</td>
+                                <td class="text-end">₺@p.UnitPrice.ToString("N2")</td>
+                                <td class="text-end fw-semibold">₺@p.Total.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><strong>Giderler</strong></div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Kategori</th>
+                            <th>Açıklama</th>
+                            <th class="text-end">Tutar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model.Expenses)
+                        {
+                            <tr>
+                                <td>@e.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@e.Category</td>
+                                <td>@e.Description</td>
+                                <td class="text-end fw-semibold">₺@e.Amount.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <strong>Notlar</strong>
+        <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#ddl">
+            <i class="fas fa-database me-1"></i> Örnek SQL
+        </button>
+    </div>
+    <div class="card-body collapse" id="ddl">
+<pre class="mb-0"><code>-- Purchases tablosu (alış kayıtları)
+CREATE TABLE dbo.Purchases (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    [Date] DATETIME2 NOT NULL,
+    Supplier NVARCHAR(200) NULL,
+    Item NVARCHAR(200) NULL,
+    Quantity DECIMAL(18,3) NOT NULL DEFAULT(0),
+    Unit NVARCHAR(50) NULL, -- kg, lt, adet
+    UnitPrice DECIMAL(18,2) NOT NULL DEFAULT(0),
+    Notes NVARCHAR(500) NULL
+);
+
+-- Expenses tablosu (genel giderler)
+CREATE TABLE dbo.Expenses (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    [Date] DATETIME2 NOT NULL,
+    Category NVARCHAR(100) NULL,
+    Description NVARCHAR(300) NULL,
+    Amount DECIMAL(18,2) NOT NULL DEFAULT(0),
+    PaymentMethod NVARCHAR(50) NULL -- Nakit, Havale, Kredi Kartı
+);
+</code></pre>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // future: small charts can be added here
+    </script>
+}
+
+

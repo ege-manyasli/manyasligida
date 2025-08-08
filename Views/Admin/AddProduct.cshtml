@@ -199,9 +199,15 @@
 
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="imageFile" class="form-label fw-bold">Ürün Resmi</label>
+                                    <label for="imageFile" class="form-label fw-bold">Ana Ürün Görseli</label>
                                     <input type="file" id="imageFile" name="imageFile" class="form-control form-control-modern" accept="image/*">
-                                    <div class="form-text">Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maksimum dosya boyutu: 5MB</div>
+                                    <div class="form-text">Sadece JPG, PNG, GIF ve WEBP. Maks 5MB.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="galleryFiles" class="form-label fw-bold">Galeri Görselleri (çoklu)</label>
+                                    <input type="file" id="galleryFiles" name="galleryFiles" class="form-control form-control-modern" accept="image/*" multiple>
+                                    <div class="form-text">Birden fazla görsel seçebilirsiniz.</div>
                                 </div>
 
                                 <div id="imagePreview" class="mb-3 d-none">
@@ -273,6 +279,8 @@
             preview.classList.add('d-none');
         }
     });
+
+    // Çoklu galeri önizleme (opsiyonel): isterseniz kart olarak listeleyebiliriz
 
     // Form validation
     document.getElementById('addProductForm').addEventListener('submit', function(e) {
