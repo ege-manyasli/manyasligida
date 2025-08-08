@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class BlogController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
         private readonly ISiteSettingsService _siteSettingsService;
 
-        public BlogController(ApplicationDbContext context, CartService cartService, ISiteSettingsService siteSettingsService)
+        public BlogController(IServiceProvider serviceProvider, CartService cartService, ISiteSettingsService siteSettingsService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
             _siteSettingsService = siteSettingsService;
         }
@@ -24,7 +25,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var query = _context.Blogs.Where(b => b.IsActive);
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var query = context.Blogs.Where(b => b.IsActive);
                 var totalBlogs = await query.CountAsync();
                 var totalPages = (int)Math.Ceiling((double)totalBlogs / pageSize);
 
@@ -34,7 +38,7 @@ namespace manyasligida.Controllers
                     .Take(pageSize)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 var siteSettings = _siteSettingsService.Get();
 
@@ -50,7 +54,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -77,7 +84,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var blog = await _context.Blogs
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var blog = await context.Blogs
                     .FirstOrDefaultAsync(b => b.Id == id && b.IsActive);
 
                 if (blog == null)
@@ -86,13 +96,13 @@ namespace manyasligida.Controllers
                 }
 
                 // Son blog yazıları
-                var recentBlogs = await _context.Blogs
+                var recentBlogs = await context.Blogs
                     .Where(b => b.IsActive && b.Id != id)
                     .OrderByDescending(b => b.PublishedAt ?? b.CreatedAt)
                     .Take(3)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 // Site ayarları
                 var siteSettings = new
@@ -116,7 +126,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",

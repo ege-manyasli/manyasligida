@@ -2,19 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using manyasligida.Services;
 using manyasligida.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class AboutController : Controller
     {
         private readonly CartService _cartService;
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ISiteSettingsService _siteSettingsService;
 
-        public AboutController(CartService cartService, ApplicationDbContext context, ISiteSettingsService siteSettingsService)
+        public AboutController(CartService cartService, IServiceProvider serviceProvider, ISiteSettingsService siteSettingsService)
         {
             _cartService = cartService;
-            _context = context;
+            _serviceProvider = serviceProvider;
             _siteSettingsService = siteSettingsService;
         }
 
@@ -23,7 +24,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 var siteSettings = _siteSettingsService.Get();
 
@@ -35,7 +39,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",

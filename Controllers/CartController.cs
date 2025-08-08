@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class CartController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
 
-        public CartController(ApplicationDbContext context, CartService cartService)
+        public CartController(IServiceProvider serviceProvider, CartService cartService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
         }
 
@@ -22,13 +23,16 @@ namespace manyasligida.Controllers
         {
             try
             {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
                 var cart = _cartService.GetCart();
                 var cartItems = new List<CartItemViewModel>();
 
                 if (cart.Any())
                 {
                     var productIds = cart.Select(c => c.ProductId).ToList();
-                    var products = await _context.Products
+                    var products = await context.Products
                         .Where(p => productIds.Contains(p.Id) && p.IsActive)
                         .ToDictionaryAsync(p => p.Id, p => p);
 
@@ -73,7 +77,10 @@ namespace manyasligida.Controllers
                     return Json(new { success = false, message = "Geçersiz miktar." });
                 }
 
-                var product = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var product = await context.Products
                     .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
                 
                 if (product == null)
@@ -132,7 +139,10 @@ namespace manyasligida.Controllers
                     });
                 }
 
-                var product = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var product = await context.Products
                     .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
                 
                 if (product == null)

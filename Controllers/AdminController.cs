@@ -6,22 +6,32 @@ using manyasligida.Services;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
+using manyasligida.Attributes;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
         private readonly IFileUploadService _fileUploadService;
         private readonly IAuthService _authService;
+        private readonly ILogger<AdminController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public AdminController(ApplicationDbContext context, CartService cartService, IFileUploadService fileUploadService, IAuthService authService)
+        public AdminController(IServiceProvider serviceProvider, CartService cartService, IFileUploadService fileUploadService, IAuthService authService, ILogger<AdminController> logger, ApplicationDbContext context)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
             _fileUploadService = fileUploadService;
             _authService = authService;
+            _logger = logger;
+            _context = context;
         }
 
         // Admin kontrolü
@@ -1651,6 +1661,25 @@ namespace manyasligida.Controllers
             }
 
             return RedirectToAction(nameof(Users));
+        }
+
+        [AdminAuthorization]
+        public IActionResult Performance()
+        {
+            try
+            {
+                var performanceService = HttpContext.RequestServices.GetService<IPerformanceMonitorService>();
+                var metrics = performanceService?.GetPerformanceMetrics() ?? new Dictionary<string, object>();
+                
+                ViewBag.PerformanceMetrics = metrics;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading performance metrics");
+                TempData["ErrorMessage"] = "Performans metrikleri yüklenirken hata oluştu.";
+                return RedirectToAction("Index");
+            }
         }
 
         private bool ProductExists(int id)

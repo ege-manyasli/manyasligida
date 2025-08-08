@@ -5,17 +5,18 @@ using manyasligida.Models;
 using manyasligida.Services;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
 
-        public OrderController(ApplicationDbContext context, CartService cartService)
+        public OrderController(IServiceProvider serviceProvider, CartService cartService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
         }
 
@@ -28,7 +29,10 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var orders = await _context.Orders
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var orders = await context.Orders
                 .Where(o => o.UserId == int.Parse(userId))
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
@@ -38,7 +42,7 @@ namespace manyasligida.Controllers
         }
 
         // GET: Order/Checkout
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             var userId = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId))
@@ -53,7 +57,10 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == int.Parse(userId));
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -89,6 +96,9 @@ namespace manyasligida.Controllers
             {
                 try
                 {
+                    using var scope = _serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
                     var order = new Order
                     {
                         OrderNumber = GenerateOrderNumber(),
@@ -109,13 +119,13 @@ namespace manyasligida.Controllers
                         OrderDate = DateTime.Now
                     };
 
-                    _context.Orders.Add(order);
-                    await _context.SaveChangesAsync();
+                    context.Orders.Add(order);
+                    await context.SaveChangesAsync();
 
                     // Order items ekle
                     foreach (var cartItem in cart)
                     {
-                        var product = await _context.Products.FindAsync(cartItem.ProductId);
+                        var product = await context.Products.FindAsync(cartItem.ProductId);
                         if (product != null)
                         {
                             var orderItem = new OrderItem
@@ -128,14 +138,14 @@ namespace manyasligida.Controllers
                                 TotalPrice = cartItem.TotalPrice
                             };
 
-                            _context.OrderItems.Add(orderItem);
+                            context.OrderItems.Add(orderItem);
 
                             // Stok güncelle
                             product.StockQuantity -= cartItem.Quantity;
                         }
                     }
 
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
                     // Sepeti temizle
                     _cartService.ClearCart();
@@ -149,7 +159,10 @@ namespace manyasligida.Controllers
                 }
             }
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == int.Parse(userId));
+            using var userScope = _serviceProvider.CreateScope();
+            var userContext = userScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var user = await userContext.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+            
             ViewBag.Cart = cart;
             ViewBag.CartTotal = _cartService.GetCartTotal();
             ViewBag.User = user;
@@ -167,7 +180,10 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var order = await _context.Orders
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var order = await context.Orders
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Id == id && o.UserId == int.Parse(userId));
 
@@ -189,7 +205,10 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var order = await _context.Orders
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var order = await context.Orders
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Id == id && o.UserId == int.Parse(userId));
 

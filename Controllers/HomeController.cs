@@ -7,18 +7,23 @@ using manyasligida.Data;
 using manyasligida.Services;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ISiteSettingsService _siteSettingsService;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ApplicationDbContext context, ISiteSettingsService siteSettingsService)
+        public HomeController(IServiceProvider serviceProvider, ISiteSettingsService siteSettingsService, ILogger<HomeController> logger)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _siteSettingsService = siteSettingsService;
+            _logger = logger;
         }
 
         [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
@@ -26,85 +31,77 @@ namespace manyasligida.Controllers
         {
             try
             {
-                // Optimize database queries by running them in parallel
-                var popularProductsTask = _context.Products
-                    .Where(p => p.IsActive && p.IsPopular)
-                    .OrderByDescending(p => p.CreatedAt)
+                _logger.LogInformation("Home page requested");
+
+                // Create separate DbContext instances to avoid threading issues
+                using var productsContext = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                using var categoriesContext = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                // Get products with separate context
+                var products = await productsContext.Products
+                    .Where(p => p.IsActive)
+                    .OrderByDescending(p => p.IsPopular)
+                    .ThenByDescending(p => p.CreatedAt)
                     .Take(8)
-                    .ToListAsync();
-
-                var recentBlogsTask = _context.Blogs
-                    .Where(b => b.IsActive)
-                    .OrderByDescending(b => b.CreatedAt)
-                    .Take(3)
-                    .ToListAsync();
-
-                var categoriesTask = _context.Categories
-                    .Where(c => c.IsActive)
-                    .OrderBy(c => c.DisplayOrder)
-                    .Take(6)
-                    .ToListAsync();
-
-                // Execute all queries in parallel
-                await Task.WhenAll(popularProductsTask, recentBlogsTask, categoriesTask);
-
-                var popularProducts = await popularProductsTask;
-                var recentBlogs = await recentBlogsTask;
-                var categories = await categoriesTask;
-
-                // Eğer popüler ürün yoksa, son eklenen ürünleri getir
-                if (!popularProducts.Any())
-                {
-                    popularProducts = await _context.Products
-                        .Where(p => p.IsActive)
-                        .OrderByDescending(p => p.CreatedAt)
-                        .Take(8)
-                        .ToListAsync();
-                }
-
-                // Cache statistics for better performance
-                var statsTask = Task.Run(async () =>
-                {
-                    var totalProducts = await _context.Products.Where(p => p.IsActive).CountAsync();
-                    var totalOrders = await _context.Orders.CountAsync();
-                    var totalUsers = await _context.Users.Where(u => u.IsActive).CountAsync();
-                    var totalBlogs = await _context.Blogs.Where(b => b.IsActive).CountAsync();
-
-                    return new
+                    .Select(p => new
                     {
-                        TotalProducts = totalProducts,
-                        TotalOrders = totalOrders,
-                        TotalUsers = totalUsers,
-                        TotalBlogs = totalBlogs
-                    };
-                });
+                        p.Id,
+                        p.Name,
+                        p.Description,
+                        p.Price,
+                        p.ImageUrl,
+                        p.IsPopular,
+                        p.CreatedAt,
+                        p.Weight,
+                        p.FatContent,
+                        p.OldPrice,
+                        IsNew = p.CreatedAt > DateTime.Now.AddDays(-30)
+                    })
+                    .ToListAsync();
 
-                var siteSettings = _siteSettingsService.Get();
-                var stats = await statsTask;
+                // Get categories with separate context
+                var categories = await categoriesContext.Categories
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.Name)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.Name,
+                        c.Description
+                    })
+                    .ToListAsync();
 
-                ViewBag.PopularProducts = popularProducts;
-                ViewBag.RecentBlogs = recentBlogs;
-                ViewBag.Categories = categories;
-                ViewBag.Stats = stats;
-                ViewBag.SiteSettings = siteSettings;
+                // Get site settings
+                var siteSettings = await Task.Run(() => _siteSettingsService.Get());
 
-                return View();
+                var viewModel = new
+                {
+                    Products = products,
+                    Categories = categories,
+                    SiteSettings = siteSettings ?? new SiteSettings()
+                };
+
+                _logger.LogInformation($"Home page loaded successfully. Products: {products.Count}, Categories: {categories.Count}");
+
+                return View(viewModel);
             }
             catch (Exception ex)
             {
-                // Log the error
-                ViewBag.ErrorMessage = "Veriler yüklenirken bir hata oluştu.";
-                return View();
+                _logger.LogError(ex, "Error loading home page");
+                
+                // Return empty data instead of throwing
+                var emptyViewModel = new
+                {
+                    Products = new List<object>(),
+                    Categories = new List<object>(),
+                    SiteSettings = _siteSettingsService.Get() ?? new SiteSettings()
+                };
+
+                ViewBag.ErrorMessage = "Ürünler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.";
+                return View(emptyViewModel);
             }
         }
 
-        [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)] // Cache for 10 minutes
-        public IActionResult About()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)] // Cache for 10 minutes
         public IActionResult Privacy()
         {
             return View();
@@ -113,7 +110,7 @@ namespace manyasligida.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

@@ -1,0 +1,44 @@
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\ege.manyasli\source\repos\manyasligida
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (210ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT COUNT(*)
+      FROM [Products] AS [p]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (247ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='60']
+      SELECT [t].[Id], [t].[AllergenInfo], [t].[CategoryId], [t].[CreatedAt], [t].[Description], [t].[ExpiryInfo], [t].[FatContent], [t].[ImageUrl], [t].[ImageUrls], [t].[Ingredients], [t].[IsActive], [t].[IsFeatured], [t].[IsNew], [t].[IsPopular], [t].[MetaDescription], [t].[MetaKeywords], [t].[MetaTitle], [t].[Name], [t].[NutritionalInfo], [t].[OldPrice], [t].[Price], [t].[PublishedAt], [t].[Slug], [t].[SortOrder], [t].[StockQuantity], [t].[StorageInfo], [t].[ThumbnailUrl], [t].[UpdatedAt], [t].[Weight], [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM (
+          SELECT [p].[Id], [p].[AllergenInfo], [p].[CategoryId], [p].[CreatedAt], [p].[Description], [p].[ExpiryInfo], [p].[FatContent], [p].[ImageUrl], [p].[ImageUrls], [p].[Ingredients], [p].[IsActive], [p].[IsFeatured], [p].[IsNew], [p].[IsPopular], [p].[MetaDescription], [p].[MetaKeywords], [p].[MetaTitle], [p].[Name], [p].[NutritionalInfo], [p].[OldPrice], [p].[Price], [p].[PublishedAt], [p].[Slug], [p].[SortOrder], [p].[StockQuantity], [p].[StorageInfo], [p].[ThumbnailUrl], [p].[UpdatedAt], [p].[Weight]
+          FROM [Products] AS [p]
+          WHERE [p].[IsActive] = CAST(1 AS bit)
+          ORDER BY [p].[SortOrder], [p].[CreatedAt] DESC
+          OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+      ) AS [t]
+      LEFT JOIN [Categories] AS [c] ON [t].[CategoryId] = [c].[Id]
+      ORDER BY [t].[SortOrder], [t].[CreatedAt] DESC
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /video/9586240-uhd_4096_2160_25fps.mp4 took 9702ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /video/9586240-uhd_4096_2160_25fps.mp4 took 9702ms from ::1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /Products took 8942ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /Products took 8942ms from ::1
+warn: Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware[4]
+      Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+warn: Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware[4]
+      Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+warn: Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware[4]
+      Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+warn: Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware[4]
+      Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling r

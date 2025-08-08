@@ -123,12 +123,23 @@
         
         <div class="row g-4">
             @{
-                var popularProducts = ViewBag.PopularProducts as List<manyasligida.Models.Product> ?? new List<manyasligida.Models.Product>();
+                var products = Model?.Products as List<object> ?? new List<object>();
+                var errorMessage = ViewBag.ErrorMessage as string;
             }
             
-            @foreach (var product in popularProducts.Take(4))
+            @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(popularProducts.IndexOf(product) * 100)">
+                <div class="col-12">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        @errorMessage
+                    </div>
+                </div>
+            }
+            
+            @foreach (dynamic product in products.Take(4))
+            {
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(products.IndexOf(product) * 100)">
                     <div class="card product-card h-100 border-0 shadow-sm">
                         <div class="product-image position-relative">
                             <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">

@@ -4,19 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class AccountingController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
 
-        public AccountingController(ApplicationDbContext context, IAuthService authService, IConfiguration configuration)
+        public AccountingController(IServiceProvider serviceProvider, IAuthService authService, IConfiguration configuration)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _authService = authService;
             _configuration = configuration;
             _connectionString = _configuration.GetConnectionString("DefaultConnection")!;
@@ -35,12 +36,15 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Admin");
             }
 
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
             var now = DateTime.Now;
             var start = startDate ?? new DateTime(now.Year, now.Month, 1);
             var end = endDate ?? start.AddMonths(1).AddDays(-1);
 
             // Ciro (teslim edilen siparişler)
-            decimal revenue = await _context.Orders
+            decimal revenue = await context.Orders
                 .Where(o => o.OrderStatus == ApplicationConstants.OrderStatus.Delivered && o.OrderDate >= start && o.OrderDate <= end)
                 .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
 

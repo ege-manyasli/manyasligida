@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class FAQController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
         private readonly ISiteSettingsService _siteSettingsService;
 
-        public FAQController(ApplicationDbContext context, CartService cartService, ISiteSettingsService siteSettingsService)
+        public FAQController(IServiceProvider serviceProvider, CartService cartService, ISiteSettingsService siteSettingsService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
             _siteSettingsService = siteSettingsService;
         }
@@ -24,12 +25,15 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var faqs = await _context.FAQs
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var faqs = await context.FAQs
                     .Where(f => f.IsActive)
                     .OrderBy(f => f.DisplayOrder)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 var siteSettings = _siteSettingsService.Get();
 
@@ -41,7 +45,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = _siteSettingsService.Get();
                 
                 ViewBag.Categories = categories;

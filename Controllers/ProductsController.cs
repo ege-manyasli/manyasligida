@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
         private readonly ISiteSettingsService _siteSettingsService;
 
-        public ProductsController(ApplicationDbContext context, CartService cartService, ISiteSettingsService siteSettingsService)
+        public ProductsController(IServiceProvider serviceProvider, CartService cartService, ISiteSettingsService siteSettingsService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
             _siteSettingsService = siteSettingsService;
         }
@@ -25,7 +26,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var query = _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var query = context.Products
                     .Include(p => p.Category)
                     .Where(p => p.IsActive);
 
@@ -56,16 +60,10 @@ namespace manyasligida.Controllers
                     _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
                 };
 
-                // Optimize pagination with parallel execution
-                var totalProductsTask = query.CountAsync();
-                var productsTask = query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
-
-                await Task.WhenAll(totalProductsTask, productsTask, categoriesTask);
-
-                var totalProducts = await totalProductsTask;
-                var products = await productsTask;
-                var categories = await categoriesTask;
+                // Sıralı sorgular - paralel sorgular yerine
+                var totalProducts = await query.CountAsync();
+                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
 
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
@@ -86,7 +84,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = _siteSettingsService.Get();
                 
                 ViewBag.Categories = categories;
@@ -104,7 +105,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var product = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var product = await context.Products
                     .Include(p => p.Category)
                     .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
 
@@ -113,8 +117,8 @@ namespace manyasligida.Controllers
                     return NotFound();
                 }
 
-                // Optimize related queries with parallel execution
-                var relatedProductsTask = _context.Products
+                // Sıralı sorgular - paralel sorgular yerine
+                var relatedProducts = await context.Products
                     .Where(p => p.CategoryId == product.CategoryId && 
                                p.Id != product.Id && 
                                p.IsActive)
@@ -123,19 +127,13 @@ namespace manyasligida.Controllers
                     .Take(4)
                     .ToListAsync();
 
-                var popularProductsTask = _context.Products
+                var popularProducts = await context.Products
                     .Where(p => p.IsPopular && p.IsActive && p.Id != product.Id)
                     .OrderByDescending(p => p.CreatedAt)
                     .Take(4)
                     .ToListAsync();
 
-                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
-
-                await Task.WhenAll(relatedProductsTask, popularProductsTask, categoriesTask);
-
-                var relatedProducts = await relatedProductsTask;
-                var popularProducts = await popularProductsTask;
-                var categories = await categoriesTask;
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 var siteSettings = _siteSettingsService.Get();
 
@@ -149,7 +147,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = _siteSettingsService.Get();
                 
                 ViewBag.Categories = categories;
@@ -167,13 +168,16 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
                 if (category == null)
                 {
                     return NotFound();
                 }
 
-                var query = _context.Products
+                var query = context.Products
                     .Include(p => p.Category)
                     .Where(p => p.CategoryId == id && p.IsActive);
 
@@ -190,16 +194,10 @@ namespace manyasligida.Controllers
                     _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
                 };
 
-                // Optimize pagination
-                var totalProductsTask = query.CountAsync();
-                var productsTask = query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
-
-                await Task.WhenAll(totalProductsTask, productsTask, categoriesTask);
-
-                var totalProducts = await totalProductsTask;
-                var products = await productsTask;
-                var categories = await categoriesTask;
+                // Sıralı sorgular
+                var totalProducts = await query.CountAsync();
+                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
 
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
@@ -219,7 +217,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -252,7 +253,10 @@ namespace manyasligida.Controllers
                     return RedirectToAction("Index");
                 }
 
-                var query = _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var query = context.Products
                     .Include(p => p.Category)
                     .Where(p => p.IsActive && 
                                (p.Name.Contains(q) || 
@@ -272,16 +276,10 @@ namespace manyasligida.Controllers
                     _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
                 };
 
-                // Optimize pagination
-                var totalProductsTask = query.CountAsync();
-                var productsTask = query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-                var categoriesTask = _context.Categories.Where(c => c.IsActive).ToListAsync();
-
-                await Task.WhenAll(totalProductsTask, productsTask, categoriesTask);
-
-                var totalProducts = await totalProductsTask;
-                var products = await productsTask;
-                var categories = await categoriesTask;
+                // Sıralı sorgular
+                var totalProducts = await query.CountAsync();
+                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
 
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
@@ -301,7 +299,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -329,14 +330,17 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var featuredProducts = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var featuredProducts = await context.Products
                     .Include(p => p.Category)
                     .Where(p => p.IsFeatured && p.IsActive)
                     .OrderBy(p => p.SortOrder)
                     .ThenByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = _siteSettingsService.Get();
 
                 ViewBag.FeaturedProducts = featuredProducts;
@@ -348,7 +352,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -375,13 +382,16 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var newProducts = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var newProducts = await context.Products
                     .Include(p => p.Category)
                     .Where(p => p.IsNew && p.IsActive)
                     .OrderByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 // Site ayarları
                 var siteSettings = new
@@ -404,7 +414,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -431,14 +444,17 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var onSaleProducts = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var onSaleProducts = await context.Products
                     .Include(p => p.Category)
                     .Where(p => p.IsActive && p.OldPrice.HasValue && p.OldPrice > p.Price)
                     .OrderByDescending(p => p.DiscountPercentage)
                     .ThenByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 // Site ayarları
                 var siteSettings = new
@@ -461,7 +477,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -488,7 +507,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var product = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var product = await context.Products
                     .Include(p => p.Category)
                     .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
 
@@ -510,7 +532,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var product = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var product = await context.Products
                     .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
 
                 if (product == null)
@@ -533,7 +558,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var product = await _context.Products
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var product = await context.Products
                     .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
 
                 if (product == null)
@@ -565,7 +593,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var categories = await _context.Categories
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var categories = await context.Categories
                     .Where(c => c.IsActive)
                     .OrderBy(c => c.DisplayOrder)
                     .ThenBy(c => c.Name)

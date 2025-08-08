@@ -1,0 +1,159 @@
+@{
+    ViewData["Title"] = "Performans Metrikleri";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Performans Metrikleri</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick="location.reload()">
+            <i class="fas fa-sync-alt fa-sm text-white-50"></i> Yenile
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Toplam İstek
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @(ViewBag.PerformanceMetrics?.TotalRequests ?? 0)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Toplam Sorgu
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @(ViewBag.PerformanceMetrics?.TotalQueries ?? 0)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-database fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Toplam Hata
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @(ViewBag.PerformanceMetrics?.TotalErrors ?? 0)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Sistem Durumu
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Aktif
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-server fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İstek Süreleri</h6>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.PerformanceMetrics?.AverageRequestTimes != null)
+                    {
+                        var requestTimes = ViewBag.PerformanceMetrics.AverageRequestTimes as Dictionary<string, long>;
+                        if (requestTimes != null && requestTimes.Any())
+                        {
+                            foreach (var request in requestTimes.Take(10))
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-sm">@request.Key</span>
+                                    <span class="badge badge-primary">@request.Value ms</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">Henüz veri yok.</p>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Son Hatalar</h6>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.PerformanceMetrics?.RecentErrors != null)
+                    {
+                        var errors = ViewBag.PerformanceMetrics.RecentErrors as List<string>;
+                        if (errors != null && errors.Any())
+                        {
+                            foreach (var error in errors.Take(5))
+                            {
+                                <div class="alert alert-danger alert-sm mb-2">
+                                    <small>@error</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">Hata yok.</p>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-refresh every 30 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+</script>

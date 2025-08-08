@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class ContactController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
         private readonly ISiteSettingsService _siteSettingsService;
 
-        public ContactController(ApplicationDbContext context, CartService cartService, ISiteSettingsService siteSettingsService)
+        public ContactController(IServiceProvider serviceProvider, CartService cartService, ISiteSettingsService siteSettingsService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
             _siteSettingsService = siteSettingsService;
         }
@@ -24,7 +25,10 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
                 var siteSettings = _siteSettingsService.Get();
 
@@ -36,7 +40,10 @@ namespace manyasligida.Controllers
             }
             catch (Exception)
             {
-                var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 var siteSettings = new
                 {
                     Phone = "+90 266 123 45 67",
@@ -66,12 +73,15 @@ namespace manyasligida.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    using var scope = _serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
                     model.CreatedAt = DateTime.Now;
                     model.IsRead = false;
                     model.IsReplied = false;
 
-                    _context.ContactMessages.Add(model);
-                    await _context.SaveChangesAsync();
+                    context.ContactMessages.Add(model);
+                    await context.SaveChangesAsync();
 
                     TempData["MessageSuccess"] = "Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.";
                     return RedirectToAction(nameof(Index));
@@ -82,7 +92,10 @@ namespace manyasligida.Controllers
                 ModelState.AddModelError("", "Mesaj gönderilirken bir hata oluştu.");
             }
 
-            var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
+            using var errorScope = _serviceProvider.CreateScope();
+            var errorContext = errorScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            
+            var categories = await errorContext.Categories.Where(c => c.IsActive).ToListAsync();
             var siteSettings = new
             {
                 Phone = "+90 266 123 45 67",

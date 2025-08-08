@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CartService _cartService;
         private readonly IAuthService _authService;
 
-        public AccountController(ApplicationDbContext context, CartService cartService, IAuthService authService)
+        public AccountController(IServiceProvider serviceProvider, CartService cartService, IAuthService authService)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _cartService = cartService;
             _authService = authService;
         }
@@ -139,7 +140,10 @@ namespace manyasligida.Controllers
             }
 
             // Get user's order history
-            var userOrders = await _context.Orders
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var userOrders = await context.Orders
                 .Where(o => o.UserId == user.Id)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
@@ -164,19 +168,34 @@ namespace manyasligida.Controllers
             {
                 try
                 {
-                    user.FirstName = model.FirstName;
-                    user.LastName = model.LastName;
-                    user.Phone = model.Phone;
-                    user.Address = model.Address;
-                    user.City = model.City;
-                    user.PostalCode = model.PostalCode;
-                    user.UpdatedAt = DateTime.Now;
+                    using var scope = _serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                    await _context.SaveChangesAsync();
-                    TempData["ProfileUpdateSuccess"] = "Profil bilgileriniz güncellendi.";
-                    
-                    // Session'daki kullanıcı adını güncelle
-                    _authService.SetCurrentUser(user);
+                    var userToUpdate = await context.Users.FindAsync(user.Id);
+                    if (userToUpdate != null)
+                    {
+                        userToUpdate.FirstName = model.FirstName;
+                        userToUpdate.LastName = model.LastName;
+                        userToUpdate.Phone = model.Phone;
+                        userToUpdate.Address = model.Address;
+                        userToUpdate.City = model.City;
+                        userToUpdate.PostalCode = model.PostalCode;
+                        userToUpdate.UpdatedAt = DateTime.Now;
+
+                        await context.SaveChangesAsync();
+                        
+                        // Session'daki kullanıcı bilgilerini güncelle
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;
+                        user.Phone = model.Phone;
+                        user.Address = model.Address;
+                        user.City = model.City;
+                        user.PostalCode = model.PostalCode;
+                        user.UpdatedAt = DateTime.Now;
+                        
+                        _authService.SetCurrentUser(user);
+                        TempData["ProfileUpdateSuccess"] = "Profil bilgileriniz güncellendi.";
+                    }
                 }
                 catch (Exception)
                 {
