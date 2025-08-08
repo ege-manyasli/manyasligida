@@ -152,12 +152,35 @@ namespace manyasligida.Services
                 // Session'ı tamamen temizle
                 session.Clear();
                 
+                // Tüm session key'lerini manuel olarak temizle
+                session.Remove("UserId");
+                session.Remove("UserName");
+                session.Remove("UserEmail");
+                session.Remove("IsAdmin");
+                session.Remove("LoginTime");
+                session.Remove("SessionId");
+                
                 // Cookie'yi de temizle
                 var response = _httpContextAccessor.HttpContext?.Response;
                 if (response != null)
                 {
                     response.Cookies.Delete(".ManyasliGida.Session");
+                    response.Cookies.Delete("ASP.NET_SessionId");
+                    
+                    // Tüm cookie'leri temizle
+                    var request = _httpContextAccessor.HttpContext?.Request;
+                    if (request != null)
+                    {
+                        var cookies = request.Cookies.Keys;
+                        foreach (var cookie in cookies)
+                        {
+                            response.Cookies.Delete(cookie);
+                        }
+                    }
                 }
+                
+                // Session'ı commit et
+                session.CommitAsync().Wait();
             }
         }
 

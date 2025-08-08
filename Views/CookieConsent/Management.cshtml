@@ -1,0 +1,384 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Cookie Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-cookie-bite me-2"></i>Cookie Yönetimi
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Toplam Onay</h6>
+                                            <h3 class="mb-0" id="totalConsents">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Kabul Edilen</h6>
+                                            <h3 class="mb-0" id="acceptedConsents">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-thumbs-up fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Reddedilen</h6>
+                                            <h3 class="mb-0" id="declinedConsents">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-thumbs-down fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">Kabul Oranı</h6>
+                                            <h3 class="mb-0" id="acceptanceRate">0%</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-percentage fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Chart -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Son 30 Gün Onay Grafiği</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="consentChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Management -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Cookie Kategorileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Kategori</th>
+                                                    <th>Açıklama</th>
+                                                    <th>Gerekli</th>
+                                                    <th>Aktif</th>
+                                                    <th>Sıralama</th>
+                                                    <th>İşlemler</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="categoryTableBody">
+                                                @if (ViewBag.Categories != null)
+                                                {
+                                                    foreach (var category in ViewBag.Categories)
+                                                    {
+                                                        <tr data-category-id="@category.Id">
+                                                            <td>
+                                                                <span class="category-name">@category.Name</span>
+                                                                <input type="text" class="form-control category-name-input" value="@category.Name" style="display: none;">
+                                                            </td>
+                                                            <td>
+                                                                <span class="category-description">@category.Description</span>
+                                                                <textarea class="form-control category-description-input" style="display: none;">@category.Description</textarea>
+                                                            </td>
+                                                            <td>
+                                                                <span class="category-required">
+                                                                    @if (category.IsRequired)
+                                                                    {
+                                                                        <span class="badge bg-success">Evet</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="badge bg-secondary">Hayır</span>
+                                                                    }
+                                                                </span>
+                                                                <select class="form-select category-required-input" style="display: none;" data-is-required="@category.IsRequired.ToString().ToLower()">
+                                                                    <option value="true">Evet</option>
+                                                                    <option value="false">Hayır</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <span class="category-active">
+                                                                    @if (category.IsActive)
+                                                                    {
+                                                                        <span class="badge bg-success">Aktif</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="badge bg-danger">Pasif</span>
+                                                                    }
+                                                                </span>
+                                                                <select class="form-select category-active-input" style="display: none;" data-is-active="@category.IsActive.ToString().ToLower()">
+                                                                    <option value="true">Aktif</option>
+                                                                    <option value="false">Pasif</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <span class="category-sort">@category.SortOrder</span>
+                                                                <input type="number" class="form-control category-sort-input" value="@category.SortOrder" style="display: none;">
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <button type="button" class="btn btn-sm btn-primary edit-category">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-sm btn-success save-category" style="display: none;">
+                                                                        <i class="fas fa-save"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-sm btn-secondary cancel-edit" style="display: none;">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let consentChart;
+
+        // Load statistics
+        function loadStatistics() {
+            const stats = @Html.Raw(Json.Serialize(ViewBag.ConsentStats));
+            if (stats) {
+                document.getElementById('totalConsents').textContent = stats.totalConsents || 0;
+                document.getElementById('acceptedConsents').textContent = stats.acceptedConsents || 0;
+                document.getElementById('declinedConsents').textContent = stats.declinedConsents || 0;
+                document.getElementById('acceptanceRate').textContent = (stats.acceptanceRate || 0) + '%';
+            }
+        }
+
+        // Load analytics
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/CookieConsent/GetConsentAnalytics');
+                const data = await response.json();
+
+                if (data.success && data.analytics) {
+                    createConsentChart(data.analytics.dailyConsents);
+                }
+            } catch (error) {
+                console.error('Analitik veriler yüklenemedi:', error);
+            }
+        }
+
+        // Create consent chart
+        function createConsentChart(dailyConsents) {
+            const ctx = document.getElementById('consentChart').getContext('2d');
+
+            if (consentChart) {
+                consentChart.destroy();
+            }
+
+            const labels = dailyConsents.map(item => item.date);
+            const acceptedData = dailyConsents.map(item => item.acceptedCount);
+            const declinedData = dailyConsents.map(item => item.declinedCount);
+
+            consentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Kabul Edilen',
+                            data: acceptedData,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Reddedilen',
+                            data: declinedData,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Category management
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStatistics();
+            loadAnalytics();
+
+            // Set initial selected values for select elements
+            document.querySelectorAll('.category-required-input').forEach(select => {
+                const isRequired = select.getAttribute('data-is-required') === 'true';
+                select.value = isRequired.toString();
+            });
+
+            document.querySelectorAll('.category-active-input').forEach(select => {
+                const isActive = select.getAttribute('data-is-active') === 'true';
+                select.value = isActive.toString();
+            });
+
+            // Edit category
+            document.querySelectorAll('.edit-category').forEach(button => {
+                button.addEventListener('click', function () {
+                    const row = this.closest('tr');
+                    const categoryId = row.dataset.categoryId;
+
+                    // Show input fields
+                    row.querySelector('.category-name').style.display = 'none';
+                    row.querySelector('.category-name-input').style.display = 'block';
+
+                    row.querySelector('.category-description').style.display = 'none';
+                    row.querySelector('.category-description-input').style.display = 'block';
+
+                    row.querySelector('.category-required').style.display = 'none';
+                    row.querySelector('.category-required-input').style.display = 'block';
+
+                    row.querySelector('.category-active').style.display = 'none';
+                    row.querySelector('.category-active-input').style.display = 'block';
+
+                    row.querySelector('.category-sort').style.display = 'none';
+                    row.querySelector('.category-sort-input').style.display = 'block';
+
+                    // Show save/cancel buttons
+                    this.style.display = 'none';
+                    row.querySelector('.save-category').style.display = 'inline-block';
+                    row.querySelector('.cancel-edit').style.display = 'inline-block';
+                });
+            });
+
+            // Save category
+            document.querySelectorAll('.save-category').forEach(button => {
+                button.addEventListener('click', async function () {
+                    const row = this.closest('tr');
+                    const categoryId = row.dataset.categoryId;
+
+                    const request = {
+                        name: row.querySelector('.category-name-input').value,
+                        description: row.querySelector('.category-description-input').value,
+                        isRequired: row.querySelector('.category-required-input').value === 'true',
+                        isActive: row.querySelector('.category-active-input').value === 'true',
+                        sortOrder: parseInt(row.querySelector('.category-sort-input').value)
+                    };
+
+                    try {
+                        const response = await fetch(`/CookieConsent/UpdateCategory/${categoryId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify(request)
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            showToast(data.message, 'success');
+                            location.reload();
+                        } else {
+                            showToast(data.message, 'error');
+                        }
+                    } catch (error) {
+                        showToast('Kategori güncellenirken hata oluştu.', 'error');
+                    }
+                });
+            });
+
+            // Cancel edit
+            document.querySelectorAll('.cancel-edit').forEach(button => {
+                button.addEventListener('click', function () {
+                    const row = this.closest('tr');
+
+                    // Hide input fields
+                    row.querySelector('.category-name').style.display = 'inline';
+                    row.querySelector('.category-name-input').style.display = 'none';
+
+                    row.querySelector('.category-description').style.display = 'inline';
+                    row.querySelector('.category-description-input').style.display = 'none';
+
+                    row.querySelector('.category-required').style.display = 'inline';
+                    row.querySelector('.category-required-input').style.display = 'none';
+
+                    row.querySelector('.category-active').style.display = 'inline';
+                    row.querySelector('.category-active-input').style.display = 'none';
+
+                    row.querySelector('.category-sort').style.display = 'inline';
+                    row.querySelector('.category-sort-input').style.display = 'none';
+
+                    // Show edit button
+                    row.querySelector('.edit-category').style.display = 'inline-block';
+                    row.querySelector('.save-category').style.display = 'none';
+                    row.querySelector('.cancel-edit').style.display = 'none';
+                });
+            });
+        });
+    </script>
+}

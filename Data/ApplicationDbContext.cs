@@ -23,6 +23,9 @@ namespace manyasligida.Data
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<Video> Videos { get; set; }
         public DbSet<EmailVerification> EmailVerifications { get; set; }
+        public DbSet<CookieConsent> CookieConsents { get; set; }
+        public DbSet<CookieCategory> CookieCategories { get; set; }
+        public DbSet<CookieConsentDetail> CookieConsentDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,6 +82,19 @@ namespace manyasligida.Data
             modelBuilder.Entity<Product>()
                 .Property(p => p.OldPrice)
                 .HasPrecision(18, 2);
+
+            // Cookie Consent relationships
+            modelBuilder.Entity<CookieConsentDetail>()
+                .HasOne(ccd => ccd.CookieConsent)
+                .WithMany(cc => cc.ConsentDetails)
+                .HasForeignKey(ccd => ccd.CookieConsentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CookieConsentDetail>()
+                .HasOne(ccd => ccd.CookieCategory)
+                .WithMany(cc => cc.ConsentDetails)
+                .HasForeignKey(ccd => ccd.CookieCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Seed data
             SeedData(modelBuilder);
@@ -392,6 +408,50 @@ namespace manyasligida.Data
                     IsActive = true,
                     IsFeatured = false,
                     DisplayOrder = 3,
+                    CreatedAt = new DateTime(2024, 1, 1)
+                }
+            );
+
+            // Cookie Categories
+            modelBuilder.Entity<CookieCategory>().HasData(
+                new CookieCategory
+                {
+                    Id = 1,
+                    Name = "Gerekli Çerezler",
+                    Description = "Sitenin temel işlevselliği için gerekli olan çerezler. Bu çerezler olmadan site düzgün çalışmaz.",
+                    IsRequired = true,
+                    IsActive = true,
+                    SortOrder = 1,
+                    CreatedAt = new DateTime(2024, 1, 1)
+                },
+                new CookieCategory
+                {
+                    Id = 2,
+                    Name = "Analitik Çerezler",
+                    Description = "Sitenin kullanımını analiz etmek ve performansını iyileştirmek için kullanılan çerezler.",
+                    IsRequired = false,
+                    IsActive = true,
+                    SortOrder = 2,
+                    CreatedAt = new DateTime(2024, 1, 1)
+                },
+                new CookieCategory
+                {
+                    Id = 3,
+                    Name = "Pazarlama Çerezleri",
+                    Description = "Kişiselleştirilmiş reklamlar ve pazarlama içerikleri için kullanılan çerezler.",
+                    IsRequired = false,
+                    IsActive = true,
+                    SortOrder = 3,
+                    CreatedAt = new DateTime(2024, 1, 1)
+                },
+                new CookieCategory
+                {
+                    Id = 4,
+                    Name = "Sosyal Medya Çerezleri",
+                    Description = "Sosyal medya platformları ile etkileşim ve paylaşım için kullanılan çerezler.",
+                    IsRequired = false,
+                    IsActive = true,
+                    SortOrder = 4,
                     CreatedAt = new DateTime(2024, 1, 1)
                 }
             );

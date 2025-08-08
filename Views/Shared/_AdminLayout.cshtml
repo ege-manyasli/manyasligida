@@ -801,17 +801,25 @@
                 </a>
             </li>
 
+            <!-- Cookie Yönetimi -->
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CookieConsent" ? "active" : "")" href="@Url.Action("Management", "CookieConsent")">
+                    <i class="fas fa-cookie-bite"></i>
+                    <span>Cookie Yönetimi</span>
+                </a>
+            </li>
+
 
 
             <!-- Site Görüntüleme ve Çıkış -->
             <li class="nav-item mt-4">
-                <a class="nav-link" href="@Url.Action("Index", "Home")" target="_blank">
+                <a class="nav-link" href="@Url.Action("Index", "Home")" target="_blank" onclick="openSiteInNewTab()">
                     <i class="fas fa-external-link-alt"></i>
                     <span>Siteyi Görüntüle</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Logout", "Account")">
+                <a class="nav-link" href="#" onclick="performLogout()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Çıkış Yap</span>
                 </a>
@@ -833,7 +841,11 @@
                         <i class="fas fa-user"></i>
                     </div>
                     <div>
-                        <div class="fw-bold">@Context.Session.GetString("UserName")</div>
+                        @{
+                            var adminUserName = Context.Session.GetString("UserName");
+                            var adminUserId = Context.Session.GetString("UserId");
+                        }
+                        <div class="fw-bold">@(adminUserName ?? "Admin")</div>
                         <small class="text-muted">Admin</small>
                     </div>
                 </div>
@@ -897,15 +909,38 @@
         // Show TempData messages
         @if (TempData["Success"] != null)
         {
-                <text>showToast('@TempData["Success"]', 'success');</text>
+                            <text>showToast('@TempData["Success"]', 'success');</text>
         }
         @if (TempData["Error"] != null)
         {
-                <text>showToast('@TempData["Error"]', 'error');</text>
+                            <text>showToast('@TempData["Error"]', 'error');</text>
         }
         @if (TempData["Info"] != null)
         {
-                <text>showToast('@TempData["Info"]', 'info');</text>
+                            <text>showToast('@TempData["Info"]', 'info');</text>
+        }
+
+        // Session check on page load
+        $(document).ready(function() {
+            const adminUserName = '@Context.Session.GetString("UserName")';
+            const adminUserId = '@Context.Session.GetString("UserId")';
+            
+            if (adminUserId && adminUserName) {
+                console.log('Admin logged in:', adminUserName);
+                updateAdminDisplay(adminUserName);
+            } else {
+                console.log('No admin session found');
+                // Redirect to login if no session
+                window.location.href = '@Url.Action("Login", "Account")';
+            }
+        });
+
+        // Function to update admin display
+        function updateAdminDisplay(userName) {
+            const adminNameElement = document.querySelector('.user-info .fw-bold');
+            if (adminNameElement) {
+                adminNameElement.textContent = userName;
+            }
         }
 
         // Enhanced Mobile sidebar toggle
@@ -938,6 +973,58 @@
                 document.getElementById('mainContent').classList.add('expanded');
             }
         });
+
+        // Logout functionality
+        function performLogout() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                // Clear session data immediately
+                sessionStorage.clear();
+                localStorage.clear();
+
+                // Clear all cookies
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+
+                // Make logout request
+                fetch('@Url.Action("Logout", "Account")', {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                })
+                .then(response => {
+                    // Force page reload regardless of response
+                    setTimeout(() => {
+                        window.location.reload(true);
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    // Force page reload anyway
+                    setTimeout(() => {
+                        window.location.reload(true);
+                    }, 100);
+                });
+            }
+        }
+
+        // Function to open site in new tab
+        function openSiteInNewTab() {
+            const siteUrl = '@Url.Action("Index", "Home")';
+            const newWindow = window.open(siteUrl, '_blank');
+            
+            if (newWindow) {
+                // Add a small delay to ensure the new window loads properly
+                setTimeout(() => {
+                    newWindow.focus();
+                }, 100);
+            } else {
+                showToast('Site açılamadı. Popup engelleyiciyi kontrol edin.', 'error');
+            }
+        }
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

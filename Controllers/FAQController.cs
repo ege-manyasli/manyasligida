@@ -20,44 +20,11 @@ namespace manyasligida.Controllers
             _siteSettingsService = siteSettingsService;
         }
 
-        // GET: FAQ/Index
-        public async Task<IActionResult> Index()
+        // GET: FAQ/Index - Devre dışı bırakıldı
+        public IActionResult Index()
         {
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                var faqs = await context.FAQs
-                    .Where(f => f.IsActive)
-                    .OrderBy(f => f.DisplayOrder)
-                    .ToListAsync();
-
-                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                
-                var siteSettings = _siteSettingsService.Get();
-
-                ViewBag.CartItemCount = _cartService.GetCartItemCount();
-                ViewBag.Categories = categories;
-                ViewBag.SiteSettings = siteSettings;
-                
-                return View(faqs);
-            }
-            catch (Exception ex)
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                
-                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                var siteSettings = _siteSettingsService.Get();
-                
-                ViewBag.Categories = categories;
-                ViewBag.SiteSettings = siteSettings;
-                ViewBag.CartItemCount = _cartService.GetCartItemCount();
-                
-                TempData["Error"] = "SSS yüklenirken bir hata oluştu: " + ex.Message;
-                return View(new List<FAQ>());
-            }
+            // SSS sayfası kaldırıldı, ana sayfaya yönlendir
+            return RedirectToAction("Index", "Home");
         }
     }
 } 

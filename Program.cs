@@ -53,14 +53,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add Session support
 builder.Services.AddDistributedMemoryCache();
+// Add session services
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     options.Cookie.Name = ".ManyasliGida.Session";
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Lax; // Back to Lax for better compatibility
+    options.Cookie.HttpOnly = true; // Back to true for security
 });
 
 // Add HttpContextAccessor
@@ -83,6 +84,9 @@ builder.Services.AddSingleton<ISiteSettingsService, SiteSettingsService>();
 
 // Add PerformanceMonitorService
 builder.Services.AddSingleton<IPerformanceMonitorService, PerformanceMonitorService>();
+
+// Add CookieConsentService
+builder.Services.AddScoped<ICookieConsentService, CookieConsentService>();
 
 var app = builder.Build();
 
@@ -118,6 +122,21 @@ app.UseResponseCaching();
 
 app.UseRouting();
 
+// Add cache clearing middleware for logout
+app.Use(async (context, next) =>
+{
+    // Check if this is a logout request
+    if (context.Request.Path.StartsWithSegments("/Account/Logout"))
+    {
+        // Clear all cache headers
+        context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        context.Response.Headers["Pragma"] = "no-cache";
+        context.Response.Headers["Expires"] = "0";
+    }
+    
+    await next();
+});
+
 // Configure session middleware with security
 app.UseSession(new SessionOptions
 {
@@ -125,10 +144,11 @@ app.UseSession(new SessionOptions
     Cookie = new CookieBuilder
     {
         Name = ".ManyasliGida.Session",
-        HttpOnly = true,
+        HttpOnly = true, // Back to true for security
         IsEssential = true,
         SecurePolicy = CookieSecurePolicy.SameAsRequest,
-        SameSite = SameSiteMode.Strict
+        SameSite = SameSiteMode.Lax, // Back to Lax for better compatibility
+        MaxAge = TimeSpan.FromMinutes(30)
     }
 });
 

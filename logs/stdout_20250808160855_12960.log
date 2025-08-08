@@ -1,0 +1,65 @@
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (172ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /CookieConsent/GetCategories took 2019ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /CookieConsent/GetCategories took 2019ms from ::1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (173ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='60']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [CookieConsents] AS [c]
+              WHERE [c].[SessionId] = @__sessionId_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (153ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='60']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [CookieConsents] AS [c]
+              WHERE [c].[SessionId] = @__sessionId_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+warn: Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware[4]
+      Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+warn: Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware[4]
+      Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (153ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (152ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (154ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='60']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [CookieConsents] AS [c]
+              WHERE [c].[SessionId] = @__sessionId_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+warn: Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware[4]
+      Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+warn: Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware[4]
+      Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (154ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], 

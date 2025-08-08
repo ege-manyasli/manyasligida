@@ -245,16 +245,6 @@ namespace manyasligida.Controllers
                             return View(product);
                         }
 
-                        // Minimum çözünürlük kontrolü (örnek: 1200x1200)
-                        var okRes = await _fileUploadService.IsResolutionSufficientAsync(imageFile, 1200, 1200);
-                        if (!okRes)
-                        {
-                            ModelState.AddModelError("ImageFile", "Görsel çözünürlüğü düşük. Lütfen en az 1200x1200 piksel görsel yükleyin.");
-                            var activeCategories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-                            ViewBag.Categories = activeCategories;
-                            return View(product);
-                        }
-
                         var mainUrl = await _fileUploadService.UploadImageAsync(imageFile, "products");
                         product.ImageUrl = mainUrl;
                         imageUrls.Add(mainUrl);
@@ -266,9 +256,6 @@ namespace manyasligida.Controllers
                         {
                             if (gf != null && gf.Length > 0 && _fileUploadService.IsValidImage(gf))
                             {
-                                // Galeri için de temel çözünürlük kontrolü (örnek: 1000x1000)
-                                var okGallery = await _fileUploadService.IsResolutionSufficientAsync(gf, 1000, 1000);
-                                if (!okGallery) continue;
                                 var url = await _fileUploadService.UploadImageAsync(gf, "products");
                                 if (!imageUrls.Contains(url)) imageUrls.Add(url);
                             }
@@ -382,15 +369,6 @@ namespace manyasligida.Controllers
                             return View(product);
                         }
 
-                        var okRes = await _fileUploadService.IsResolutionSufficientAsync(imageFile, 1200, 1200);
-                        if (!okRes)
-                        {
-                            ModelState.AddModelError("ImageFile", "Görsel çözünürlüğü düşük. Lütfen en az 1200x1200 piksel görsel yükleyin.");
-                            var activeCategories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
-                            ViewBag.Categories = activeCategories;
-                            return View(product);
-                        }
-
                         // Eski ana resmi sil (diskten) ve listeden çıkar
                         if (!string.IsNullOrEmpty(existingProduct.ImageUrl))
                         {
@@ -415,8 +393,6 @@ namespace manyasligida.Controllers
                         {
                             if (gf != null && gf.Length > 0 && _fileUploadService.IsValidImage(gf))
                             {
-                                var okGallery = await _fileUploadService.IsResolutionSufficientAsync(gf, 1000, 1000);
-                                if (!okGallery) continue;
                                 var url = await _fileUploadService.UploadImageAsync(gf, "products");
                                 if (!mergedImageUrls.Contains(url)) mergedImageUrls.Add(url);
                             }

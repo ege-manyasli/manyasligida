@@ -48,7 +48,7 @@ namespace manyasligida.Controllers
                 {
                     Phone = "+90 266 123 45 67",
                     Email = "info@manyasligida.com",
-                    Address = "Manyas, Balıkesir",
+                    Address = "17 Eylül, Hal Cd. No:6 D:8, 10200 Bandırma/Balıkesir",
                     WorkingHours = "Pzt-Cmt: 08:00-18:00",
                     FacebookUrl = "#",
                     InstagramUrl = "#",
@@ -100,7 +100,7 @@ namespace manyasligida.Controllers
             {
                 Phone = "+90 266 123 45 67",
                 Email = "info@manyasligida.com",
-                Address = "Manyas, Balıkesir",
+                Address = "17 Eylül, Hal Cd. No:6 D:8, 10200 Bandırma/Balıkesir",
                 WorkingHours = "Pzt-Cmt: 08:00-18:00",
                 FacebookUrl = "#",
                 InstagramUrl = "#",

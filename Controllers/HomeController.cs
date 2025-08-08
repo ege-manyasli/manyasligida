@@ -29,6 +29,9 @@ namespace manyasligida.Controllers
         [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
         public async Task<IActionResult> Index()
         {
+            // Clear cookie consent for testing (remove this line later)
+            HttpContext.Session.Remove("CookieConsent");
+            
             try
             {
                 _logger.LogInformation("Home page requested");
@@ -74,11 +77,21 @@ namespace manyasligida.Controllers
                 // Get site settings
                 var siteSettings = await Task.Run(() => _siteSettingsService.Get());
 
+                // Get current user info from session
+                var currentUser = new
+                {
+                    IsLoggedIn = !string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")),
+                    UserName = HttpContext.Session.GetString("UserName"),
+                    UserEmail = HttpContext.Session.GetString("UserEmail"),
+                    IsAdmin = HttpContext.Session.GetString("IsAdmin") == "True"
+                };
+
                 var viewModel = new
                 {
                     Products = products,
                     Categories = categories,
-                    SiteSettings = siteSettings ?? new SiteSettings()
+                    SiteSettings = siteSettings ?? new SiteSettings(),
+                    CurrentUser = currentUser
                 };
 
                 _logger.LogInformation($"Home page loaded successfully. Products: {products.Count}, Categories: {categories.Count}");
@@ -94,7 +107,14 @@ namespace manyasligida.Controllers
                 {
                     Products = new List<object>(),
                     Categories = new List<object>(),
-                    SiteSettings = _siteSettingsService.Get() ?? new SiteSettings()
+                    SiteSettings = _siteSettingsService.Get() ?? new SiteSettings(),
+                    CurrentUser = new
+                    {
+                        IsLoggedIn = !string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")),
+                        UserName = HttpContext.Session.GetString("UserName"),
+                        UserEmail = HttpContext.Session.GetString("UserEmail"),
+                        IsAdmin = HttpContext.Session.GetString("IsAdmin") == "True"
+                    }
                 };
 
                 ViewBag.ErrorMessage = "Ürünler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.";

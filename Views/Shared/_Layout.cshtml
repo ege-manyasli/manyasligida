@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Manyaslı Gıda</title>
-    <meta name="description" content="Manyas'ın bereketli topraklarından sofralarınıza uzanan %100 doğal süt ürünleri. Katkısız, taze ve güvenilir üretimle sağlığınız için en iyisi.">
-    <meta name="keywords" content="peynir, süt ürünleri, doğal, organik, manyas, gıda, taze">
+    <meta name="description" content="Balıkesir Bandırma'dan sofralarınıza uzanan kaliteli süt ürünleri. Taze ve güvenilir üretimle sağlığınız için en iyisi.">
+    <meta name="keywords" content="peynir, süt ürünleri, kaliteli, taze, bandırma, gıda, balıkesir">
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
 
     <!-- Bootstrap CSS -->
@@ -1572,11 +1572,7 @@
                                 <i class="fas fa-blog me-1"></i>Blog
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "FAQ" ? "active" : "")" href="@Url.Action("Index", "FAQ")">
-                                <i class="fas fa-question-circle me-1"></i>SSS
-                            </a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")" href="@Url.Action("Index", "Contact")">
                                 <i class="fas fa-envelope me-1"></i>İletişim
@@ -1585,18 +1581,24 @@
                     </ul>
 
                     <div class="nav-right">
-                        @if (Context.Session.GetString("UserId") != null)
+                        @{
+                            var userId = Context.Session.GetString("UserId");
+                            var userName = Context.Session.GetString("UserName");
+                            var isLoggedIn = !string.IsNullOrEmpty(userId);
+                        }
+                        
+                        @if (isLoggedIn)
                         {
                             <div class="dropdown">
                                 <button class="btn btn-link nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-user"></i>
-                                    <span>@Context.Session.GetString("UserName")</span>
+                                    <span>@userName</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">Profilim</a></li>
                                     <li><a class="dropdown-item" href="@Url.Action("Index", "Order")">Siparişlerim</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")">Çıkış Yap</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="performLogout()">Çıkış Yap</a></li>
                                 </ul>
                             </div>
                         }
@@ -1627,7 +1629,7 @@
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-5">
                     <h5><i class="fas fa-store me-2"></i>Cemal Manyaslı Süt Ürünleri</h5>
-                    <p class="mb-4">1980'den günümüze uzanan eşsiz lezzet. Manyas'ın bereketli topraklarından sofralarınıza uzanan %100 doğal süt ürünleri. Katkısız, taze ve güvenilir üretimle sağlığınız için en iyisi.</p>
+                    <p class="mb-4">1980'den günümüze uzanan eşsiz lezzet. Balıkesir Bandırma'dan sofralarınıza uzanan kaliteli süt ürünleri. Taze ve güvenilir üretimle sağlığınız için en iyisi.</p>
                     <div class="social-links">
                         <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
@@ -1667,7 +1669,7 @@
                         <li><a href="@Url.Action("Index", "About")">Hakkımızda</a></li>
                         <li><a href="@Url.Action("Index", "Blog")">Blog</a></li>
                         <li><a href="@Url.Action("Index", "Gallery")">Galeri</a></li>
-                        <li><a href="@Url.Action("Index", "FAQ")">Sıkça Sorulan Sorular</a></li>
+
                         <li><a href="@Url.Action("Index", "Contact")">İletişim</a></li>
                     </ul>
                 </div>
@@ -1707,7 +1709,7 @@
                     <div class="col-md-6 text-md-end">
                         <a href="@Url.Action("Index", "KVKK")" class="me-3">KVKK</a>
                         <a href="@Url.Action("Gizlilik", "KVKK")" class="me-3">Gizlilik Politikası</a>
-                        <a href="@Url.Action("Index", "FAQ")">SSS</a>
+
                     </div>
                 </div>
             </div>
@@ -1797,52 +1799,97 @@
             btn.prop('disabled', true).html('<span class="loading"></span>');
 
             // Create cart animation
-            const productCard = btn.closest('.product-card');
-            if (productCard.length) {
-                const productImg = productCard.find('.card-img-top');
-                const cartIcon = $('.cart-link');
+            const cartIcon = $('.cart-link');
+            const productCard = $('[data-product-id="' + productId + '"]').closest('.product-card');
+            
+            if (productCard.length && cartIcon.length) {
+                const productImg = productCard.find('.product-image img');
+                if (productImg.length) {
+                    const clone = productImg.clone().css({
+                        position: 'fixed',
+                        zIndex: 9999,
+                        width: '50px',
+                        height: '50px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        pointerEvents: 'none'
+                    });
 
-                const animation = $('<div class="cart-animation"></div>');
-                animation.css({
-                    position: 'fixed',
-                    top: productImg.offset().top + productImg.height() / 2,
-                    left: productImg.offset().left + productImg.width() / 2,
-                    width: '50px',
-                    height: '50px',
-                    background: 'var(--primary-color)',
-                    borderRadius: '50%',
-                    zIndex: 9999,
-                    pointerEvents: 'none'
-                });
+                    const productOffset = productImg.offset();
+                    const cartOffset = cartIcon.offset();
 
-                $('body').append(animation);
-
-                setTimeout(() => {
-                    animation.remove();
-                }, 1000);
+                    clone.appendTo('body').animate({
+                        left: cartOffset.left + (cartIcon.width() / 2) - 25,
+                        top: cartOffset.top + (cartIcon.height() / 2) - 25,
+                        width: '20px',
+                        height: '20px',
+                        opacity: 0.7
+                    }, 800, function() {
+                        clone.remove();
+                    });
+                }
             }
 
             $.post('/Cart/AddToCart', { productId: productId, quantity: quantity })
                 .done(function(response) {
                     if (response.success) {
                         updateCartCount();
-                        showToast(response.message, 'success');
-
-                        // Add success animation to cart icon
-                        $('.cart-link').addClass('pulse');
+                        showToast('Ürün sepete eklendi!', 'success');
+                        btn.html('<i class="fas fa-check"></i> Eklendi');
+                        
                         setTimeout(() => {
-                            $('.cart-link').removeClass('pulse');
-                        }, 500);
+                            btn.prop('disabled', false).html(originalText);
+                        }, 2000);
                     } else {
-                        showToast(response.message, 'error');
+                        showToast(response.message || 'Ürün eklenirken hata oluştu.', 'error');
+                        btn.prop('disabled', false).html(originalText);
                     }
                 })
                 .fail(function() {
-                    showToast('Bir hata oluştu', 'error');
-                })
-                .always(function() {
+                    showToast('Ürün eklenirken hata oluştu.', 'error');
                     btn.prop('disabled', false).html(originalText);
                 });
+        }
+
+        // Logout function
+        function performLogout() {
+            // Show loading
+            const logoutBtn = event.target;
+            const originalText = logoutBtn.innerHTML;
+            logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çıkış yapılıyor...';
+            logoutBtn.disabled = true;
+
+            // Clear session data immediately
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+
+            // Make logout request
+            fetch('/Account/Logout', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            })
+            .then(response => {
+                // Force page reload regardless of response
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 100);
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                // Force page reload anyway
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 100);
+            });
         }
 
         // Newsletter subscription
@@ -1899,6 +1946,39 @@
         @if (TempData["Info"] != null)
         {
                             <text>showToast('@Html.Raw(TempData["Info"])', 'info');</text>
+        }
+
+        // Session check on page load
+        $(document).ready(function() {
+            // Check if user is logged in
+            const userId = '@Context.Session.GetString("UserId")';
+            const userName = '@Context.Session.GetString("UserName")';
+            
+            if (userId && userName) {
+                console.log('User logged in:', userName);
+                // Force update user display
+                updateUserDisplay(userName);
+            } else {
+                console.log('No user session found');
+                // Hide user dropdown if no session
+                hideUserDropdown();
+            }
+        });
+
+        // Function to update user display
+        function updateUserDisplay(userName) {
+            const userSpan = document.querySelector('.dropdown-toggle span');
+            if (userSpan) {
+                userSpan.textContent = userName;
+            }
+        }
+
+        // Function to hide user dropdown
+        function hideUserDropdown() {
+            const userDropdown = document.querySelector('.dropdown');
+            if (userDropdown) {
+                userDropdown.style.display = 'none';
+            }
         }
     </script>
 

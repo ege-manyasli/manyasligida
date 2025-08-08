@@ -120,7 +120,33 @@ namespace manyasligida.Controllers
         // GET: Account/Logout
         public IActionResult Logout()
         {
+            // AuthService logout
             _authService.Logout();
+            
+            // Ek olarak session'ı manuel temizle
+            var session = HttpContext.Session;
+            session.Clear();
+            session.Remove("UserId");
+            session.Remove("UserName");
+            session.Remove("UserEmail");
+            session.Remove("IsAdmin");
+            session.Remove("LoginTime");
+            session.Remove("SessionId");
+            
+            // Cookie'leri temizle
+            Response.Cookies.Delete(".ManyasliGida.Session");
+            Response.Cookies.Delete("ASP.NET_SessionId");
+            
+            // Tüm cookie'leri temizle
+            var cookies = Request.Cookies.Keys;
+            foreach (var cookie in cookies)
+            {
+                Response.Cookies.Delete(cookie);
+            }
+            
+            // Session'ı commit et
+            session.CommitAsync().Wait();
+            
             TempData["LogoutSuccess"] = "Başarıyla çıkış yaptınız.";
             return RedirectToAction("Index", "Home");
         }

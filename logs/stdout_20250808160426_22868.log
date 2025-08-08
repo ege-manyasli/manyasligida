@@ -1,0 +1,68 @@
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (177ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /CookieConsent/GetCategories took 1988ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /CookieConsent/GetCategories took 1988ms from ::1
+info: manyasligida.Controllers.HomeController[0]
+      Home page requested
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (178ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='60']
+      SELECT TOP(@__p_0) [p].[Id], [p].[Name], [p].[Description], [p].[Price], [p].[ImageUrl], [p].[IsPopular], [p].[CreatedAt], [p].[Weight], [p].[FatContent], [p].[OldPrice], CASE
+          WHEN [p].[CreatedAt] > DATEADD(day, CAST(-30.0E0 AS int), GETDATE()) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END AS [IsNew]
+      FROM [Products] AS [p]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+      ORDER BY [p].[IsPopular] DESC, [p].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[Name], [c].[Description]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[Name]
+info: manyasligida.Controllers.HomeController[0]
+      Home page loaded successfully. Products: 8, Categories: 4
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='60']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [CookieConsents] AS [c]
+              WHERE [c].[SessionId] = @__sessionId_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+warn: Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware[4]
+      Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+warn: Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware[4]
+      Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='60']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [CookieConsents] AS [c]
+              WHERE [c].[SessionId] = @__sessionId_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: manyasligida.Controllers.HomeController[0]
+      Home page requested
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (167ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='60']
+      SELECT TOP(@__p_0) [p].[Id], [p].[Name], [p].[Description], [p].[Price], [p].[ImageUrl], [p].[IsPopular], [p].
