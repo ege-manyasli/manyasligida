@@ -778,6 +778,18 @@
                     <span>SSS</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && (ViewContext.RouteData.Values["Action"]?.ToString() == "AboutContent" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditAboutContent") ? "active" : "")" href="@Url.Action("AboutContent", "Admin")">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Hakkımızda</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && (ViewContext.RouteData.Values["Action"]?.ToString() == "HomeContent" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditHomeContent") ? "active" : "")" href="@Url.Action("HomeContent", "Admin")">
+                    <i class="fas fa-home"></i>
+                    <span>Ana Sayfa</span>
+                </a>
+            </li>
             
             <!-- Muhasebe -->
             <li class="nav-item">
@@ -845,7 +857,7 @@
                             var adminUserName = Context.Session.GetString("UserName");
                             var adminUserId = Context.Session.GetString("UserId");
                         }
-                        <div class="fw-bold">@(adminUserName ?? "Admin")</div>
+                        <div class="fw-bold">@Html.Raw(adminUserName ?? "Admin")</div>
                         <small class="text-muted">Admin</small>
                     </div>
                 </div>
@@ -939,7 +951,8 @@
         function updateAdminDisplay(userName) {
             const adminNameElement = document.querySelector('.user-info .fw-bold');
             if (adminNameElement) {
-                adminNameElement.textContent = userName;
+                // Use innerHTML to properly decode HTML entities like &#x131;
+                adminNameElement.innerHTML = userName;
             }
         }
 
@@ -977,6 +990,12 @@
         // Logout functionality
         function performLogout() {
             if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                // Show loading indicator
+                const adminNameElement = document.querySelector('.user-info .fw-bold');
+                if (adminNameElement) {
+                    adminNameElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çıkış yapılıyor...';
+                }
+
                 // Clear session data immediately
                 sessionStorage.clear();
                 localStorage.clear();
@@ -986,7 +1005,7 @@
                     document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
                 });
 
-                // Make logout request
+                // Make logout request with fetch
                 fetch('@Url.Action("Logout", "Account")', {
                     method: 'GET',
                     credentials: 'same-origin',
@@ -996,7 +1015,8 @@
                     }
                 })
                 .then(response => {
-                    // Force page reload regardless of response
+                    // Force complete page reload
+                    window.location.href = '/';
                     setTimeout(() => {
                         window.location.reload(true);
                     }, 100);
@@ -1004,6 +1024,7 @@
                 .catch(error => {
                     console.error('Logout error:', error);
                     // Force page reload anyway
+                    window.location.href = '/';
                     setTimeout(() => {
                         window.location.reload(true);
                     }, 100);

@@ -20,6 +20,10 @@ namespace manyasligida.Models
         
         public DateTime ConsentDate { get; set; } = DateTime.Now;
         
+        public DateTime ExpiryDate { get; set; } = DateTime.Now.AddYears(1);
+        
+        public bool IsActive { get; set; } = true;
+        
         public bool IsAccepted { get; set; }
         
         [StringLength(1000)]

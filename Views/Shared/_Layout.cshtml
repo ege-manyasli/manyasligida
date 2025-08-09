@@ -1,5 +1,6 @@
 ﻿@using manyasligida.Services
 @inject CartService CartService
+@inject IAuthService AuthService
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -1505,7 +1506,7 @@
     <div class="toast-container"></div>
 
     <!-- Modern Top Bar -->
-    <div class="top-bar">
+    <div class="top-bar d-none d-lg-block">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -1530,6 +1531,27 @@
                         <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
                         <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Top Bar (Simplified) -->
+    <div class="top-bar d-block d-lg-none">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <a href="tel:+905356335477" class="text-center">
+                        <i class="fas fa-phone"></i>
+                        <span class="d-inline d-sm-none">Ara</span>
+                        <span class="d-none d-sm-inline">0535 633 54 77</span>
+                    </a>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="social-links d-flex align-items-center justify-content-end gap-1">
+                        <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
@@ -1582,9 +1604,18 @@
 
                     <div class="nav-right">
                         @{
-                            var userId = Context.Session.GetString("UserId");
-                            var userName = Context.Session.GetString("UserName");
-                            var isLoggedIn = !string.IsNullOrEmpty(userId);
+                            // Check both claims-based auth AND session
+                            var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+                            var currentUser = isAuthenticated ? await AuthService.GetCurrentUserAsync() : null;
+                            var isLoggedIn = isAuthenticated && currentUser != null;
+                            var displayName = isLoggedIn ? currentUser.FullName : "Kullanıcı";
+                            
+                            // If claims auth exists but no user found, force logout
+                            if (isAuthenticated && currentUser == null)
+                            {
+                                // This will be handled by middleware, but we still show login
+                                isLoggedIn = false;
+                            }
                         }
                         
                         @if (isLoggedIn)
@@ -1592,7 +1623,7 @@
                             <div class="dropdown">
                                 <button class="btn btn-link nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-user"></i>
-                                    <span>@userName</span>
+                                    <span>@Html.Raw(displayName)</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">Profilim</a></li>
@@ -1853,11 +1884,11 @@
 
         // Logout function
         function performLogout() {
-            // Show loading
-            const logoutBtn = event.target;
-            const originalText = logoutBtn.innerHTML;
-            logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çıkış yapılıyor...';
-            logoutBtn.disabled = true;
+            // Show loading indicator
+            const userSpan = document.querySelector('.dropdown-toggle span');
+            if (userSpan) {
+                userSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çıkış yapılıyor...';
+            }
 
             // Clear session data immediately
             sessionStorage.clear();
@@ -1868,7 +1899,7 @@
                 document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
             });
 
-            // Make logout request
+            // Make logout request with fetch to handle properly
             fetch('/Account/Logout', {
                 method: 'GET',
                 credentials: 'same-origin',
@@ -1878,7 +1909,8 @@
                 }
             })
             .then(response => {
-                // Force page reload regardless of response
+                // Force complete page reload to refresh all UI
+                window.location.href = '/';
                 setTimeout(() => {
                     window.location.reload(true);
                 }, 100);
@@ -1886,6 +1918,7 @@
             .catch(error => {
                 console.error('Logout error:', error);
                 // Force page reload anyway
+                window.location.href = '/';
                 setTimeout(() => {
                     window.location.reload(true);
                 }, 100);
@@ -1969,7 +2002,8 @@
         function updateUserDisplay(userName) {
             const userSpan = document.querySelector('.dropdown-toggle span');
             if (userSpan) {
-                userSpan.textContent = userName;
+                // Use innerHTML to properly decode HTML entities like &#x131;
+                userSpan.innerHTML = userName;
             }
         }
 

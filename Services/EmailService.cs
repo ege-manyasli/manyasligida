@@ -28,6 +28,12 @@ namespace manyasligida.Services
             }
         }
 
+        public async Task<bool> SendEmailVerificationAsync(string email, string verificationCode)
+        {
+            // Alias for SendVerificationEmailAsync
+            return await SendVerificationEmailAsync(email, verificationCode);
+        }
+
         public async Task<bool> SendPasswordResetEmailAsync(string email, string resetCode)
         {
             try

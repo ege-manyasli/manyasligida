@@ -1,309 +1,370 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using manyasligida.Data;
 using manyasligida.Models;
 using manyasligida.Services;
-using Microsoft.Extensions.DependencyInjection;
+using manyasligida.Data;
+using System.Security.Claims;
 
 namespace manyasligida.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly CartService _cartService;
         private readonly IAuthService _authService;
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IServiceProvider serviceProvider, CartService cartService, IAuthService authService)
+        public AccountController(
+            IAuthService authService,
+            ApplicationDbContext context,
+            ILogger<AccountController> logger)
         {
-            _serviceProvider = serviceProvider;
-            _cartService = cartService;
             _authService = authService;
+            _context = context;
+            _logger = logger;
         }
 
-        // GET: Account/Login
-        public async Task<IActionResult> Login()
+        [HttpGet]
+        public IActionResult Login()
         {
-            var currentUser = await _authService.GetCurrentUserAsync();
-            if (currentUser != null)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToAction("Index", "Home");
             }
             return View();
         }
 
-        // POST: Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                _logger.LogInformation("Login attempt for: {Email}", model.Email);
+
                 var user = await _authService.LoginAsync(model.Email, model.Password);
                 if (user != null)
                 {
-                    TempData["LoginSuccess"] = "Başarıyla giriş yaptınız!";
+                    _logger.LogInformation("Login successful for: {Email}", model.Email);
+
+                    // Create claims
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Email),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim("FullName", user.FullName),
+                        new Claim("UserId", user.Id.ToString())
+                    };
+
+                    if (user.IsAdmin)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                    }
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = model.RememberMe,
+                        ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1)
+                    };
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
+                        new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                    // Set session manually (simplified)
+                    HttpContext.Session.SetString("UserId", user.Id.ToString());
+                    HttpContext.Session.SetString("UserName", user.FullName);
+                    HttpContext.Session.SetString("IsAdmin", user.IsAdmin.ToString());
+
+                    _logger.LogInformation("User {Email} logged in successfully", model.Email);
                     
-                    // Tüm kullanıcılar profil sayfasına yönlendirilir
-                    return RedirectToAction("Profile", "Account");
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+                    _logger.LogWarning("Login failed for: {Email}", model.Email);
+                    // Check if user exists but email not confirmed
+                    var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.IsActive);
+                    if (existingUser != null && !existingUser.EmailConfirmed)
+                    {
+                        ModelState.AddModelError("", "E-posta adresinizi doğrulamanız gerekmektedir. Lütfen e-posta kutunuzu kontrol edin ve doğrulama kodunu girin.");
+                        TempData["UnverifiedEmail"] = model.Email;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+                    }
+                    return View(model);
                 }
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-            }
-            catch (Exception)
-            {
+                _logger.LogError(ex, "Error during login for: {Email}", model.Email);
                 ModelState.AddModelError("", "Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+                return View(model);
             }
-
-            return View(model);
         }
 
-        // GET: Account/Register
-        public async Task<IActionResult> Register()
+        [HttpGet]
+        public IActionResult Register()
         {
-            var currentUser = await _authService.GetCurrentUserAsync();
-            if (currentUser != null)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToAction("Index", "Home");
             }
             return View();
         }
 
-        // POST: Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
             try
             {
-                // Check if email already exists
-                if (await _authService.IsEmailExistsAsync(model.Email))
+                if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError("Email", "Bu e-posta adresi zaten kullanılıyor.");
                     return View(model);
                 }
+
+                _logger.LogInformation("Registration attempt for: {Email}", model.Email);
 
                 var user = await _authService.RegisterAsync(model);
                 if (user != null)
                 {
-                    TempData["RegisterSuccess"] = "Kayıt işleminiz başarıyla tamamlandı! E-posta adresinize gönderilen doğrulama kodunu kullanarak hesabınızı doğrulayın.";
-                    return RedirectToAction(nameof(VerifyEmail), new { email = user.Email });
+                    _logger.LogInformation("Registration successful for: {Email}", model.Email);
+                    TempData["Success"] = "Kayıt başarılı! E-posta adresinize gönderilen doğrulama kodunu girin.";
+                    return RedirectToAction("VerifyEmail", new { email = model.Email });
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
-                }
-            }
-            catch (Exception)
-            {
-                ModelState.AddModelError("", "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
-            }
-
-            return View(model);
-        }
-
-        // GET: Account/Logout
-        public IActionResult Logout()
-        {
-            // AuthService logout
-            _authService.Logout();
-            
-            // Ek olarak session'ı manuel temizle
-            var session = HttpContext.Session;
-            session.Clear();
-            session.Remove("UserId");
-            session.Remove("UserName");
-            session.Remove("UserEmail");
-            session.Remove("IsAdmin");
-            session.Remove("LoginTime");
-            session.Remove("SessionId");
-            
-            // Cookie'leri temizle
-            Response.Cookies.Delete(".ManyasliGida.Session");
-            Response.Cookies.Delete("ASP.NET_SessionId");
-            
-            // Tüm cookie'leri temizle
-            var cookies = Request.Cookies.Keys;
-            foreach (var cookie in cookies)
-            {
-                Response.Cookies.Delete(cookie);
-            }
-            
-            // Session'ı commit et
-            session.CommitAsync().Wait();
-            
-            TempData["LogoutSuccess"] = "Başarıyla çıkış yaptınız.";
-            return RedirectToAction("Index", "Home");
-        }
-
-        // GET: Account/Profile
-        public async Task<IActionResult> Profile()
-        {
-            var user = await _authService.GetCurrentUserAsync();
-            if (user == null)
-            {
-                return RedirectToAction(nameof(Login));
-            }
-
-            // Get user's order history
-            using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var userOrders = await context.Orders
-                .Where(o => o.UserId == user.Id)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
-
-            ViewBag.UserOrders = userOrders;
-            ViewBag.CartItemCount = _cartService.GetCartItemCount();
-            return View(user);
-        }
-
-        // POST: Account/UpdateProfile
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProfile(User model)
-        {
-            var user = await _authService.GetCurrentUserAsync();
-            if (user == null)
-            {
-                return RedirectToAction(nameof(Login));
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                    var userToUpdate = await context.Users.FindAsync(user.Id);
-                    if (userToUpdate != null)
-                    {
-                        userToUpdate.FirstName = model.FirstName;
-                        userToUpdate.LastName = model.LastName;
-                        userToUpdate.Phone = model.Phone;
-                        userToUpdate.Address = model.Address;
-                        userToUpdate.City = model.City;
-                        userToUpdate.PostalCode = model.PostalCode;
-                        userToUpdate.UpdatedAt = DateTime.Now;
-
-                        await context.SaveChangesAsync();
-                        
-                        // Session'daki kullanıcı bilgilerini güncelle
-                        user.FirstName = model.FirstName;
-                        user.LastName = model.LastName;
-                        user.Phone = model.Phone;
-                        user.Address = model.Address;
-                        user.City = model.City;
-                        user.PostalCode = model.PostalCode;
-                        user.UpdatedAt = DateTime.Now;
-                        
-                        _authService.SetCurrentUser(user);
-                        TempData["ProfileUpdateSuccess"] = "Profil bilgileriniz güncellendi.";
-                    }
-                }
-                catch (Exception)
-                {
-                    TempData["ProfileUpdateError"] = "Profil güncellenirken bir hata oluştu.";
-                }
-            }
-
-            ViewBag.CartItemCount = _cartService.GetCartItemCount();
-            return View("Profile", user);
-        }
-
-        // GET: Account/VerifyEmail
-        public IActionResult VerifyEmail(string email)
-        {
-            if (string.IsNullOrEmpty(email))
-            {
-                return RedirectToAction(nameof(Login));
-            }
-
-            var model = new EmailVerificationViewModel
-            {
-                Email = email
-            };
-
-            return View(model);
-        }
-
-        // POST: Account/VerifyEmail
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> VerifyEmail(EmailVerificationViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            try
-            {
-                // Model verilerini normalize et
-                model.Email = model.Email?.ToLower().Trim() ?? string.Empty;
-                model.VerificationCode = model.VerificationCode?.Trim() ?? string.Empty;
-
-                var isVerified = await _authService.VerifyEmailAsync(model.Email, model.VerificationCode);
-                if (isVerified)
-                {
-                    TempData["EmailVerificationSuccess"] = "E-posta adresiniz başarıyla doğrulandı! Şimdi giriş yapabilirsiniz.";
-                    return RedirectToAction(nameof(Login));
-                }
-                else
-                {
-                    ModelState.AddModelError("VerificationCode", "Doğrulama kodu hatalı veya süresi dolmuş. Lütfen tekrar deneyin.");
+                    _logger.LogWarning("Registration failed for: {Email}", model.Email);
+                    ModelState.AddModelError("", "Bu e-posta adresi zaten kullanımda veya kayıt sırasında bir hata oluştu.");
+                    return View(model);
                 }
             }
             catch (Exception ex)
             {
-                // Log the exception for debugging
-                System.Diagnostics.Debug.WriteLine($"Email verification error in controller: {ex.Message}");
-                ModelState.AddModelError("", "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+                _logger.LogError(ex, "Error during registration for: {Email}", model.Email);
+                ModelState.AddModelError("", "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+                return View(model);
             }
-
-            return View(model);
         }
 
-        // POST: Account/ResendVerificationCode
+        [HttpGet]
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var userId = User.FindFirst("UserId")?.Value;
+                _logger.LogInformation("Logout attempt for user: {UserId}", userId);
+
+                // Sign out
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                HttpContext.Session.Clear();
+
+                _logger.LogInformation("User {UserId} logged out successfully", userId);
+                TempData["Info"] = "Başarıyla çıkış yaptınız.";
+                
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during logout");
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+                var currentUser = await _authService.GetCurrentUserAsync();
+                if (currentUser == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                return View(currentUser);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading profile");
+                TempData["Error"] = "Profil yüklenirken bir hata oluştu.";
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        // Test endpoint for debugging
+        [HttpGet]
+        public async Task<IActionResult> DebugUsers()
+        {
+            try
+            {
+                var users = await _context.Users.ToListAsync();
+                var userInfo = users.Select(u => new {
+                    u.Id,
+                    u.Email,
+                    u.FirstName,
+                    u.LastName,
+                    FullName = u.FirstName + " " + u.LastName,
+                    u.IsActive,
+                    u.EmailConfirmed,
+                    PasswordLength = u.Password?.Length ?? 0
+                }).ToList();
+
+                return Json(userInfo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DebugUsers");
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        // Email Verification
+        [HttpGet]
+        public IActionResult VerifyEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("Register");
+            }
+
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyEmail(string email, string verificationCode)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(verificationCode))
+                {
+                    ModelState.AddModelError("", "E-posta ve doğrulama kodu gereklidir.");
+                    ViewBag.Email = email;
+                    return View();
+                }
+
+                _logger.LogInformation("Email verification attempt for: {Email}", email);
+
+                var result = await _authService.VerifyEmailAsync(email, verificationCode);
+                if (result)
+                {
+                    _logger.LogInformation("Email verification successful for: {Email}", email);
+                    TempData["Success"] = "E-posta adresiniz başarıyla doğrulandı! Artık giriş yapabilirsiniz.";
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    _logger.LogWarning("Email verification failed for: {Email}", email);
+                    ModelState.AddModelError("", "Doğrulama kodu hatalı veya süresi dolmuş. Lütfen tekrar deneyin.");
+                    ViewBag.Email = email;
+                    return View();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during email verification for: {Email}", email);
+                ModelState.AddModelError("", "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+                ViewBag.Email = email;
+                return View();
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendVerificationCode(string email)
         {
             try
             {
-                var isSent = await _authService.ResendVerificationCodeAsync(email);
-                if (isSent)
+                if (string.IsNullOrEmpty(email))
                 {
-                    TempData["ResendSuccess"] = "Yeni doğrulama kodu e-posta adresinize gönderildi.";
+                    TempData["Error"] = "E-posta adresi gereklidir.";
+                    return RedirectToAction("Register");
+                }
+
+                _logger.LogInformation("Resend verification code for: {Email}", email);
+
+                var result = await _authService.ResendVerificationCodeAsync(email);
+                if (result)
+                {
+                    TempData["Success"] = "Yeni doğrulama kodu e-posta adresinize gönderildi.";
                 }
                 else
                 {
-                    TempData["ResendError"] = "Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
+                    TempData["Error"] = "Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
                 }
-            }
-            catch (Exception)
-            {
-                TempData["ResendError"] = "Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
-            }
 
-            return RedirectToAction(nameof(VerifyEmail), new { email });
+                return RedirectToAction("VerifyEmail", new { email = email });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending verification code for: {Email}", email);
+                TempData["Error"] = "Doğrulama kodu gönderilirken bir hata oluştu.";
+                return RedirectToAction("VerifyEmail", new { email = email });
+            }
+        }
+
+        // Debug Email Verification
+        [HttpGet]
+        public async Task<IActionResult> DebugEmailVerification(string email)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email))
+                {
+                    return Json(new { error = "Email required" });
+                }
+
+                var verifications = await _context.EmailVerifications
+                    .Where(v => v.Email.ToLower() == email.ToLower())
+                    .OrderByDescending(v => v.CreatedAt)
+                    .Take(5)
+                    .Select(v => new {
+                        v.VerificationCode,
+                        v.CreatedAt,
+                        v.ExpiresAt,
+                        v.IsUsed,
+                        IsExpired = v.ExpiresAt <= DateTime.Now,
+                        MinutesToExpire = (v.ExpiresAt - DateTime.Now).TotalMinutes
+                    })
+                    .ToListAsync();
+
+                return Json(new { 
+                    email = email,
+                    verifications = verifications,
+                    currentTime = DateTime.Now,
+                    currentTimeUtc = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DebugEmailVerification");
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        // Emergency test action
+        [HttpGet]
+        public IActionResult Test()
+        {
+            ViewBag.Message = "Account Controller çalışıyor! ✅";
+            ViewBag.IsAuthenticated = User.Identity?.IsAuthenticated ?? false;
+            ViewBag.UserName = User.Identity?.Name ?? "Anonim";
+            return View();
         }
     }
-} 
+}

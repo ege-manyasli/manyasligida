@@ -1,0 +1,894 @@
+@model manyasligida.Models.DTOs.HomeContentResponse
+@{
+    ViewData["Title"] = "Ana Sayfa İçeriği Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h4 text-primary fw-bold mb-1">
+            <i class="fas fa-home me-2"></i>Ana Sayfa İçeriği Düzenle
+        </h2>
+        <p class="text-muted mb-0">Ana sayfadaki tüm bölümleri buradan düzenleyebilirsiniz</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-warning me-2" onclick="clearAllImageCache()" title="Resim cache'ini temizle">
+            <i class="fas fa-sync-alt me-2"></i>Cache Temizle
+        </button>
+        <a href="@Url.Action("HomeContent")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Geri
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Form -->
+<form id="homeContentForm" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="homeContentTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button">
+                <i class="fas fa-star me-2"></i>Hero Bölümü
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features" type="button">
+                <i class="fas fa-award me-2"></i>Özellikler
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button">
+                <i class="fas fa-shopping-cart me-2"></i>Ürünler
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button">
+                <i class="fas fa-info-circle me-2"></i>Hakkımızda
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button">
+                <i class="fas fa-chart-bar me-2"></i>İstatistikler
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="blog-tab" data-bs-toggle="tab" data-bs-target="#blog" type="button">
+                <i class="fas fa-blog me-2"></i>Blog
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="newsletter-tab" data-bs-toggle="tab" data-bs-target="#newsletter" type="button">
+                <i class="fas fa-envelope me-2"></i>Newsletter
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="styling-tab" data-bs-toggle="tab" data-bs-target="#styling" type="button">
+                <i class="fas fa-palette me-2"></i>Stil & Renkler
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="homeContentTabsContent">
+        
+        <!-- HERO SECTION -->
+        <div class="tab-pane fade show active" id="hero" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Hero Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ana Başlık <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="HeroTitle" value="@Model?.HeroTitle" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Başlık</label>
+                            <input type="text" class="form-control" name="HeroSubtitle" value="@Model?.HeroSubtitle">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" name="HeroDescription" rows="3">@Model?.HeroDescription</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hero Video</label>
+                            <div class="mb-2">
+                                <input type="file" id="heroVideoFile" name="heroVideoFile" class="form-control" accept="video/*">
+                                <div class="form-text">MP4, WEBM, AVI ve MOV dosyaları kabul edilir. <strong>Maksimum 50MB</strong> 
+                                    <br><small class="text-warning">⚠️ Büyük video dosyaları yükleme süresini uzatabilir.</small></div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label text-muted small">Manuel URL (opsiyonel)</label>
+                                <input type="text" class="form-control form-control-sm" name="HeroVideoUrl" value="@Model?.HeroVideoUrl" placeholder="~/video/video.mp4">
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model?.HeroVideoUrl))
+                            {
+                                <div class="current-media mt-2">
+                                    <video controls style="max-width: 200px; max-height: 150px;">
+                                        <source src="@Model.HeroVideoUrl" type="video/mp4">
+                                    </video>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hero Resim</label>
+                            <div class="mb-2">
+                                <input type="file" id="heroImageFile" name="heroImageFile" class="form-control" accept="image/*">
+                                <div class="form-text">JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maks 5MB.</div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label text-muted small">Manuel URL (opsiyonel)</label>
+                                <input type="text" class="form-control form-control-sm" name="HeroImageUrl" value="@Model?.HeroImageUrl" placeholder="~/img/resim.jpg">
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model?.HeroImageUrl))
+                            {
+                                <div class="current-image mt-2">
+                                    <img src="@Model.HeroImageUrl" alt="Mevcut Hero Resim" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Birinci Buton Metni</label>
+                            <input type="text" class="form-control" name="HeroButtonText" value="@Model?.HeroButtonText">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">İkinci Buton Metni</label>
+                            <input type="text" class="form-control" name="HeroSecondButtonText" value="@Model?.HeroSecondButtonText">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES SECTION -->
+        <div class="tab-pane fade" id="features" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-award me-2"></i>Özellikler Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Bölüm Başlığı</label>
+                            <input type="text" class="form-control" name="FeaturesTitle" value="@Model?.FeaturesTitle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Başlık</label>
+                            <input type="text" class="form-control" name="FeaturesSubtitle" value="@Model?.FeaturesSubtitle">
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold">Özellik Listesi</h6>
+                    <div id="featuresList">
+                        <!-- Dynamic features will be populated here -->
+                    </div>
+                    <button type="button" class="btn btn-outline-success btn-sm" onclick="addFeature()">
+                        <i class="fas fa-plus me-2"></i>Özellik Ekle
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTS SECTION -->
+        <div class="tab-pane fade" id="products" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Ürünler Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Bölüm Başlığı</label>
+                            <input type="text" class="form-control" name="ProductsTitle" value="@Model?.ProductsTitle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Başlık</label>
+                            <input type="text" class="form-control" name="ProductsSubtitle" value="@Model?.ProductsSubtitle">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="ShowPopularProducts" id="showPopularProducts" @(Model?.ShowPopularProducts == true ? "checked" : "")>
+                                <label class="form-check-label" for="showPopularProducts">
+                                    Popüler ürünleri göster
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Maksimum Ürün Sayısı</label>
+                            <input type="number" class="form-control" name="MaxProductsToShow" value="@Model?.MaxProductsToShow" min="1" max="50">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT SECTION -->
+        <div class="tab-pane fade" id="about" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Hakkımızda Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Bölüm Başlığı</label>
+                            <input type="text" class="form-control" name="AboutTitle" value="@Model?.AboutTitle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Buton Metni</label>
+                            <input type="text" class="form-control" name="AboutButtonText" value="@Model?.AboutButtonText">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">İçerik</label>
+                            <textarea class="form-control" name="AboutContent" rows="4">@Model?.AboutContent</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">About Resim</label>
+                            <div class="mb-2">
+                                <input type="file" id="aboutImageFile" name="aboutImageFile" class="form-control" accept="image/*">
+                                <div class="form-text">JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maks 5MB.</div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label text-muted small">Manuel URL (opsiyonel)</label>
+                                <input type="text" class="form-control form-control-sm" name="AboutImageUrl" value="@Model?.AboutImageUrl" placeholder="~/img/resim.jpg">
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model?.AboutImageUrl))
+                            {
+                                <div class="current-image mt-2">
+                                    <img src="@Model.AboutImageUrl" alt="Mevcut About Resim" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold">About Özellikleri</h6>
+                    <div id="aboutFeaturesList">
+                        <!-- Dynamic about features will be populated here -->
+                    </div>
+                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="addAboutFeature()">
+                        <i class="fas fa-plus me-2"></i>Özellik Ekle
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS SECTION -->
+        <div class="tab-pane fade" id="stats" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>İstatistikler Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Bölüm Başlığı</label>
+                            <input type="text" class="form-control" name="StatsTitle" value="@Model?.StatsTitle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Başlık</label>
+                            <input type="text" class="form-control" name="StatsSubtitle" value="@Model?.StatsSubtitle">
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold">İstatistik Listesi</h6>
+                    <div id="statsList">
+                        <!-- Dynamic stats will be populated here -->
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addStats()">
+                        <i class="fas fa-plus me-2"></i>İstatistik Ekle
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOG SECTION -->
+        <div class="tab-pane fade" id="blog" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-blog me-2"></i>Blog Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Bölüm Başlığı</label>
+                            <input type="text" class="form-control" name="BlogTitle" value="@Model?.BlogTitle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Başlık</label>
+                            <input type="text" class="form-control" name="BlogSubtitle" value="@Model?.BlogSubtitle">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="ShowLatestBlogs" id="showLatestBlogs" @(Model?.ShowLatestBlogs == true ? "checked" : "")>
+                                <label class="form-check-label" for="showLatestBlogs">
+                                    Son blog yazılarını göster
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Maksimum Blog Sayısı</label>
+                            <input type="number" class="form-control" name="MaxBlogsToShow" value="@Model?.MaxBlogsToShow" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEWSLETTER SECTION -->
+        <div class="tab-pane fade" id="newsletter" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Newsletter Bölümü</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Başlık</label>
+                            <input type="text" class="form-control" name="NewsletterTitle" value="@Model?.NewsletterTitle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Buton Metni</label>
+                            <input type="text" class="form-control" name="NewsletterButtonText" value="@Model?.NewsletterButtonText">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" name="NewsletterDescription" rows="2">@Model?.NewsletterDescription</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STYLING SECTION -->
+        <div class="tab-pane fade" id="styling" role="tabpanel">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Stil & Renkler</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Ana Renk</label>
+                            <input type="color" class="form-control form-control-color" name="PrimaryColor" value="@(Model?.PrimaryColor ?? "#8B4513")">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">İkincil Renk</label>
+                            <input type="color" class="form-control form-control-color" name="SecondaryColor" value="@(Model?.SecondaryColor ?? "#D2691E")">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hero Arkaplan</label>
+                            <input type="text" class="form-control" name="HeroBackgroundColor" value="@Model?.HeroBackgroundColor" placeholder="CSS gradient">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a href="@Url.Action("HomeContent")" class="btn btn-secondary">
+            <i class="fas fa-times me-2"></i>İptal
+        </a>
+        <button type="button" class="btn btn-success" onclick="saveHomeContent()">
+            <i class="fas fa-save me-2"></i>Kaydet
+        </button>
+    </div>
+</form>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mb-0">Kaydediliyor...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global arrays for dynamic content
+let features = @Html.Raw(Json.Serialize(Model?.FeatureItems ?? new List<manyasligida.Models.DTOs.FeatureItemRequest>()));
+let aboutFeatures = @Html.Raw(Json.Serialize(Model?.AboutFeatures ?? new List<manyasligida.Models.DTOs.AboutFeatureRequest>()));
+let statsItems = @Html.Raw(Json.Serialize(Model?.StatsItems ?? new List<manyasligida.Models.DTOs.StatsItemRequest>()));
+
+// Initialize form when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    renderFeatures();
+    renderAboutFeatures();
+    renderStats();
+    
+    // Add file preview handlers
+    const heroImageInput = document.getElementById('heroImageFile');
+    if (heroImageInput) {
+        heroImageInput.addEventListener('change', function(e) {
+            showImagePreview('hero', e.target.files[0]);
+        });
+    }
+    
+    const aboutImageInput = document.getElementById('aboutImageFile');
+    if (aboutImageInput) {
+        aboutImageInput.addEventListener('change', function(e) {
+            showImagePreview('about', e.target.files[0]);
+        });
+    }
+    
+    const heroVideoInput = document.getElementById('heroVideoFile');
+    if (heroVideoInput) {
+        heroVideoInput.addEventListener('change', function(e) {
+            showVideoPreview('hero', e.target.files[0]);
+        });
+    }
+});
+
+// Features Management
+function renderFeatures() {
+    const container = document.getElementById('featuresList');
+    container.innerHTML = '';
+    
+    features.forEach((feature, index) => {
+        const featureHtml = `
+            <div class="card mb-3" id="feature-${index}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="card-title mb-0">Özellik ${index + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFeature(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control form-control-sm" placeholder="Başlık" value="${feature.Title || ''}" onchange="updateFeature(${index}, 'Title', this.value)">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control form-control-sm" placeholder="İkon (fas fa-star)" value="${feature.Icon || ''}" onchange="updateFeature(${index}, 'Icon', this.value)">
+                        </div>
+                        <div class="col-md-8">
+                            <textarea class="form-control form-control-sm" placeholder="Açıklama" rows="2" onchange="updateFeature(${index}, 'Description', this.value)">${feature.Description || ''}</textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select form-select-sm" onchange="updateFeature(${index}, 'Color', this.value)">
+                                <option value="primary" ${feature.Color === 'primary' ? 'selected' : ''}>Mavi</option>
+                                <option value="success" ${feature.Color === 'success' ? 'selected' : ''}>Yeşil</option>
+                                <option value="info" ${feature.Color === 'info' ? 'selected' : ''}>Açık Mavi</option>
+                                <option value="warning" ${feature.Color === 'warning' ? 'selected' : ''}>Sarı</option>
+                                <option value="danger" ${feature.Color === 'danger' ? 'selected' : ''}>Kırmızı</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', featureHtml);
+    });
+}
+
+function addFeature() {
+    features.push({
+        Title: '',
+        Description: '',
+        Icon: 'fas fa-star',
+        Color: 'primary'
+    });
+    renderFeatures();
+}
+
+function removeFeature(index) {
+    features.splice(index, 1);
+    renderFeatures();
+}
+
+function updateFeature(index, field, value) {
+    features[index][field] = value;
+}
+
+// About Features Management
+function renderAboutFeatures() {
+    const container = document.getElementById('aboutFeaturesList');
+    container.innerHTML = '';
+    
+    aboutFeatures.forEach((feature, index) => {
+        const featureHtml = `
+            <div class="card mb-3" id="aboutFeature-${index}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="card-title mb-0">Özellik ${index + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAboutFeature(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control form-control-sm" placeholder="Başlık" value="${feature.Title || ''}" onchange="updateAboutFeature(${index}, 'Title', this.value)">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control form-control-sm" placeholder="Değer" value="${feature.Value || ''}" onchange="updateAboutFeature(${index}, 'Value', this.value)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', featureHtml);
+    });
+}
+
+function addAboutFeature() {
+    aboutFeatures.push({
+        Title: '',
+        Value: ''
+    });
+    renderAboutFeatures();
+}
+
+function removeAboutFeature(index) {
+    aboutFeatures.splice(index, 1);
+    renderAboutFeatures();
+}
+
+function updateAboutFeature(index, field, value) {
+    aboutFeatures[index][field] = value;
+}
+
+// Stats Management
+function renderStats() {
+    const container = document.getElementById('statsList');
+    container.innerHTML = '';
+    
+    statsItems.forEach((stat, index) => {
+        const statHtml = `
+            <div class="card mb-3" id="stat-${index}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="card-title mb-0">İstatistik ${index + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeStats(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control form-control-sm" placeholder="Başlık" value="${stat.Title || ''}" onchange="updateStats(${index}, 'Title', this.value)">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control form-control-sm" placeholder="Değer" value="${stat.Value || ''}" onchange="updateStats(${index}, 'Value', this.value)">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="+" value="${stat.Suffix || ''}" onchange="updateStats(${index}, 'Suffix', this.value)">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="fas fa-users" value="${stat.Icon || ''}" onchange="updateStats(${index}, 'Icon', this.value)">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm" onchange="updateStats(${index}, 'Color', this.value)">
+                                <option value="primary" ${stat.Color === 'primary' ? 'selected' : ''}>Mavi</option>
+                                <option value="success" ${stat.Color === 'success' ? 'selected' : ''}>Yeşil</option>
+                                <option value="info" ${stat.Color === 'info' ? 'selected' : ''}>Açık Mavi</option>
+                                <option value="warning" ${stat.Color === 'warning' ? 'selected' : ''}>Sarı</option>
+                                <option value="danger" ${stat.Color === 'danger' ? 'selected' : ''}>Kırmızı</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', statHtml);
+    });
+}
+
+function addStats() {
+    statsItems.push({
+        Title: '',
+        Value: '',
+        Icon: 'fas fa-chart-bar',
+        Suffix: '',
+        Color: 'primary'
+    });
+    renderStats();
+}
+
+function removeStats(index) {
+    statsItems.splice(index, 1);
+    renderStats();
+}
+
+function updateStats(index, field, value) {
+    statsItems[index][field] = value;
+}
+
+// File Preview Functions
+function showImagePreview(type, file) {
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            updateImagePreview(type, e.target.result, file.name);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function showVideoPreview(type, file) {
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            updateVideoPreview(type, e.target.result, file.name);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function updateImagePreview(type, src, fileName) {
+    const container = document.querySelector(`input[name="${type}ImageFile"]`).closest('.col-12, .col-md-6');
+    let preview = container.querySelector('.file-preview');
+    
+    if (!preview) {
+        preview = document.createElement('div');
+        preview.className = 'file-preview mt-2';
+        container.appendChild(preview);
+    }
+    
+    preview.innerHTML = `
+        <div class="d-flex align-items-center">
+            <img src="${src}" alt="Preview" class="img-thumbnail me-2" style="max-width: 100px; max-height: 80px;">
+            <div>
+                <small class="text-success fw-bold">Yeni resim seçildi:</small><br>
+                <small class="text-muted">${fileName}</small>
+            </div>
+        </div>
+    `;
+}
+
+function updateVideoPreview(type, src, fileName) {
+    const container = document.querySelector(`input[name="${type}VideoFile"]`).closest('.col-12, .col-md-6');
+    let preview = container.querySelector('.file-preview');
+    
+    if (!preview) {
+        preview = document.createElement('div');
+        preview.className = 'file-preview mt-2';
+        container.appendChild(preview);
+    }
+    
+    preview.innerHTML = `
+        <div class="d-flex align-items-center">
+            <video controls class="me-2" style="max-width: 150px; max-height: 100px;">
+                <source src="${src}" type="video/mp4">
+            </video>
+            <div>
+                <small class="text-success fw-bold">Yeni video seçildi:</small><br>
+                <small class="text-muted">${fileName}</small>
+            </div>
+        </div>
+    `;
+}
+
+// Save Function
+function saveHomeContent() {
+    const form = document.getElementById('homeContentForm');
+    const formData = new FormData(form);
+    
+    // Check file sizes before upload
+    const heroVideoFile = document.getElementById('heroVideoFile').files[0];
+    const heroImageFile = document.getElementById('heroImageFile').files[0];
+    const aboutImageFile = document.getElementById('aboutImageFile').files[0];
+    
+    const maxFileSize = 50 * 1024 * 1024; // 50MB in bytes
+    
+    if (heroVideoFile && heroVideoFile.size > maxFileSize) {
+        showToast(`Hero video çok büyük! Maksimum 50MB olmalı. Seçilen dosya: ${(heroVideoFile.size / 1024 / 1024).toFixed(2)}MB`, 'error');
+        return;
+    }
+    
+    if (heroImageFile && heroImageFile.size > maxFileSize) {
+        showToast(`Hero resim çok büyük! Maksimum 50MB olmalı. Seçilen dosya: ${(heroImageFile.size / 1024 / 1024).toFixed(2)}MB`, 'error');
+        return;
+    }
+    
+    if (aboutImageFile && aboutImageFile.size > maxFileSize) {
+        showToast(`About resim çok büyük! Maksimum 50MB olmalı. Seçilen dosya: ${(aboutImageFile.size / 1024 / 1024).toFixed(2)}MB`, 'error');
+        return;
+    }
+    
+    // Add dynamic content as JSON strings
+    formData.set('FeatureItems', JSON.stringify(features));
+    formData.set('AboutFeatures', JSON.stringify(aboutFeatures));
+    formData.set('StatsItems', JSON.stringify(statsItems));
+    
+    // Debug: Log form data
+    console.log('Form data being sent:');
+    let totalSize = 0;
+    for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+            console.log(key, `File: ${value.name} (${(value.size / 1024 / 1024).toFixed(2)}MB)`);
+            totalSize += value.size;
+        } else {
+            console.log(key, value);
+        }
+    }
+    console.log(`Total upload size: ${(totalSize / 1024 / 1024).toFixed(2)}MB`);
+    
+    // Show loading modal
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    fetch('@Url.Action("EditHomeContent")', {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: formData
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            return response.text().then(text => {
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned non-JSON response: ' + text.substring(0, 200));
+            });
+        }
+        
+        return response.json();
+    })
+    .then(result => {
+        loadingModal.hide();
+        
+        if (result.success) {
+            // Update image previews if new images were uploaded
+            if (result.heroImageUrl) {
+                updateImagePreview('hero', result.heroImageUrl);
+                refreshCachedImage(result.heroImageUrl);
+            }
+            if (result.heroVideoUrl) {
+                updateVideoPreview('hero', result.heroVideoUrl);
+            }
+            if (result.aboutImageUrl) {
+                updateImagePreview('about', result.aboutImageUrl);
+                refreshCachedImage(result.aboutImageUrl);
+            }
+            
+            // Clear browser cache
+            if (window.caches) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // Show success message
+            showToast(result.message, 'success');
+            
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                window.location.href = '@Url.Action("HomeContent")';
+            }, 2000);
+        } else {
+            showToast(result.message, 'error');
+        }
+    })
+    .catch(error => {
+        loadingModal.hide();
+        console.error('Error:', error);
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    });
+}
+
+// Cache Management Functions
+function refreshCachedImage(imageUrl) {
+    const baseUrl = imageUrl.split('?')[0];
+    const timestamp = Date.now();
+    const cacheBustUrl = `${baseUrl}?v=${timestamp}&_refresh=true`;
+    
+    const tempImg = new Image();
+    tempImg.onload = function() {
+        const allImages = document.querySelectorAll('img');
+        allImages.forEach(img => {
+            if (img.src.includes(baseUrl)) {
+                img.src = cacheBustUrl;
+            }
+        });
+    };
+    tempImg.src = cacheBustUrl;
+}
+
+function clearAllImageCache() {
+    if ('serviceWorker' in navigator && 'caches' in window) {
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.map(function(cacheName) {
+                    return caches.delete(cacheName);
+                })
+            );
+        }).then(function() {
+            showToast('Tüm cache temizlendi!', 'success');
+        });
+    }
+    
+    document.querySelectorAll('img[src*="/uploads/"]').forEach(img => {
+        const currentSrc = img.src;
+        const baseUrl = currentSrc.split('?')[0];
+        const newSrc = `${baseUrl}?v=${Date.now()}&_refresh=true`;
+        img.src = newSrc;
+    });
+}
+
+// Toast Notification Function
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.tab-content .card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.tab-content .card-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.file-preview {
+    padding: 10px;
+    border: 1px dashed #28a745;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.current-image, .current-media {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link {
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+</style>

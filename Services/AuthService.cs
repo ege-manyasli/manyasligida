@@ -9,71 +9,168 @@ namespace manyasligida.Services
     public class AuthService : IAuthService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISessionManager _sessionManager;
         private readonly IEmailService _emailService;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
+        public AuthService(ApplicationDbContext context, ISessionManager sessionManager, IEmailService emailService, ILogger<AuthService> logger)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
+            _sessionManager = sessionManager;
             _emailService = emailService;
+            _logger = logger;
         }
 
         public async Task<User?> LoginAsync(string email, string password)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                return null;
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.IsActive);
-
-            if (user != null && VerifyPassword(password, user.Password))
+            try
             {
-                // Email doğrulaması kontrolü
-                if (!user.EmailConfirmed)
+                _logger.LogInformation("Login attempt for email: {Email}", email);
+
+                // Normalize inputs
+                email = (email ?? string.Empty).Trim().ToLowerInvariant();
+                password = (password ?? string.Empty).Trim();
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    throw new InvalidOperationException("E-posta adresiniz henüz doğrulanmamış. Lütfen önce e-posta adresinizi doğrulayın.");
+                    _logger.LogWarning("Login attempt with empty email or password");
+                    return null;
                 }
 
-                // Update last login
-                user.LastLoginAt = DateTime.Now;
-                await _context.SaveChangesAsync();
-                
-                SetCurrentUser(user);
-                return user;
-            }
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.IsActive);
 
-            return null;
+                _logger.LogInformation("User found: {UserFound}, Email: {Email}, IsActive: {IsActive}", 
+                    user != null, email, user?.IsActive);
+
+                if (user != null)
+                {
+                    var passwordValid = VerifyPassword(password, user.Password);
+                    _logger.LogInformation("Password validation result: {PasswordValid} for user {UserId}", passwordValid, user.Id);
+                    _logger.LogInformation("Input password length: {InputLength}, Stored password length: {StoredLength}", password.Length, user.Password.Length);
+                    _logger.LogInformation("Stored password starts with: {PasswordStart}", user.Password.Substring(0, Math.Min(20, user.Password.Length)));
+                    
+                    // MANUAL TEST: Try direct hash comparison
+                    var manualHash = HashPassword(password);
+                    var manualMatch = string.Equals(manualHash, user.Password, StringComparison.Ordinal);
+                    _logger.LogInformation("Manual hash test - Generated: {Generated}, Match: {Match}", manualHash.Substring(0, Math.Min(20, manualHash.Length)), manualMatch);
+                    
+                    if (passwordValid)
+                    {
+                        // Email doğrulaması kontrolü - ZORUNLU
+                        if (!user.EmailConfirmed)
+                        {
+                            _logger.LogWarning("Login denied for unverified email: {Email}", user.Email);
+                            return null; // E-posta doğrulanmamış, giriş yapamaz
+                        }
+
+                        // Auto-migrate password to current hash format if needed
+                        var needsMigration = false;
+                        if (string.Equals(user.Password, password, StringComparison.Ordinal))
+                        {
+                            // Plain text password - migrate to hash
+                            needsMigration = true;
+                            _logger.LogInformation("Migrating plain text password to hash for user {UserId}", user.Id);
+                        }
+                        else if (!user.Password.StartsWith(HashPassword(password).Substring(0, 10)))
+                        {
+                            // Legacy hash format - check and migrate
+                            using var sha256 = SHA256.Create();
+                            var legacyHash1 = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
+                            var legacyHash2 = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password + "salt")));
+                            
+                            if (string.Equals(legacyHash1, user.Password, StringComparison.Ordinal) || 
+                                string.Equals(legacyHash2, user.Password, StringComparison.Ordinal))
+                            {
+                                needsMigration = true;
+                                _logger.LogInformation("Migrating legacy hash to current format for user {UserId}", user.Id);
+                            }
+                        }
+                        
+                        if (needsMigration)
+                        {
+                            user.Password = HashPassword(password);
+                            _logger.LogInformation("Password migrated to current hash format for user {UserId}", user.Id);
+                        }
+
+                        // Update last login
+                        user.LastLoginAt = DateTime.Now;
+                        await _context.SaveChangesAsync();
+
+                        // Enforce single active session per user
+                        await _sessionManager.ForceLogoutOtherSessionsAsync(user.Id);
+
+                        // Create new session using SessionManager
+                        var sessionCreated = await _sessionManager.CreateUserSessionAsync(user);
+                        if (!sessionCreated)
+                        {
+                            _logger.LogError("Failed to create session for user {UserId}", user.Id);
+                            return null;
+                        }
+
+                        _logger.LogInformation("User {UserId} logged in successfully", user.Id);
+                        return user;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Password validation failed for user {UserId}", user.Id);
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login for email {Email}", email);
+                throw;
+            }
         }
 
         public async Task<User?> RegisterAsync(RegisterViewModel model)
         {
-            if (await IsEmailExistsAsync(model.Email))
-                return null;
-
-            var user = new User
+            try
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email.ToLower(),
-                Phone = model.Phone,
-                Password = HashPassword(model.Password),
-                Address = model.Address,
-                City = model.City,
-                PostalCode = model.PostalCode,
-                IsActive = true,
-                IsAdmin = false,
-                EmailConfirmed = false,
-                CreatedAt = DateTime.Now
-            };
+                // Normalize inputs
+                model.Email = model.Email?.Trim().ToLowerInvariant() ?? string.Empty;
+                model.Password = model.Password?.Trim() ?? string.Empty;
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+                if (await IsEmailExistsAsync(model.Email))
+                    return null;
 
-            // Email doğrulama kodu gönder
-            await SendVerificationCodeAsync(user.Email);
+                var hashedPassword = HashPassword(model.Password);
+                _logger.LogInformation("Register - Original password length: {OrigLen}, Hashed length: {HashLen}", model.Password.Length, hashedPassword.Length);
+                _logger.LogInformation("Register - Hashed password preview: {HashPreview}", hashedPassword.Substring(0, Math.Min(20, hashedPassword.Length)));
+                
+                var user = new User
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email.ToLower(),
+                    Phone = model.Phone,
+                    Password = hashedPassword,
+                    Address = model.Address,
+                    City = model.City,
+                    PostalCode = model.PostalCode,
+                    IsActive = true,
+                    IsAdmin = false,
+                    EmailConfirmed = false,
+                    CreatedAt = DateTime.Now
+                };
 
-            return user;
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                // Email doğrulama kodu gönder
+                await SendVerificationCodeAsync(user.Email);
+
+                _logger.LogInformation("User registered successfully: {Email}", user.Email);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration for email {Email}", model.Email);
+                throw;
+            }
         }
 
         public async Task<bool> IsEmailExistsAsync(string email)
@@ -91,181 +188,289 @@ namespace manyasligida.Services
 
         public bool VerifyPassword(string password, string hashedPassword)
         {
-            var hashedInput = HashPassword(password);
-            return hashedInput == hashedPassword;
-        }
-
-        public async Task<User?> GetCurrentUserAsync()
-        {
-            var session = _httpContextAccessor.HttpContext?.Session;
-            if (session == null) return null;
-
-            var userIdString = session.GetString("UserId");
-            var sessionId = session.GetString("SessionId");
-            
-            if (string.IsNullOrEmpty(userIdString) || string.IsNullOrEmpty(sessionId) || !int.TryParse(userIdString, out int userId))
-                return null;
-
-            // Session'ın geçerliliğini kontrol et
-            var loginTimeString = session.GetString("LoginTime");
-            if (!string.IsNullOrEmpty(loginTimeString) && DateTime.TryParse(loginTimeString, out DateTime loginTime))
-            {
-                // 30 dakikadan eski session'ları geçersiz kıl
-                if (DateTime.UtcNow.Subtract(loginTime).TotalMinutes > 30)
-                {
-                    session.Clear();
-                    return null;
-                }
-            }
-
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsActive);
-        }
-
-        public async Task<bool> IsCurrentUserAdminAsync()
-        {
-            var user = await GetCurrentUserAsync();
-            return user?.IsAdmin == true;
-        }
-
-        public void SetCurrentUser(User user)
-        {
-            var session = _httpContextAccessor.HttpContext?.Session;
-            if (session == null) return;
-
-            // Önce session'ı temizle
-            session.Clear();
-            
-            // Yeni kullanıcı bilgilerini set et
-            session.SetString("UserId", user.Id.ToString());
-            session.SetString("UserName", user.FullName);
-            session.SetString("UserEmail", user.Email);
-            session.SetString("IsAdmin", user.IsAdmin.ToString());
-            session.SetString("LoginTime", DateTime.UtcNow.ToString("O"));
-            session.SetString("SessionId", Guid.NewGuid().ToString());
-        }
-
-        public void Logout()
-        {
-            var session = _httpContextAccessor.HttpContext?.Session;
-            if (session != null)
-            {
-                // Session'ı tamamen temizle
-                session.Clear();
-                
-                // Tüm session key'lerini manuel olarak temizle
-                session.Remove("UserId");
-                session.Remove("UserName");
-                session.Remove("UserEmail");
-                session.Remove("IsAdmin");
-                session.Remove("LoginTime");
-                session.Remove("SessionId");
-                
-                // Cookie'yi de temizle
-                var response = _httpContextAccessor.HttpContext?.Response;
-                if (response != null)
-                {
-                    response.Cookies.Delete(".ManyasliGida.Session");
-                    response.Cookies.Delete("ASP.NET_SessionId");
-                    
-                    // Tüm cookie'leri temizle
-                    var request = _httpContextAccessor.HttpContext?.Request;
-                    if (request != null)
-                    {
-                        var cookies = request.Cookies.Keys;
-                        foreach (var cookie in cookies)
-                        {
-                            response.Cookies.Delete(cookie);
-                        }
-                    }
-                }
-                
-                // Session'ı commit et
-                session.CommitAsync().Wait();
-            }
-        }
-
-        private string GetSalt()
-        {
-            // Basit bir salt - production'da daha güvenli bir yöntem kullanılmalı
-            return "ManyasliGida2024!";
-        }
-
-        public async Task<bool> SendVerificationCodeAsync(string email)
-        {
             try
             {
-                // Önceki doğrulama kodlarını temizle
-                var existingCodes = await _context.EmailVerifications
-                    .Where(ev => ev.Email == email && !ev.IsUsed)
-                    .ToListAsync();
-
-                _context.EmailVerifications.RemoveRange(existingCodes);
-
-                // Yeni doğrulama kodu oluştur
-                var verificationCode = GenerateVerificationCode();
-                var expiresAt = DateTime.Now.AddMinutes(10);
-
-                var emailVerification = new EmailVerification
+                _logger.LogInformation("VerifyPassword called - Input length: {InputLen}, Stored length: {StoredLen}", password?.Length ?? 0, hashedPassword?.Length ?? 0);
+                
+                if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hashedPassword))
                 {
-                    Email = email,
-                    VerificationCode = verificationCode,
-                    CreatedAt = DateTime.Now,
-                    ExpiresAt = expiresAt,
-                    IsUsed = false
-                };
-
-                _context.EmailVerifications.Add(emailVerification);
-                await _context.SaveChangesAsync();
-
-                // Email gönder
-                return await _emailService.SendVerificationEmailAsync(email, verificationCode);
+                    _logger.LogWarning("Empty password or hash provided");
+                    return false;
+                }
+                
+                // 1. Plain text check first (for existing users)
+                if (string.Equals(password, hashedPassword, StringComparison.Ordinal))
+                {
+                    _logger.LogInformation("Plain text password match - SUCCESS");
+                    return true;
+                }
+                
+                // 2. Current hash format check
+                var currentHash = HashPassword(password);
+                if (string.Equals(currentHash, hashedPassword, StringComparison.Ordinal))
+                {
+                    _logger.LogInformation("Current hash format match - SUCCESS");
+                    return true;
+                }
+                
+                _logger.LogWarning("Password verification FAILED - Current hash: {CurrentHash}, Stored: {StoredHash}", 
+                    currentHash?.Substring(0, Math.Min(15, currentHash.Length)), 
+                    hashedPassword?.Substring(0, Math.Min(15, hashedPassword.Length)));
+                
+                return false;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in VerifyPassword");
                 return false;
             }
         }
 
-        public async Task<bool> VerifyEmailAsync(string email, string code)
+        public async Task<User?> GetCurrentUserAsync()
         {
             try
             {
-                // Email'i normalize et
-                email = email.ToLower().Trim();
-                code = code.Trim();
+                return await _sessionManager.GetCurrentUserAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting current user from AuthService");
+                return null;
+            }
+        }
 
-                var verification = await _context.EmailVerifications
-                    .Where(ev => ev.Email.ToLower() == email && 
-                                ev.VerificationCode.Trim() == code && 
-                                !ev.IsUsed && 
-                                ev.ExpiresAt > DateTime.Now)
-                    .FirstOrDefaultAsync();
+        public async Task<bool> IsCurrentUserAdminAsync()
+        {
+            return await _sessionManager.IsCurrentUserAdminAsync();
+        }
 
-                if (verification == null)
-                    return false;
+        public async Task<bool> IsUserLoggedInAsync()
+        {
+            return await _sessionManager.IsUserLoggedInAsync();
+        }
 
-                // Kullanıcıyı bul ve email'i doğrula
+        public async Task<bool> IsUserAdminAsync()
+        {
+            return await _sessionManager.IsUserAdminAsync();
+        }
+
+        public async Task<bool> ValidateSessionAsync()
+        {
+            return await _sessionManager.ValidateSessionAsync();
+        }
+
+        public async Task<bool> ExtendSessionAsync()
+        {
+            return await _sessionManager.ExtendSessionAsync();
+        }
+
+        public async Task<bool> ForceLogoutOtherSessionsAsync()
+        {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+                return false;
+
+            return await _sessionManager.ForceLogoutOtherSessionsAsync(currentUser.Id);
+        }
+
+        public async Task<int> GetActiveSessionCountAsync()
+        {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+                return 0;
+
+            return await _sessionManager.GetActiveSessionCountAsync(currentUser.Id);
+        }
+
+        public async Task Logout()
+        {
+            try
+            {
+                await _sessionManager.InvalidateSessionAsync();
+                _logger.LogInformation("User logged out successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during logout");
+            }
+        }
+
+        public async Task<bool> RefreshSessionAsync()
+        {
+            return await _sessionManager.RefreshSessionAsync();
+        }
+
+        public async Task<DateTime?> GetSessionExpiryAsync()
+        {
+            return await _sessionManager.GetSessionExpiryAsync();
+        }
+
+        public async Task<bool> IsSessionExpiredAsync()
+        {
+            return await _sessionManager.IsSessionExpiredAsync();
+        }
+
+        public async Task CleanupExpiredSessionsAsync()
+        {
+            await _sessionManager.CleanupExpiredSessionsAsync();
+        }
+
+        public void SetCurrentUser(User user)
+        {
+            // This method is used to update the current user in the session
+            // The actual session update is handled by the SessionManager
+            _logger.LogInformation("Setting current user: {UserId}", user.Id);
+        }
+
+        public async Task<bool> VerifyEmailAsync(string email, string verificationCode)
+        {
+            try
+            {
+                email = (email ?? string.Empty).Trim().ToLowerInvariant();
+                verificationCode = (verificationCode ?? string.Empty).Trim();
+                
+                _logger.LogInformation("Email verification attempt - Email: {Email}, Code: {Code}", email, verificationCode);
+
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email);
-                if (user == null)
+                if (user == null) 
+                {
+                    _logger.LogWarning("User not found for email: {Email}", email);
                     return false;
+                }
+
+                var record = await _context.EmailVerifications
+                    .FirstOrDefaultAsync(v => v.Email.ToLower() == email && !v.IsUsed);
+                
+                if (record == null) 
+                {
+                    _logger.LogWarning("No verification record found for email: {Email}", email);
+                    return false;
+                }
+                
+                _logger.LogInformation("Verification record found - Code: {StoredCode}, Expires: {ExpiresAt}, IsUsed: {IsUsed}", 
+                    record.VerificationCode, record.ExpiresAt, record.IsUsed);
+                
+                if (record.ExpiresAt <= DateTime.Now) 
+                {
+                    _logger.LogWarning("Verification code expired for email: {Email}. Expires: {ExpiresAt}, Now: {Now}", 
+                        email, record.ExpiresAt, DateTime.Now);
+                    return false;
+                }
+                
+                if (!string.Equals(record.VerificationCode, verificationCode, StringComparison.Ordinal)) 
+                {
+                    _logger.LogWarning("Verification code mismatch for email: {Email}. Expected: {Expected}, Provided: {Provided}", 
+                        email, record.VerificationCode, verificationCode);
+                    return false;
+                }
 
                 user.EmailConfirmed = true;
-                verification.IsUsed = true;
-
+                user.UpdatedAt = DateTime.Now;
+                record.IsUsed = true;
                 await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Email verified successfully for user: {Email}", email);
                 return true;
             }
             catch (Exception ex)
             {
-                // Log the exception for debugging
-                System.Diagnostics.Debug.WriteLine($"Email verification error: {ex.Message}");
+                _logger.LogError(ex, "Error verifying email for {Email}", email);
                 return false;
             }
         }
 
         public async Task<bool> ResendVerificationCodeAsync(string email)
         {
-            return await SendVerificationCodeAsync(email);
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+
+                if (user != null)
+                {
+                    // Send new verification code
+                    await SendVerificationCodeAsync(email);
+                    _logger.LogInformation("Verification code resent to: {Email}", email);
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending verification code to {Email}", email);
+                return false;
+            }
+        }
+
+        public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsActive);
+                if (user == null) return false;
+
+                // Verify current password
+                if (!VerifyPassword(currentPassword, user.Password)) return false;
+
+                user.Password = HashPassword(newPassword);
+                user.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Password changed for user {UserId}", userId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error changing password for user {UserId}", userId);
+                return false;
+            }
+        }
+
+        private string GetSalt()
+        {
+            // Basit bir salt - production'da daha güvenli bir yöntem kullanılmalı
+            // Admin password hash: sNaWAMfPr1AQUDPjD9iKHB3Jc+Ky6BbhLPYBvU4hwjI=
+            // Bu hash "admin123" + "ManyasliGida2024!" ile oluşturulmuş
+            return "ManyasliGida2024!";
+        }
+
+        private async Task SendVerificationCodeAsync(string email)
+        {
+            try
+            {
+                // Email doğrulama kodu gönderme işlemi
+                var verificationCode = GenerateVerificationCode();
+                
+                // Upsert verification record
+                var existing = await _context.EmailVerifications.FirstOrDefaultAsync(v => v.Email.ToLower() == email.ToLower());
+                if (existing == null)
+                {
+                    _context.EmailVerifications.Add(new EmailVerification
+                    {
+                        Email = email.ToLower(),
+                        VerificationCode = verificationCode,
+                        CreatedAt = DateTime.Now,
+                        ExpiresAt = DateTime.Now.AddMinutes(15), // 15 dakika ve local time
+                        IsUsed = false
+                    });
+                }
+                else
+                {
+                    existing.VerificationCode = verificationCode;
+                    existing.ExpiresAt = DateTime.Now.AddMinutes(15); // 15 dakika ve local time
+                    existing.IsUsed = false;
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Send via email service
+                await _emailService.SendVerificationEmailAsync(email, verificationCode);
+                _logger.LogInformation("Verification code sent to {Email}: {Code}", email, verificationCode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending verification code to {Email}", email);
+            }
         }
 
         private string GenerateVerificationCode()

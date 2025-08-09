@@ -5,8 +5,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.Http.Features;
+
 using manyasligida.Data;
 using manyasligida.Services;
+using manyasligida.Services.Interfaces;
 using manyasligida.Middleware;
 using System;
 using Microsoft.AspNetCore.Http;
@@ -22,19 +27,48 @@ builder.Logging.AddDebug();
 // Add services to the container
 builder.Services.AddControllersWithViews();
 
+// Configure request size limits for large file uploads
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 100_000_000; // 100MB
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 100_000_000; // 100MB
+});
+
+// Configure form options
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 100_000_000; // 100MB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+
 // Add Response Caching
 builder.Services.AddResponseCaching();
 
-// Add Compression
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
-    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
-});
+
+
+
 
 // Add Memory Cache
 builder.Services.AddMemoryCache();
+
+// Add Authentication (Cookie)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = ".ManyasliGida.Auth";
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    });
 
 // Add Entity Framework with Azure-optimized configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -85,14 +119,23 @@ builder.Services.AddSession(options =>
 // Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
-// Add Services
+// Add Services - Modern Architecture
+builder.Services.AddScoped<manyasligida.Services.Interfaces.IAccountService, AccountService>();
+builder.Services.AddScoped<manyasligida.Services.Interfaces.ICookieConsentService, CookieConsentService>();
+builder.Services.AddScoped<manyasligida.Services.Interfaces.IAccountingService, AccountingService>();
+builder.Services.AddScoped<manyasligida.Services.Interfaces.IAboutService, AboutService>();
+builder.Services.AddScoped<manyasligida.Services.Interfaces.IHomeService, HomeService>();
+builder.Services.AddScoped<SiteSettingsService>();
+
+
+// Legacy Services (keeping for compatibility)
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISessionManager, SessionManager>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddSingleton<IPerformanceMonitorService, PerformanceMonitorService>();
-builder.Services.AddScoped<ICookieConsentService, CookieConsentService>();
 
 var app = builder.Build();
 
@@ -128,8 +171,8 @@ try
         startupLogger.LogInformation("Development mode configured");
     }
 
-    // Add middleware with error handling
-    try
+    // Add middleware with error handling - TEMPORARILY DISABLED FOR EMERGENCY FIX
+    /*try
     {
         app.UseMiddleware<GlobalExceptionMiddleware>();
         startupLogger.LogInformation("GlobalExceptionMiddleware registered");
@@ -147,11 +190,33 @@ try
     catch (Exception ex)
     {
         startupLogger.LogError(ex, "Failed to register PerformanceMonitoringMiddleware");
+    }*/
+
+    try
+    {
+        app.UseSession();
+        startupLogger.LogInformation("Session configured");
+    }
+    catch (Exception ex)
+    {
+        startupLogger.LogError(ex, "Failed to configure session");
     }
 
-    // Add Response Compression
-    app.UseResponseCompression();
-    startupLogger.LogInformation("Response compression configured");
+    // Ensure authentication is available before session validation
+    app.UseAuthentication();
+
+    // TEMPORARILY DISABLED FOR EMERGENCY FIX
+    /*try
+    {
+        app.UseMiddleware<SessionValidationMiddleware>();
+        startupLogger.LogInformation("SessionValidationMiddleware registered");
+    }
+    catch (Exception ex)
+    {
+        startupLogger.LogError(ex, "Failed to register SessionValidationMiddleware");
+    }*/
+
+
 
     app.UseHttpsRedirection();
     app.UseStaticFiles(new StaticFileOptions
@@ -165,19 +230,22 @@ try
     app.UseResponseCaching();
     app.UseRouting();
 
-    // Add cache clearing middleware for logout
+    // No-cache for HTML and sensitive routes to prevent user data leakage
     app.Use(async (context, next) =>
     {
-        if (context.Request.Path.StartsWithSegments("/Account/Logout"))
+        await next();
+        var contentType = context.Response.ContentType;
+        if ((contentType != null && contentType.Contains("text/html", StringComparison.OrdinalIgnoreCase)) ||
+            context.Request.Path.StartsWithSegments("/Account") ||
+            context.Request.Path.StartsWithSegments("/Admin") ||
+            context.Request.Path.StartsWithSegments("/Order") ||
+            context.Request.Path.StartsWithSegments("/Cart"))
         {
             context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
             context.Response.Headers["Pragma"] = "no-cache";
             context.Response.Headers["Expires"] = "0";
         }
-        await next();
     });
-
-    app.UseSession();
     app.UseAuthorization();
 
     app.MapControllerRoute(

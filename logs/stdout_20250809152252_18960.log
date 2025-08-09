@@ -1,0 +1,1830 @@
+info: Program[0]
+      === APPLICATION STARTUP BEGIN ===
+info: Program[0]
+      Environment: Development
+info: Program[0]
+      Content Root: C:\Users\pc\manyasligida
+info: Program[0]
+      Web Root: C:\Users\pc\manyasligida\wwwroot
+info: Program[0]
+      ASPNETCORE_ENVIRONMENT: Development
+info: Program[0]
+      Connection string configured: True
+info: Program[0]
+      Development mode configured
+info: Program[0]
+      GlobalExceptionMiddleware registered
+info: Program[0]
+      PerformanceMonitoringMiddleware registered
+info: Program[0]
+      Session configured
+info: Program[0]
+      SessionValidationMiddleware registered
+info: Program[0]
+      Response compression configured
+info: Program[0]
+      === APPLICATION STARTUP COMPLETE ===
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Auth cookie exists but no session - attempting to recreate session
+info: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Auth cookie exists but no session - attempting to recreate session
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (199ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__userId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (182ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 100), @p2='?' (DbType = DateTime2), @p3='?' (Size = 45), @p4='?' (DbType = Boolean), @p5='?' (DbType = DateTime2), @p6='?' (Size = 50), @p7='?' (Size = 50), @p8='?' (Size = 500), @p9='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [UserSessions] ([CreatedAt], [DeviceInfo], [ExpiresAt], [IpAddress], [IsActive], [LastActivity], [Location], [SessionId], [UserAgent], [UserId])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9);
+info: manyasligida.Services.SessionManager[0]
+      Session created for user 16 with session 84oGUOWeS0eRMVt-Iu4AFA
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /video/9586240-uhd_4096_2160_25fps.mp4 took 2638ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /video/9586240-uhd_4096_2160_25fps.mp4 took 2638ms from ::1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (179ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__userId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (196ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__userId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 100), @p2='?' (DbType = DateTime2), @p3='?' (Size = 45), @p4='?' (DbType = Boolean), @p5='?' (DbType = DateTime2), @p6='?' (Size = 50), @p7='?' (Size = 50), @p8='?' (Size = 500), @p9='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [UserSessions] ([CreatedAt], [DeviceInfo], [ExpiresAt], [IpAddress], [IsActive], [LastActivity], [Location], [SessionId], [UserAgent], [UserId])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9);
+info: manyasligida.Services.SessionManager[0]
+      Session created for user 16 with session pNIngtNvgUKSzx2Ax4lZUQ
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 100), @p2='?' (DbType = DateTime2), @p3='?' (Size = 45), @p4='?' (DbType = Boolean), @p5='?' (DbType = DateTime2), @p6='?' (Size = 50), @p7='?' (Size = 50), @p8='?' (Size = 500), @p9='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [UserSessions] ([CreatedAt], [DeviceInfo], [ExpiresAt], [IpAddress], [IsActive], [LastActivity], [Location], [SessionId], [UserAgent], [UserId])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9);
+info: manyasligida.Services.SessionManager[0]
+      Session created for user 16 with session F7LdsB29RUWYsWqCIexKxA
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /Account/Login took 2699ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /Account/Login took 2699ms from ::1
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /Cart/GetCartCount took 3313ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /Cart/GetCartCount took 3313ms from ::1
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18302628908719144973", Request ID "8000000e-0005-fe00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (167ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (171ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18302628921604046863", Request ID "80000010-0008-fe00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId], [u0].[Id], [u0].[Address], [u0].[City], [u0].[CreatedAt], [u0].[Email], [u0].[EmailConfirmed], [u0].[FirstName], [u0].[GoogleId], [u0].[IsActive], [u0].[IsAdmin], [u0].[LastLoginAt], [u0].[LastName], [u0].[Password], [u0].[Phone], [u0].[PostalCode], [u0].[UpdatedAt]
+      FROM [UserSessions] AS [u]
+      INNER JOIN [Users] AS [u0] ON [u].[UserId] = [u0].[Id]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit) AND [u].[ExpiresAt] > GETUTCDATE()
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18374686485577203722", Request ID "8000000b-0001-ff00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (169ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId], [u0].[Id], [u0].[Address], [u0].[City], [u0].[CreatedAt], [u0].[Email], [u0].[EmailConfirmed], [u0].[FirstName], [u0].[GoogleId], [u0].[IsActive], [u0].[IsAdmin], [u0].[LastLoginAt], [u0].[LastName], [u0].[Password], [u0].[Phone], [u0].[PostalCode], [u0].[UpdatedAt]
+      FROM [UserSessions] AS [u]
+      INNER JOIN [Users] AS [u0] ON [u].[UserId] = [u0].[Id]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit) AND [u].[ExpiresAt] > GETUTCDATE()
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "17870283365966413846", Request ID "80000017-000a-f800-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId], [u0].[Id], [u0].[Address], [u0].[City], [u0].[CreatedAt], [u0].[Email], [u0].[EmailConfirmed], [u0].[FirstName], [u0].[GoogleId], [u0].[IsActive], [u0].[IsAdmin], [u0].[LastLoginAt], [u0].[LastName], [u0].[Password], [u0].[Phone], [u0].[PostalCode], [u0].[UpdatedAt]
+      FROM [UserSessions] AS [u]
+      INNER JOIN [Users] AS [u0] ON [u].[UserId] = [u0].[Id]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit) AND [u].[ExpiresAt] > GETUTCDATE()
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18374686481282236438", Request ID "80000017-0000-ff00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18374686481282236440", Request ID "80000019-0000-ff00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId], [u0].[Id], [u0].[Address], [u0].[City], [u0].[CreatedAt], [u0].[Email], [u0].[EmailConfirmed], [u0].[FirstName], [u0].[GoogleId], [u0].[IsActive], [u0].[IsAdmin], [u0].[LastLoginAt], [u0].[LastName], [u0].[Password], [u0].[Phone], [u0].[PostalCode], [u0].[UpdatedAt]
+      FROM [UserSessions] AS [u]
+      INNER JOIN [Users] AS [u0] ON [u].[UserId] = [u0].[Id]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit) AND [u].[ExpiresAt] > GETUTCDATE()
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /About took 1248ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /About took 1248ms from ::1
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /About from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+         at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+         at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+         at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /About
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+         at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+         at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+         at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "17870283365966413848", Request ID "80000019-000a-f800-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18302628913014112274", Request ID "80000013-0006-fe00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (154ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18302628921604046865", Request ID "80000012-0008-fe00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (155ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (171ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18374686481282236442", Request ID "8000001b-0000-ff00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[SessionId] = @__sessionId_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = Boolean)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [IsActive] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: manyasligida.Services.AuthService[0]
+      User logged out successfully
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: manyasligida.Controllers.HomeController[0]
+      Home page requested
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [p].[Id], [p].[Name], [p].[Description], [p].[Price], [p].[ImageUrl], [p].[IsPopular], [p].[CreatedAt], [p].[Weight], [p].[FatContent], [p].[OldPrice], CASE
+          WHEN [p].[CreatedAt] > DATEADD(day, CAST(-30.0E0 AS int), GETDATE()) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END AS [IsNew]
+      FROM [Products] AS [p]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+      ORDER BY [p].[IsPopular] DESC, [p].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Name], [c].[Description]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[Name]
+info: manyasligida.Controllers.HomeController[0]
+      Home page loaded successfully. Products: 8, Categories: 4
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET / from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.Remove(String key)
+         at Microsoft.AspNetCore.Mvc.Filters.ResponseCacheFilterExecutor.Execute(FilterContext context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.Remove(String key)
+         at Microsoft.AspNetCore.Mvc.Filters.ResponseCacheFilterExecutor.Execute(FilterContext context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18158513707758387211", Request ID "8000000c-0002-fc00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (155ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Products] AS [p]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[AllergenInfo], [t].[CategoryId], [t].[CreatedAt], [t].[Description], [t].[ExpiryInfo], [t].[FatContent], [t].[ImageUrl], [t].[ImageUrls], [t].[Ingredients], [t].[IsActive], [t].[IsFeatured], [t].[IsNew], [t].[IsPopular], [t].[MetaDescription], [t].[MetaKeywords], [t].[MetaTitle], [t].[Name], [t].[NutritionalInfo], [t].[OldPrice], [t].[Price], [t].[PublishedAt], [t].[Slug], [t].[SortOrder], [t].[StockQuantity], [t].[StorageInfo], [t].[ThumbnailUrl], [t].[UpdatedAt], [t].[Weight], [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM (
+          SELECT [p].[Id], [p].[AllergenInfo], [p].[CategoryId], [p].[CreatedAt], [p].[Description], [p].[ExpiryInfo], [p].[FatContent], [p].[ImageUrl], [p].[ImageUrls], [p].[Ingredients], [p].[IsActive], [p].[IsFeatured], [p].[IsNew], [p].[IsPopular], [p].[MetaDescription], [p].[MetaKeywords], [p].[MetaTitle], [p].[Name], [p].[NutritionalInfo], [p].[OldPrice], [p].[Price], [p].[PublishedAt], [p].[Slug], [p].[SortOrder], [p].[StockQuantity], [p].[StorageInfo], [p].[ThumbnailUrl], [p].[UpdatedAt], [p].[Weight]
+          FROM [Products] AS [p]
+          WHERE [p].[IsActive] = CAST(1 AS bit)
+          ORDER BY [p].[SortOrder], [p].[CreatedAt] DESC
+          OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+      ) AS [t]
+      LEFT JOIN [Categories] AS [c] ON [t].[CategoryId] = [c].[Id]
+      ORDER BY [t].[SortOrder], [t].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (155ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[DisplayOrder], [c].[ImageUrl], [c].[IsActive], [c].[Name], [c].[UpdatedAt]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Products from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.Remove(String key)
+         at Microsoft.AspNetCore.Mvc.Filters.ResponseCacheFilterExecutor.Execute(FilterContext context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Products
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.ThrowIfReadOnly()
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.Remove(String key)
+         at Microsoft.AspNetCore.Mvc.Filters.ResponseCacheFilterExecutor.Execute(FilterContext context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18230571331861086217", Request ID "8000000a-0009-fd00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+info: Program[0]
+      Connection string found: True
+info: Program[0]
+      Database server: tcp:manyasligida-server.database.windows.net,1433
+fail: manyasligida.Middleware.SessionValidationMiddleware[0]
+      Error in SessionValidationMiddleware
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 218
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 70
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      An unhandled exception occurred. Request: GET /Cart/GetCartCount from ::1
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: manyasligida.Middleware.GlobalExceptionMiddleware[0]
+      Detailed error information for request GET /Cart/GetCartCount
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor.ExecuteAsync(ActionContext context, JsonResult result)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in C:\Users\pc\manyasligida\Program.cs:line 210
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+         at Microsoft.AspNetCore.ResponseCompression.ResponseCompressionMiddleware.InvokeCore(HttpContext context)
+         at manyasligida.Middleware.SessionValidationMiddleware.InvokeAsync(HttpContext context, ISessionManager sessionManager) in C:\Users\pc\manyasligida\Middleware\SessionValidationMiddleware.cs:line 75
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+         at manyasligida.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\PerformanceMonitoringMiddleware.cs:line 24
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 23
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+warn: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[2]
+      The response has already started, the error page middleware will not be executed.
+fail: Microsoft.AspNetCore.Server.IIS.Core.IISHttpServer[2]
+      Connection ID "18230571331861086219", Request ID "8000000c-0009-fd00-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+      System.InvalidOperationException: The response headers cannot be modified because the response has already started.
+         at Microsoft.AspNetCore.HttpSys.Internal.HeaderCollection.set_Item(String key, StringValues value)
+         at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+         at manyasligida.Middleware.GlobalExceptionMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 42
+         at manyasligida.Middleware.GlobalExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\pc\manyasligida\Middleware\GlobalExceptionMiddleware.cs:line 32
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+         at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+         at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slo

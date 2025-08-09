@@ -1,5 +1,17 @@
+@using manyasligida.Services.Interfaces
+@inject ICookieConsentService CookieConsentService
 @{
-    var hasConsented = Context.Session.GetString("CookieConsent") == "true";
+    var sessionConsent = Context.Session.GetString("CookieConsent") == "true";
+    var cookieConsent = Context.Request.Cookies["CookieConsent"] == "true";
+    
+    // Database kontrolü - gerçek cookie consent durumu
+    var sessionId = Context.Session.Id;
+    var dbConsentTask = CookieConsentService.GetConsentStatusAsync(sessionId);
+    var dbConsentResult = dbConsentTask.GetAwaiter().GetResult();
+    var hasDbConsent = dbConsentResult.Success && dbConsentResult.Data != null && dbConsentResult.Data.HasConsent;
+    
+    // Cookie consent kontrolü: Session OR Cookie OR Database (en güçlü check)
+    var hasConsented = sessionConsent || cookieConsent || hasDbConsent;
 }
 
 @if (!hasConsented)
@@ -15,8 +27,8 @@
                 <button type="button" class="btn btn-outline-secondary btn-sm" id="detailsBtn">
                     <i class="fas fa-cog me-1"></i>Detaylar
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm" id="acceptAllBtn">
-                    <i class="fas fa-check me-1"></i>Tümünü Kabul Et
+                <button type="button" class="btn btn-success btn-sm" id="acceptAllBtn">
+                    <i class="fas fa-check me-1"></i>Tümünü Kabul Et (1 Yıl)
                 </button>
                 <button type="button" class="btn btn-primary btn-sm" id="saveBtn">
                     <i class="fas fa-save me-1"></i>Tercihleri Kaydet
@@ -287,6 +299,28 @@
 
         .cookie-modal-body {
             margin-bottom: 25px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Scrollbar styling for modal */
+        .cookie-modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .cookie-modal-body::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .cookie-modal-body::-webkit-scrollbar-thumb {
+            background: rgba(245, 158, 11, 0.6);
+            border-radius: 4px;
+        }
+
+        .cookie-modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(245, 158, 11, 0.8);
         }
 
         .cookie-category-item {
@@ -415,17 +449,32 @@
         /* Responsive modal */
         @@media (max-width: 768px) {
             .cookie-modal-content {
-                margin: 10% auto;
+                margin: 5% auto;
                 padding: 20px;
                 width: 95%;
+                max-height: 90vh;
+            }
+            
+            .cookie-modal-body {
+                max-height: 50vh;
+                overflow-y: auto;
             }
             
             .cookie-modal-footer {
                 flex-direction: column;
+                gap: 10px;
             }
             
             .cookie-modal-footer .btn {
                 width: 100%;
+            }
+        }
+
+        /* Touch-friendly scroll for mobile */
+        @@media (max-width: 768px) {
+            .cookie-modal-body {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
             }
         }
     </style>
@@ -434,6 +483,25 @@
         // Wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Cookie consent script loaded');
+            
+            // Check localStorage first (client-side persistence check)
+            const localConsent = localStorage.getItem('CookieConsent');
+            const localExpiry = localStorage.getItem('CookieConsentExpiry');
+            
+            if (localConsent === 'true' && localExpiry) {
+                const expiryTime = parseInt(localExpiry);
+                const now = new Date().getTime();
+                
+                if (now < expiryTime) {
+                    console.log('🍪 Found valid localStorage consent, hiding banner');
+                    hideCookieBanner();
+                    return; // No need to show banner
+                } else {
+                    console.log('🍪 localStorage consent expired, clearing');
+                    localStorage.removeItem('CookieConsent');
+                    localStorage.removeItem('CookieConsentExpiry');
+                }
+            }
             
             // Get buttons
             const detailsBtn = document.getElementById('detailsBtn');
@@ -449,7 +517,7 @@
             
             if (acceptAllBtn) {
                 acceptAllBtn.addEventListener('click', function() {
-                    showCookieModal();
+                    acceptAllCookiesDirectly();
                 });
             }
             
@@ -518,6 +586,9 @@
             .then(data => {
                 console.log('Data received:', data);
                 if (data.success) {
+                    // Set persistent cookie consent
+                    setCookieConsent(true);
+                    
                     closeCookieModal();
                     hideCookieBanner();
                     
@@ -533,6 +604,59 @@
                 console.error('Error:', error);
                 alert('Cookie tercihleri kaydedilemedi.');
             });
+        }
+
+        // Accept all cookies directly (like Google, Facebook does)
+        function acceptAllCookiesDirectly() {
+            console.log('🍪 ACCEPT ALL - Directly accepting all cookies...');
+            
+            // IMMEDIATELY set persistent cookie (1 year)
+            setCookieConsent(true);
+            
+            // Hide banner immediately
+            hideCookieBanner();
+            
+            // Show success message
+            showToast('🍪 Tüm çerezler kabul edildi! (1 yıl boyunca hatırlanacak)', 'success');
+            
+            // Send to server in background
+            const preferences = {
+                necessary: true,
+                functional: true,
+                analytics: true,
+                marketing: true
+            };
+            
+            fetch('/CookieConsent/SimpleSave', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                body: JSON.stringify(preferences)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Background cookie save result:', data);
+            })
+            .catch(error => {
+                console.warn('⚠️ Background cookie save failed (but cookie is already set):', error);
+            });
+        }
+
+        // Set cookie consent with 1 year expiration
+        function setCookieConsent(value) {
+            const expires = new Date();
+            expires.setFullYear(expires.getFullYear() + 1); // 1 year
+            document.cookie = `CookieConsent=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+            
+            // Triple backup: Session + Local Storage + Cookie
+            sessionStorage.setItem('CookieConsent', value.toString());
+            localStorage.setItem('CookieConsent', value.toString());
+            localStorage.setItem('CookieConsentExpiry', expires.getTime().toString());
+            
+            console.log('🍪 Persistent cookie set for 1 year:', value);
+            console.log('📅 Cookie expires:', expires.toLocaleString());
         }
 
         // Block Google Analytics

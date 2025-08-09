@@ -40,6 +40,7 @@
                         }
 
                         <form asp-action="Login" method="post">
+                            @Html.AntiForgeryToken()
                             <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                             <div class="mb-4">
@@ -70,7 +71,7 @@
 
                             <div class="mb-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="rememberMe">
                                     <label class="form-check-label" for="rememberMe" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.95rem;">
                                         Beni hatırla
                                     </label>
@@ -90,6 +91,16 @@
                                 </a>
                             </div>
                         </form>
+
+                        @if (TempData["UnverifiedEmail"] != null)
+                        {
+                            <div class="text-center mt-3">
+                                <p class="text-muted">E-posta adresinizi doğrulamadınız mı?</p>
+                                <a href="@Url.Action("VerifyEmail", "Account", new { email = TempData["UnverifiedEmail"] })" class="btn btn-outline-warning">
+                                    <i class="fas fa-envelope-check me-2"></i>E-posta Doğrula
+                                </a>
+                            </div>
+                        }
 
                         <hr class="my-4">
 

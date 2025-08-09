@@ -26,18 +26,51 @@ namespace manyasligida.Controllers
             {
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var aboutService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IAboutService>();
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                
                 var siteSettings = _siteSettingsService.Get();
 
+                // Get about content from database
+                var aboutResult = await aboutService.GetAboutContentAsync();
+                
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 ViewBag.Categories = categories;
                 ViewBag.SiteSettings = siteSettings;
                 
+                if (aboutResult.Success && aboutResult.Data != null)
+                {
+                    // Add cache busting to image URLs
+                    var aboutContent = aboutResult.Data;
+                    var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                    
+                    // Add timestamp to image URLs to prevent caching
+                    if (!string.IsNullOrEmpty(aboutContent.StoryImageUrl))
+                    {
+                        aboutContent = aboutContent with { 
+                            StoryImageUrl = $"{aboutContent.StoryImageUrl}?v={timestamp}" 
+                        };
+                    }
+                    
+                    if (!string.IsNullOrEmpty(aboutContent.RegionImageUrl))
+                    {
+                        aboutContent = aboutContent with { 
+                            RegionImageUrl = $"{aboutContent.RegionImageUrl}?v={timestamp}" 
+                        };
+                    }
+                    
+                    ViewBag.AboutContent = aboutContent;
+                }
+                else
+                {
+                    // Create default content if none exists
+                    var defaultResult = await aboutService.CreateDefaultAboutContentAsync();
+                    ViewBag.AboutContent = defaultResult.Data;
+                }
+                
                 return View();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -58,6 +91,7 @@ namespace manyasligida.Controllers
                 ViewBag.Categories = categories;
                 ViewBag.SiteSettings = siteSettings;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
+                ViewBag.AboutContent = null; // Fallback to static content
                 
                 return View();
             }

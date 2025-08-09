@@ -1,282 +1,579 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using manyasligida.Data;
 using manyasligida.Models;
-using System.Text.Json;
+using manyasligida.Models.DTOs;
+using manyasligida.Services.Interfaces;
 
-namespace manyasligida.Services
+namespace manyasligida.Services;
+
+public class CookieConsentService : ICookieConsentService
 {
-    public class CookieConsentService : ICookieConsentService
+    private readonly ApplicationDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<CookieConsentService> _logger;
+
+    public CookieConsentService(
+        ApplicationDbContext context,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<CookieConsentService> logger)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+        _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
+    }
 
-        public CookieConsentService(ApplicationDbContext context)
+    public async Task<CookieConsentResponse> SaveConsentAsync(CookieConsentRequest request)
+    {
+        try
         {
-            _context = context;
-        }
-
-        public async Task<bool> HasUserConsentedAsync(string sessionId, int? userId = null)
-        {
-            try
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
             {
-                var query = _context.CookieConsents.AsQueryable();
-
-                if (userId.HasValue)
+                return new CookieConsentResponse
                 {
-                    query = query.Where(cc => cc.UserId == userId);
-                }
-                else
-                {
-                    query = query.Where(cc => cc.SessionId == sessionId);
-                }
-
-                return await query.AnyAsync();
+                    Success = false,
+                    Message = "HTTP bağlamı bulunamadı"
+                };
             }
-            catch (Exception)
+
+            var sessionId = request.SessionId;
+            var userId = GetCurrentUserId();
+            var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+            var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+
+            // Check for existing consent
+            var existingConsent = await _context.CookieConsents
+                .Include(c => c.ConsentDetails)
+                .FirstOrDefaultAsync(c => c.SessionId == sessionId && c.IsActive);
+
+            if (existingConsent != null)
             {
-                // If database fails, return false to show banner
-                return false;
+                // Update existing consent
+                existingConsent.ConsentDate = DateTime.UtcNow;
+                existingConsent.ExpiryDate = DateTime.UtcNow.AddYears(1);
+                existingConsent.UserId = userId;
+                existingConsent.IpAddress = ipAddress;
+                existingConsent.UserAgent = userAgent;
+
+                // Remove old consent details
+                _context.CookieConsentDetails.RemoveRange(existingConsent.ConsentDetails);
             }
-        }
-
-        public async Task<CookieConsent?> GetUserConsentAsync(string sessionId, int? userId = null)
-        {
-            try
+            else
             {
-                var query = _context.CookieConsents
-                    .Include(cc => cc.ConsentDetails)
-                    .ThenInclude(cd => cd.CookieCategory)
-                    .AsQueryable();
-
-                if (userId.HasValue)
+                // Create new consent
+                existingConsent = new CookieConsent
                 {
-                    query = query.Where(cc => cc.UserId == userId);
-                }
-                else
-                {
-                    query = query.Where(cc => cc.SessionId == sessionId);
-                }
+                    SessionId = sessionId,
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    UserAgent = userAgent,
+                    ConsentDate = DateTime.UtcNow,
+                    ExpiryDate = DateTime.UtcNow.AddYears(1),
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-                return await query.FirstOrDefaultAsync();
+                _context.CookieConsents.Add(existingConsent);
             }
-            catch (Exception)
+
+            await _context.SaveChangesAsync();
+
+            // Add consent details
+            var consentDetails = new List<CookieConsentDetail>();
+
+            if (request.AcceptAll)
             {
-                return null;
-            }
-        }
+                // Accept all categories
+                var allCategories = await _context.CookieCategories
+                    .Where(c => c.IsActive)
+                    .ToListAsync();
 
-        public async Task<bool> SaveConsentAsync(string sessionId, int? userId, string ipAddress, string userAgent, bool isAccepted, Dictionary<int, bool> categoryPreferences)
-        {
-            try
-            {
-                // Check if consent already exists
-                var existingConsent = await GetUserConsentAsync(sessionId, userId);
-                if (existingConsent != null)
+                foreach (var category in allCategories)
                 {
-                    // Update existing consent
-                    existingConsent.IsAccepted = isAccepted;
-                    existingConsent.ConsentDate = DateTime.Now;
-                    existingConsent.IpAddress = ipAddress;
-                    existingConsent.UserAgent = userAgent;
-                    existingConsent.Preferences = JsonSerializer.Serialize(categoryPreferences);
-
-                    // Update consent details
-                    _context.CookieConsentDetails.RemoveRange(existingConsent.ConsentDetails);
-                }
-                else
-                {
-                    // Create new consent
-                    existingConsent = new CookieConsent
-                    {
-                        SessionId = sessionId,
-                        UserId = userId,
-                        IpAddress = ipAddress,
-                        UserAgent = userAgent,
-                        IsAccepted = isAccepted,
-                        Preferences = JsonSerializer.Serialize(categoryPreferences),
-                        ConsentDate = DateTime.Now,
-                        CreatedAt = DateTime.Now
-                    };
-
-                    _context.CookieConsents.Add(existingConsent);
-                }
-
-                // Add consent details
-                foreach (var preference in categoryPreferences)
-                {
-                    var consentDetail = new CookieConsentDetail
+                    consentDetails.Add(new CookieConsentDetail
                     {
                         CookieConsentId = existingConsent.Id,
-                        CookieCategoryId = preference.Key,
-                        IsAccepted = preference.Value,
-                        CreatedAt = DateTime.Now
-                    };
-
-                    _context.CookieConsentDetails.Add(consentDetail);
+                        CookieCategoryId = category.Id,
+                        IsAccepted = true,
+                        CreatedAt = DateTime.UtcNow
+                    });
                 }
-
-                await _context.SaveChangesAsync();
-                return true;
             }
-            catch (Exception ex)
+            else
             {
-                // Log error but don't fail
-                Console.WriteLine($"SaveConsentAsync failed: {ex.Message}");
-                return false;
-            }
-        }
-
-        public async Task<List<CookieCategory>> GetActiveCategoriesAsync()
-        {
-            try
-            {
-                return await _context.CookieCategories
-                    .Where(cc => cc.IsActive)
-                    .OrderBy(cc => cc.SortOrder)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                // Return default categories if database fails
-                return new List<CookieCategory>
+                // Accept specific categories
+                foreach (var categoryConsent in request.CategoryConsents)
                 {
-                    new CookieCategory { Id = 1, Name = "Gerekli Çerezler", Description = "Sitenin temel işlevselliği için gerekli olan çerezler.", IsRequired = true, IsActive = true, SortOrder = 1 },
-                    new CookieCategory { Id = 2, Name = "Analitik Çerezler", Description = "Sitenin kullanımını analiz etmek için kullanılan çerezler.", IsRequired = false, IsActive = true, SortOrder = 2 },
-                    new CookieCategory { Id = 3, Name = "Pazarlama Çerezleri", Description = "Kişiselleştirilmiş reklamlar için kullanılan çerezler.", IsRequired = false, IsActive = true, SortOrder = 3 },
-                    new CookieCategory { Id = 4, Name = "Sosyal Medya Çerezleri", Description = "Sosyal medya platformları ile etkileşim için kullanılan çerezler.", IsRequired = false, IsActive = true, SortOrder = 4 }
-                };
-            }
-        }
-
-        public async Task<Dictionary<int, bool>> GetUserPreferencesAsync(string sessionId, int? userId = null)
-        {
-            try
-            {
-                var consent = await GetUserConsentAsync(sessionId, userId);
-                if (consent != null && !string.IsNullOrEmpty(consent.Preferences))
-                {
-                    return JsonSerializer.Deserialize<Dictionary<int, bool>>(consent.Preferences) ?? new Dictionary<int, bool>();
-                }
-                return new Dictionary<int, bool>();
-            }
-            catch (Exception)
-            {
-                return new Dictionary<int, bool>();
-            }
-        }
-
-        public async Task<bool> UpdatePreferencesAsync(string sessionId, int? userId, Dictionary<int, bool> categoryPreferences)
-        {
-            try
-            {
-                var consent = await GetUserConsentAsync(sessionId, userId);
-                if (consent == null)
-                    return false;
-
-                // Update preferences
-                consent.Preferences = JsonSerializer.Serialize(categoryPreferences);
-
-                // Update consent details
-                _context.CookieConsentDetails.RemoveRange(consent.ConsentDetails);
-
-                foreach (var preference in categoryPreferences)
-                {
-                    var consentDetail = new CookieConsentDetail
+                    consentDetails.Add(new CookieConsentDetail
                     {
-                        CookieConsentId = consent.Id,
-                        CookieCategoryId = preference.Key,
-                        IsAccepted = preference.Value,
-                        CreatedAt = DateTime.Now
-                    };
-
-                    _context.CookieConsentDetails.Add(consentDetail);
+                        CookieConsentId = existingConsent.Id,
+                        CookieCategoryId = categoryConsent.CategoryId,
+                        IsAccepted = categoryConsent.IsAccepted,
+                        CreatedAt = DateTime.UtcNow
+                    });
                 }
+            }
 
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
+            _context.CookieConsentDetails.AddRange(consentDetails);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Cookie consent saved for session {SessionId}", sessionId);
+
+            return new CookieConsentResponse
             {
-                Console.WriteLine($"UpdatePreferencesAsync failed: {ex.Message}");
-                return false;
-            }
+                Success = true,
+                Message = "Çerez tercihleri kaydedildi",
+                ConsentId = existingConsent.Id.ToString(),
+                ConsentDate = existingConsent.ConsentDate
+            };
         }
-
-        public async Task<object> GetConsentStatisticsAsync()
+        catch (Exception ex)
         {
-            try
+            _logger.LogError(ex, "Error saving cookie consent");
+            return new CookieConsentResponse
             {
-                var totalConsents = await _context.CookieConsents.CountAsync();
-                var acceptedConsents = await _context.CookieConsents.CountAsync(cc => cc.IsAccepted);
-                var declinedConsents = totalConsents - acceptedConsents;
-                var acceptanceRate = totalConsents > 0 ? (double)acceptedConsents / totalConsents * 100 : 0;
+                Success = false,
+                Message = "Çerez tercihleri kaydedilemedi"
+            };
+        }
+    }
 
-                return new
+    public async Task<ApiResponse<bool>> UpdateConsentAsync(CookieSettingsUpdateRequest request)
+    {
+        try
+        {
+            var sessionId = GetCurrentSessionId();
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                return ApiResponse<bool>.FailureResult("Oturum bulunamadı");
+            }
+
+            var consent = await _context.CookieConsents
+                .Include(c => c.ConsentDetails)
+                .FirstOrDefaultAsync(c => c.SessionId == sessionId && c.IsActive);
+
+            if (consent == null)
+            {
+                return ApiResponse<bool>.FailureResult("Mevcut çerez tercihi bulunamadı");
+            }
+
+            // Remove old consent details
+            _context.CookieConsentDetails.RemoveRange(consent.ConsentDetails);
+
+            // Add new consent details
+            var consentDetails = request.CategoryConsents.Select(cc => new CookieConsentDetail
+            {
+                CookieConsentId = consent.Id,
+                CookieCategoryId = cc.CategoryId,
+                IsAccepted = cc.IsAccepted,
+                CreatedAt = DateTime.UtcNow
+            });
+
+            _context.CookieConsentDetails.AddRange(consentDetails);
+
+            // Update consent timestamp
+            consent.ConsentDate = DateTime.UtcNow;
+            consent.ExpiryDate = DateTime.UtcNow.AddYears(1);
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Cookie consent updated for session {SessionId}", sessionId);
+
+            return ApiResponse<bool>.SuccessResult(true, "Çerez tercihleri güncellendi");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating cookie consent");
+            return ApiResponse<bool>.FailureResult("Çerez tercihleri güncellenemedi");
+        }
+    }
+
+    public async Task<ApiResponse<CookieConsentStatusResponse>> GetConsentStatusAsync(string sessionId)
+    {
+        try
+        {
+            var consent = await _context.CookieConsents
+                .Include(c => c.ConsentDetails)
+                .ThenInclude(cd => cd.CookieCategory)
+                .FirstOrDefaultAsync(c => c.SessionId == sessionId && c.IsActive);
+
+            var categories = await _context.CookieCategories
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.SortOrder)
+                .ToListAsync();
+
+            var categoryResponses = categories.Select(category =>
+            {
+                var consentDetail = consent?.ConsentDetails
+                    .FirstOrDefault(cd => cd.CookieCategoryId == category.Id);
+
+                return new CookieCategoryResponse
                 {
-                    totalConsents,
-                    acceptedConsents,
-                    declinedConsents,
-                    acceptanceRate = Math.Round(acceptanceRate, 2)
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description,
+                    IsRequired = category.IsRequired,
+                    IsAccepted = consentDetail?.IsAccepted ?? category.IsRequired,
+                    SortOrder = category.SortOrder
                 };
-            }
-            catch (Exception)
+            }).ToList();
+
+            var response = new CookieConsentStatusResponse
             {
-                return new
-                {
-                    totalConsents = 0,
-                    acceptedConsents = 0,
-                    declinedConsents = 0,
-                    acceptanceRate = 0.0
-                };
-            }
+                HasConsent = consent != null,
+                ConsentDate = consent?.ConsentDate,
+                Categories = categoryResponses,
+                NeedsUpdate = consent?.ExpiryDate < DateTime.UtcNow
+            };
+
+            return ApiResponse<CookieConsentStatusResponse>.SuccessResult(response);
         }
-
-        public async Task<bool> UpdateCategoryAsync(int id, CookieCategoryUpdateRequest request)
+        catch (Exception ex)
         {
-            try
+            _logger.LogError(ex, "Error getting consent status");
+            return ApiResponse<CookieConsentStatusResponse>.FailureResult("Çerez durumu alınamadı");
+        }
+    }
+
+    public async Task<ApiResponse<bool>> RevokeConsentAsync(string sessionId)
+    {
+        try
+        {
+            var consent = await _context.CookieConsents
+                .FirstOrDefaultAsync(c => c.SessionId == sessionId && c.IsActive);
+
+            if (consent != null)
             {
-                var category = await _context.CookieCategories.FindAsync(id);
-                if (category == null)
-                    return false;
-
-                category.Name = request.Name;
-                category.Description = request.Description;
-                category.IsRequired = request.IsRequired;
-                category.IsActive = request.IsActive;
-                category.SortOrder = request.SortOrder;
-
+                consent.IsActive = false;
                 await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"UpdateCategoryAsync failed: {ex.Message}");
-                return false;
-            }
-        }
 
-        public async Task<object> GetConsentAnalyticsAsync()
+                _logger.LogInformation("Cookie consent revoked for session {SessionId}", sessionId);
+            }
+
+            return ApiResponse<bool>.SuccessResult(true, "Çerez onayı iptal edildi");
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                var thirtyDaysAgo = DateTime.Now.AddDays(-30);
-                var dailyConsents = await _context.CookieConsents
-                    .Where(cc => cc.ConsentDate >= thirtyDaysAgo)
-                    .GroupBy(cc => cc.ConsentDate.Date)
-                    .Select(g => new
-                    {
-                        date = g.Key.ToString("yyyy-MM-dd"),
-                        acceptedCount = g.Count(cc => cc.IsAccepted),
-                        declinedCount = g.Count(cc => !cc.IsAccepted)
-                    })
-                    .OrderBy(x => x.date)
-                    .ToListAsync();
+            _logger.LogError(ex, "Error revoking consent");
+            return ApiResponse<bool>.FailureResult("Çerez onayı iptal edilemedi");
+        }
+    }
 
-                return new { dailyConsents };
-            }
-            catch (Exception)
+    public async Task<ApiResponse<List<CookieCategoryResponse>>> GetCategoriesAsync()
+    {
+        try
+        {
+            var categories = await _context.CookieCategories
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.SortOrder)
+                .ToListAsync();
+
+            var categoryResponses = categories.Select(c => new CookieCategoryResponse
             {
-                return new { dailyConsents = new List<object>() };
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                IsRequired = c.IsRequired,
+                IsAccepted = c.IsRequired, // Default to required
+                SortOrder = c.SortOrder
+            }).ToList();
+
+            return ApiResponse<List<CookieCategoryResponse>>.SuccessResult(categoryResponses);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting cookie categories");
+            return ApiResponse<List<CookieCategoryResponse>>.FailureResult("Çerez kategorileri alınamadı");
+        }
+    }
+
+    public async Task<ApiResponse<CookieCategoryResponse>> GetCategoryByIdAsync(int categoryId)
+    {
+        try
+        {
+            var category = await _context.CookieCategories.FindAsync(categoryId);
+            if (category == null)
+            {
+                return ApiResponse<CookieCategoryResponse>.FailureResult("Kategori bulunamadı");
+            }
+
+            var response = new CookieCategoryResponse
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                IsRequired = category.IsRequired,
+                IsAccepted = category.IsRequired,
+                SortOrder = category.SortOrder
+            };
+
+            return ApiResponse<CookieCategoryResponse>.SuccessResult(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting cookie category");
+            return ApiResponse<CookieCategoryResponse>.FailureResult("Kategori alınamadı");
+        }
+    }
+
+    // Admin functions
+    public async Task<ApiResponse<bool>> CreateCategoryAsync(string name, string description, bool isRequired)
+    {
+        try
+        {
+            var category = new CookieCategory
+            {
+                Name = name,
+                Description = description,
+                IsRequired = isRequired,
+                IsActive = true,
+                SortOrder = await GetNextSortOrderAsync(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.CookieCategories.Add(category);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Cookie category created: {CategoryName}", name);
+
+            return ApiResponse<bool>.SuccessResult(true, "Kategori oluşturuldu");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating cookie category");
+            return ApiResponse<bool>.FailureResult("Kategori oluşturulamadı");
+        }
+    }
+
+    public async Task<ApiResponse<bool>> UpdateCategoryAsync(int categoryId, string name, string description, bool isRequired)
+    {
+        try
+        {
+            var category = await _context.CookieCategories.FindAsync(categoryId);
+            if (category == null)
+            {
+                return ApiResponse<bool>.FailureResult("Kategori bulunamadı");
+            }
+
+            category.Name = name;
+            category.Description = description;
+            category.IsRequired = isRequired;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Cookie category updated: {CategoryId}", categoryId);
+
+            return ApiResponse<bool>.SuccessResult(true, "Kategori güncellendi");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating cookie category");
+            return ApiResponse<bool>.FailureResult("Kategori güncellenemedi");
+        }
+    }
+
+    public async Task<ApiResponse<bool>> DeleteCategoryAsync(int categoryId)
+    {
+        try
+        {
+            var category = await _context.CookieCategories.FindAsync(categoryId);
+            if (category == null)
+            {
+                return ApiResponse<bool>.FailureResult("Kategori bulunamadı");
+            }
+
+            if (category.IsRequired)
+            {
+                return ApiResponse<bool>.FailureResult("Gerekli kategori silinemez");
+            }
+
+            category.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Cookie category deleted: {CategoryId}", categoryId);
+
+            return ApiResponse<bool>.SuccessResult(true, "Kategori silindi");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting cookie category");
+            return ApiResponse<bool>.FailureResult("Kategori silinemedi");
+        }
+    }
+
+    public async Task<ApiResponse<bool>> UpdateCategorySortOrderAsync(int categoryId, int sortOrder)
+    {
+        try
+        {
+            var category = await _context.CookieCategories.FindAsync(categoryId);
+            if (category == null)
+            {
+                return ApiResponse<bool>.FailureResult("Kategori bulunamadı");
+            }
+
+            category.SortOrder = sortOrder;
+            await _context.SaveChangesAsync();
+
+            return ApiResponse<bool>.SuccessResult(true, "Sıralama güncellendi");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating sort order");
+            return ApiResponse<bool>.FailureResult("Sıralama güncellenemedi");
+        }
+    }
+
+    // Analytics
+    public async Task<ApiResponse<Dictionary<string, int>>> GetConsentAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        try
+        {
+            var query = _context.CookieConsents.AsQueryable();
+
+            if (startDate.HasValue)
+                query = query.Where(c => c.ConsentDate >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(c => c.ConsentDate <= endDate.Value);
+
+            var analytics = new Dictionary<string, int>
+            {
+                ["TotalConsents"] = await query.CountAsync(),
+                ["ActiveConsents"] = await query.CountAsync(c => c.IsActive),
+                ["ExpiredConsents"] = await query.CountAsync(c => c.ExpiryDate < DateTime.UtcNow),
+                ["TodayConsents"] = await query.CountAsync(c => c.ConsentDate.Date == DateTime.UtcNow.Date)
+            };
+
+            return ApiResponse<Dictionary<string, int>>.SuccessResult(analytics);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting consent analytics");
+            return ApiResponse<Dictionary<string, int>>.FailureResult("Analitik veriler alınamadı");
+        }
+    }
+
+    public async Task<ApiResponse<List<object>>> GetConsentTrendsAsync(int days = 30)
+    {
+        try
+        {
+            var startDate = DateTime.UtcNow.AddDays(-days);
+
+            var trends = await _context.CookieConsents
+                .Where(c => c.ConsentDate >= startDate)
+                .GroupBy(c => c.ConsentDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Date)
+                .ToListAsync();
+
+            return ApiResponse<List<object>>.SuccessResult(trends.Cast<object>().ToList());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting consent trends");
+            return ApiResponse<List<object>>.FailureResult("Trend verileri alınamadı");
+        }
+    }
+
+    // Compliance
+    public async Task<ApiResponse<bool>> CleanupExpiredConsentsAsync()
+    {
+        try
+        {
+            var expiredConsents = await _context.CookieConsents
+                .Where(c => c.ExpiryDate < DateTime.UtcNow && c.IsActive)
+                .ToListAsync();
+
+            foreach (var consent in expiredConsents)
+            {
+                consent.IsActive = false;
+            }
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Cleaned up {Count} expired consents", expiredConsents.Count);
+
+            return ApiResponse<bool>.SuccessResult(true, $"{expiredConsents.Count} süresi dolmuş onay temizlendi");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error cleaning up expired consents");
+            return ApiResponse<bool>.FailureResult("Süresi dolmuş onaylar temizlenemedi");
+        }
+    }
+
+    public async Task<ApiResponse<int>> GetTotalConsentsCountAsync()
+    {
+        try
+        {
+            var count = await _context.CookieConsents.CountAsync(c => c.IsActive);
+            return ApiResponse<int>.SuccessResult(count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting total consents count");
+            return ApiResponse<int>.FailureResult("Toplam onay sayısı alınamadı");
+        }
+    }
+
+    public async Task<ApiResponse<double>> GetConsentRateAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        try
+        {
+            var query = _context.CookieConsents.AsQueryable();
+
+            if (startDate.HasValue)
+                query = query.Where(c => c.ConsentDate >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(c => c.ConsentDate <= endDate.Value);
+
+            var totalVisitors = await query.CountAsync(); // This would need session tracking
+            var totalConsents = await query.CountAsync(c => c.IsActive);
+
+            var consentRate = totalVisitors > 0 ? (double)totalConsents / totalVisitors * 100 : 0;
+
+            return ApiResponse<double>.SuccessResult(consentRate);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting consent rate");
+            return ApiResponse<double>.FailureResult("Onay oranı hesaplanamadı");
+        }
+    }
+
+    // Private helper methods
+    private int? GetCurrentUserId()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.User?.Identity?.IsAuthenticated == true)
+        {
+            var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(userIdClaim, out var userId))
+            {
+                return userId;
             }
         }
+        return null;
+    }
+
+    private string? GetCurrentSessionId()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        return httpContext?.Session.GetString("SessionId");
+    }
+
+    private async Task<int> GetNextSortOrderAsync()
+    {
+        var maxOrder = await _context.CookieCategories
+            .Where(c => c.IsActive)
+            .MaxAsync(c => (int?)c.SortOrder) ?? 0;
+
+        return maxOrder + 1;
     }
 }

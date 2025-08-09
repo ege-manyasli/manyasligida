@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using manyasligida.Models;
+using System.Security.Claims;
 
 namespace manyasligida.Attributes
 {
@@ -13,6 +14,14 @@ namespace manyasligida.Attributes
             
             if (string.IsNullOrEmpty(userId))
             {
+                // Fallback to claims-based auth cookie
+                var principal = context.HttpContext.User;
+                if (principal?.Identity?.IsAuthenticated == true)
+                {
+                    base.OnActionExecuting(context);
+                    return;
+                }
+                
                 context.Result = new RedirectToActionResult(ApplicationConstants.Actions.Login, ApplicationConstants.Controllers.Account, null);
                 return;
             }

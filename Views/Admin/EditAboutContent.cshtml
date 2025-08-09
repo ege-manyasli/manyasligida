@@ -1,0 +1,903 @@
+@model manyasligida.Models.DTOs.AboutContentResponse
+@{
+    ViewData["Title"] = "About Content Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page">
+    <div class="admin-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-white">✏️ About Content Düzenle</h1>
+                <p class="text-white-50 mb-0">Hakkımızda sayfasının içeriğini düzenleyin</p>
+            </div>
+            <div>
+                <a href="@Url.Action("AboutContent")" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                </a>
+                <button type="button" class="btn btn-warning me-2" onclick="clearAllImageCache()" title="Resim cache'ini temizle">
+                    <i class="fas fa-sync-alt me-2"></i>Cache Temizle
+                </button>
+                <button type="button" class="btn btn-danger" onclick="resetAboutContent()">
+                    <i class="fas fa-undo me-2"></i>Varsayılana Sıfırla
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-page-content">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <form id="aboutContentForm" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs mb-4" id="aboutTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">
+                        <i class="fas fa-info-circle me-2"></i>Ana Bilgiler
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="story-tab" data-bs-toggle="tab" data-bs-target="#story" type="button" role="tab">
+                        <i class="fas fa-book me-2"></i>Hikaye
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="mission-tab" data-bs-toggle="tab" data-bs-target="#mission" type="button" role="tab">
+                        <i class="fas fa-bullseye me-2"></i>Misyon & Vizyon
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="values-tab" data-bs-toggle="tab" data-bs-target="#values" type="button" role="tab">
+                        <i class="fas fa-heart me-2"></i>Değerler
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="production-tab" data-bs-toggle="tab" data-bs-target="#production" type="button" role="tab">
+                        <i class="fas fa-cogs me-2"></i>Üretim
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="other-tab" data-bs-toggle="tab" data-bs-target="#other" type="button" role="tab">
+                        <i class="fas fa-ellipsis-h me-2"></i>Diğer
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="aboutTabsContent">
+                
+                <!-- Ana Bilgiler Tab -->
+                <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Ana Bilgiler</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Sayfa Başlığı *</label>
+                                    <input type="text" class="form-control" name="Title" value="@Model?.Title" required maxlength="100">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Alt Başlık *</label>
+                                    <input type="text" class="form-control" name="Subtitle" value="@Model?.Subtitle" required maxlength="200">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hikaye Tab -->
+                <div class="tab-pane fade" id="story" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-book me-2"></i>Hikaye Bölümü</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Hikaye Başlığı *</label>
+                                    <input type="text" class="form-control" name="StoryTitle" value="@Model?.StoryTitle" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Hikaye Resmi</label>
+                                    <div class="mb-2">
+                                        <input type="file" id="storyImageFile" name="storyImageFile" class="form-control" accept="image/*">
+                                        <div class="form-text">JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maks 5MB.</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small">Manuel URL (opsiyonel)</label>
+                                        <input type="text" class="form-control form-control-sm" name="StoryImageUrl" value="@Model?.StoryImageUrl" placeholder="~/img/resim.jpg">
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model?.StoryImageUrl))
+                                    {
+                                        <div class="current-image mt-2">
+                                            <small class="text-success">Mevcut resim:</small>
+                                            <div class="mt-1">
+                                                <img src="@Model.StoryImageUrl" alt="Story Image" style="max-width: 100px; max-height: 100px; object-fit: cover;" class="rounded border">
+                                                <div class="small text-muted">@Model.StoryImageUrl</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Hikaye İçeriği *</label>
+                                    <textarea class="form-control" name="StoryContent" rows="6" required>@Model?.StoryContent</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Hikaye Özellikleri (Alt Satırla Ayırın)</label>
+                                    <textarea class="form-control" name="StoryFeatures" rows="4" placeholder="38 Yıllık Deneyim&#10;Kaliteli Üretim&#10;Geleneksel Yöntem&#10;Kalite Garantisi">@(Model?.StoryFeatures != null ? string.Join("\n", Model.StoryFeatures.Select(f => f.Title)) : "")</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Misyon & Vizyon Tab -->
+                <div class="tab-pane fade" id="mission" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Misyon & Vizyon</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Misyon Başlığı *</label>
+                                    <input type="text" class="form-control" name="MissionTitle" value="@Model?.MissionTitle" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Vizyon Başlığı *</label>
+                                    <input type="text" class="form-control" name="VisionTitle" value="@Model?.VisionTitle" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Misyon İçeriği *</label>
+                                    <textarea class="form-control" name="MissionContent" rows="4" required>@Model?.MissionContent</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Vizyon İçeriği *</label>
+                                    <textarea class="form-control" name="VisionContent" rows="4" required>@Model?.VisionContent</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Değerler Tab -->
+                <div class="tab-pane fade" id="values" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Değerler Bölümü</h5>
+                            <button type="button" class="btn btn-light btn-sm" onclick="addValueItem()">
+                                <i class="fas fa-plus me-1"></i>Değer Ekle
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Değerler Başlığı</label>
+                                    <input type="text" class="form-control" name="ValuesTitle" value="@Model?.ValuesTitle">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Değerler Alt Başlığı</label>
+                                    <input type="text" class="form-control" name="ValuesSubtitle" value="@Model?.ValuesSubtitle">
+                                </div>
+                            </div>
+                            
+                            <div id="valueItems">
+                                @if (Model?.ValueItems?.Any() == true)
+                                {
+                                    @for (int i = 0; i < Model.ValueItems.Count; i++)
+                                    {
+                                        <div class="value-item border rounded p-3 mb-3">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0">Değer #@(i + 1)</h6>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeValueItem(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Başlık</label>
+                                                    <input type="text" class="form-control" name="ValueItems[@i].Title" value="@Model.ValueItems[i].Title">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">İkon (FontAwesome)</label>
+                                                    <input type="text" class="form-control" name="ValueItems[@i].Icon" value="@Model.ValueItems[i].Icon" placeholder="fas fa-leaf">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Renk</label>
+                                                    <select class="form-select" name="ValueItems[@i].Color">
+                                                        @{
+                                                            var currentColor = Model.ValueItems[i].Color;
+                                                        }
+                                                        <option value="primary" selected="@(currentColor == "primary")">Primary</option>
+                                                        <option value="success" selected="@(currentColor == "success")">Success</option>
+                                                        <option value="warning" selected="@(currentColor == "warning")">Warning</option>
+                                                        <option value="danger" selected="@(currentColor == "danger")">Danger</option>
+                                                        <option value="info" selected="@(currentColor == "info")">Info</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Açıklama</label>
+                                                    <textarea class="form-control" name="ValueItems[@i].Content" rows="2">@Model.ValueItems[i].Content</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Üretim Süreci Tab -->
+                <div class="tab-pane fade" id="production" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Üretim Süreci</h5>
+                            <button type="button" class="btn btn-light btn-sm" onclick="addProductionStep()">
+                                <i class="fas fa-plus me-1"></i>Adım Ekle
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Üretim Başlığı</label>
+                                    <input type="text" class="form-control" name="ProductionTitle" value="@Model?.ProductionTitle">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Üretim Alt Başlığı</label>
+                                    <input type="text" class="form-control" name="ProductionSubtitle" value="@Model?.ProductionSubtitle">
+                                </div>
+                            </div>
+                            
+                            <div id="productionSteps">
+                                @if (Model?.ProductionSteps?.Any() == true)
+                                {
+                                    @for (int i = 0; i < Model.ProductionSteps.Count; i++)
+                                    {
+                                        <div class="production-step border rounded p-3 mb-3">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0">Adım #@(i + 1)</h6>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeProductionStep(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Sıra No</label>
+                                                    <input type="number" class="form-control" name="ProductionSteps[@i].StepNumber" value="@Model.ProductionSteps[i].StepNumber" min="1">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Başlık</label>
+                                                    <input type="text" class="form-control" name="ProductionSteps[@i].Title" value="@Model.ProductionSteps[i].Title">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Açıklama</label>
+                                                    <textarea class="form-control" name="ProductionSteps[@i].Content" rows="2">@Model.ProductionSteps[i].Content</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diğer Bölümler Tab -->
+                <div class="tab-pane fade" id="other" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- CTA Section -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-dark text-white">
+                                    <h5 class="mb-0"><i class="fas fa-bullhorn me-2"></i>Call to Action Bölümü</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">CTA Başlığı</label>
+                                            <input type="text" class="form-control" name="CtaTitle" value="@Model?.CtaTitle">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">CTA İçeriği</label>
+                                            <textarea class="form-control" name="CtaContent" rows="2">@Model?.CtaContent</textarea>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Birinci Buton Metni</label>
+                                            <input type="text" class="form-control" name="CtaButtonText" value="@Model?.CtaButtonText">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">İkinci Buton Metni</label>
+                                            <input type="text" class="form-control" name="CtaSecondButtonText" value="@Model?.CtaSecondButtonText">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bölge Bilgisi -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Bölge Bilgisi</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Bölge Başlığı</label>
+                                            <input type="text" class="form-control" name="RegionTitle" value="@Model?.RegionTitle">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Bölge Resmi</label>
+                                            <div class="mb-2">
+                                                <input type="file" id="regionImageFile" name="regionImageFile" class="form-control" accept="image/*">
+                                                <div class="form-text">JPG, PNG, GIF ve WEBP dosyaları kabul edilir. Maks 5MB.</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label text-muted small">Manuel URL (opsiyonel)</label>
+                                                <input type="text" class="form-control form-control-sm" name="RegionImageUrl" value="@Model?.RegionImageUrl" placeholder="~/img/resim.jpg">
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(Model?.RegionImageUrl))
+                                            {
+                                                <div class="current-image mt-2">
+                                                    <small class="text-success">Mevcut resim:</small>
+                                                    <div class="mt-1">
+                                                        <img src="@Model.RegionImageUrl" alt="Region Image" style="max-width: 100px; max-height: 100px; object-fit: cover;" class="rounded border">
+                                                        <div class="small text-muted">@Model.RegionImageUrl</div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Bölge İçeriği</label>
+                                            <textarea class="form-control" name="RegionContent" rows="4">@Model?.RegionContent</textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Bölge Özellikleri (Format: Başlık|İkon - Alt satırla ayırın)</label>
+                                            <textarea class="form-control" name="RegionFeatures" rows="4" placeholder="Balıkesir, Bandırma|fas fa-map-marker-alt&#10;Mikro Klima|fas fa-temperature-high">@(Model?.RegionFeatures != null ? string.Join("\n", Model.RegionFeatures.Select(f => f.Title + "|" + f.Icon)) : "")</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-save me-2"></i>About Content'i Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Reset Confirmation Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Varsayılana Sıfırla</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tüm about content varsayılan değerlere sıfırlanacak. Bu işlem geri alınamaz!</p>
+                <p><strong>Emin misiniz?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <form method="post" action="@Url.Action("ResetAboutContent")" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Evet, Sıfırla</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form submit handler
+    document.getElementById('aboutContentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveAboutContent();
+    });
+});
+
+function saveAboutContent() {
+    const form = document.getElementById('aboutContentForm');
+    const formData = new FormData(form);
+    
+    // Add dynamic content to FormData
+    console.log('🔄 Preparing About Content data...');
+    
+    // Story Features
+    const storyFeaturesText = formData.get('StoryFeatures');
+    const storyFeatures = storyFeaturesText ? storyFeaturesText.split('\n').map(line => ({Title: line.trim()})).filter(item => item.Title) : [];
+    formData.set('StoryFeatures', JSON.stringify(storyFeatures));
+    
+    // Region Features 
+    const regionFeaturesText = formData.get('RegionFeatures');
+    const regionFeatures = regionFeaturesText ? regionFeaturesText.split('\n').map(line => {
+        const parts = line.split('|');
+        return parts.length >= 2 ? {Title: parts[0].trim(), Icon: parts[1].trim()} : null;
+    }).filter(item => item) : [];
+    formData.set('RegionFeatures', JSON.stringify(regionFeatures));
+    
+    // Value Items
+    const valueItems = [];
+    document.querySelectorAll('.value-item').forEach((item, index) => {
+        const title = item.querySelector(`input[name*="Title"]`)?.value;
+        const content = item.querySelector(`textarea[name*="Content"]`)?.value;
+        const icon = item.querySelector(`input[name*="Icon"]`)?.value;
+        const color = item.querySelector(`select[name*="Color"]`)?.value;
+        
+        if (title && content) {
+            valueItems.push({
+                Title: title,
+                Content: content,
+                Icon: icon || 'fas fa-star',
+                Color: color || 'primary'
+            });
+        }
+    });
+    formData.set('ValueItems', JSON.stringify(valueItems));
+    
+    // Production Steps
+    const productionSteps = [];
+    document.querySelectorAll('.production-step').forEach((step, index) => {
+        const stepNumber = step.querySelector(`input[name*="StepNumber"]`)?.value;
+        const title = step.querySelector(`input[name*="Title"]`)?.value;
+        const content = step.querySelector(`textarea[name*="Content"]`)?.value;
+        
+        if (title && content) {
+            productionSteps.push({
+                StepNumber: parseInt(stepNumber) || (index + 1),
+                Title: title,
+                Content: content
+            });
+        }
+    });
+    formData.set('ProductionSteps', JSON.stringify(productionSteps));
+    
+    // Certificate Items (empty for now)
+    formData.set('CertificateItems', JSON.stringify([]));
+    
+    // Check for uploaded files
+    const storyImageFile = formData.get('storyImageFile');
+    const regionImageFile = formData.get('regionImageFile');
+    console.log('📁 Story Image File:', storyImageFile?.name || 'None');
+    console.log('📁 Region Image File:', regionImageFile?.name || 'None');
+    
+    // Show loading
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Kaydediliyor...';
+    submitBtn.disabled = true;
+    
+    // Send multipart form data
+    fetch('@Url.Action("EditAboutContent")', {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        if (result.success) {
+            showToast('🎉 About content başarıyla güncellendi!', 'success');
+            
+            // Update image previews if new images were uploaded
+            if (result.storyImageUrl) {
+                updateImagePreview('story', result.storyImageUrl);
+                // Force refresh story image in current page
+                refreshCachedImage(result.storyImageUrl);
+            }
+            if (result.regionImageUrl) {
+                updateImagePreview('region', result.regionImageUrl);
+                // Force refresh region image in current page
+                refreshCachedImage(result.regionImageUrl);
+            }
+            
+            // Clear browser cache for About page
+            if (window.caches) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // Redirect after success
+            setTimeout(() => {
+                window.location.href = '@Url.Action("AboutContent")';
+            }, 2000);
+        } else {
+            showToast(result.message || 'Güncelleme sırasında hata oluştu.', 'error');
+        }
+    })
+    .catch(error => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        console.error('Error:', error);
+        showToast('Güncelleme sırasında hata oluştu.', 'error');
+    });
+}
+
+function addValueItem() {
+    const container = document.getElementById('valueItems');
+    const index = container.children.length;
+    
+    const html = `
+        <div class="value-item border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0">Değer #${index + 1}</h6>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeValueItem(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <label class="form-label">Başlık</label>
+                    <input type="text" class="form-control" name="ValueItems[${index}].Title">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">İkon (FontAwesome)</label>
+                    <input type="text" class="form-control" name="ValueItems[${index}].Icon" placeholder="fas fa-leaf">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Renk</label>
+                    <select class="form-select" name="ValueItems[${index}].Color">
+                        <option value="primary">Primary</option>
+                        <option value="success">Success</option>
+                        <option value="warning">Warning</option>
+                        <option value="danger">Danger</option>
+                        <option value="info">Info</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" name="ValueItems[${index}].Content" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+function removeValueItem(button) {
+    button.closest('.value-item').remove();
+}
+
+function addProductionStep() {
+    const container = document.getElementById('productionSteps');
+    const index = container.children.length;
+    
+    const html = `
+        <div class="production-step border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0">Adım #${index + 1}</h6>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeProductionStep(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="row g-2">
+                <div class="col-md-2">
+                    <label class="form-label">Sıra No</label>
+                    <input type="number" class="form-control" name="ProductionSteps[${index}].StepNumber" value="${index + 1}" min="1">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Başlık</label>
+                    <input type="text" class="form-control" name="ProductionSteps[${index}].Title">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" name="ProductionSteps[${index}].Content" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+function removeProductionStep(button) {
+    button.closest('.production-step').remove();
+}
+
+function resetAboutContent() {
+    const modal = new bootstrap.Modal(document.getElementById('resetModal'));
+    modal.show();
+}
+
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    
+    const toastId = 'toast-' + Date.now();
+    const bgClass = type === 'success' ? 'bg-success' : type === 'error' ? 'bg-danger' : 'bg-info';
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast ${bgClass} text-white" role="alert">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+    
+    // Remove toast after hiding
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '9999';
+    document.body.appendChild(container);
+    return container;
+}
+
+function updateImagePreview(type, imageUrl) {
+    console.log(`🖼️ Updating ${type} image preview:`, imageUrl);
+    
+    // Find the appropriate image container
+    const selector = type === 'story' ? '[name="StoryImageUrl"]' : '[name="RegionImageUrl"]';
+    const urlInput = document.querySelector(selector);
+    
+    if (urlInput) {
+        // Update the URL input
+        urlInput.value = imageUrl;
+        
+        // Find or create the preview container
+        const parentContainer = urlInput.closest('.col-md-6');
+        let previewContainer = parentContainer.querySelector('.current-image');
+        
+        if (!previewContainer) {
+            // Create new preview container
+            previewContainer = document.createElement('div');
+            previewContainer.className = 'current-image mt-2';
+            parentContainer.appendChild(previewContainer);
+        }
+        
+        // Update preview content
+        previewContainer.innerHTML = `
+            <small class="text-success">Yeni resim yüklendi:</small>
+            <div class="mt-1">
+                <img src="${imageUrl}" alt="${type} Image" style="max-width: 100px; max-height: 100px; object-fit: cover;" class="rounded border">
+                <div class="small text-muted">${imageUrl}</div>
+            </div>
+        `;
+        
+        // Add success animation
+        previewContainer.style.animation = 'fadeInScale 0.5s ease-out';
+    }
+}
+
+// Add image file input change listeners for preview
+document.addEventListener('DOMContentLoaded', function() {
+    // Story image preview
+    const storyImageInput = document.getElementById('storyImageFile');
+    if (storyImageInput) {
+        storyImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    showImagePreview('story', e.target.result, file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Region image preview
+    const regionImageInput = document.getElementById('regionImageFile');
+    if (regionImageInput) {
+        regionImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    showImagePreview('region', e.target.result, file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+function showImagePreview(type, src, fileName) {
+    const selector = type === 'story' ? '#storyImageFile' : '#regionImageFile';
+    const input = document.querySelector(selector);
+    const parentContainer = input.closest('.col-md-6');
+    
+    // Find or create preview container
+    let previewContainer = parentContainer.querySelector('.temp-preview');
+    if (!previewContainer) {
+        previewContainer = document.createElement('div');
+        previewContainer.className = 'temp-preview mt-2 p-2 border rounded bg-light';
+        input.parentNode.appendChild(previewContainer);
+    }
+    
+    previewContainer.innerHTML = `
+        <small class="text-info">📁 Seçilen dosya:</small>
+        <div class="mt-1 d-flex align-items-center gap-2">
+            <img src="${src}" alt="Preview" style="max-width: 60px; max-height: 60px; object-fit: cover;" class="rounded border">
+            <div>
+                <div class="small fw-bold">${fileName}</div>
+                <div class="small text-muted">Kaydet butonuna basarak yükleyin</div>
+            </div>
+        </div>
+    `;
+}
+
+function refreshCachedImage(imageUrl) {
+    console.log('🔄 Force refreshing cached image:', imageUrl);
+    
+    // Remove query params to get base URL
+    const baseUrl = imageUrl.split('?')[0];
+    
+    // Create a new image element to force browser to fetch fresh version
+    const tempImg = new Image();
+    const timestamp = Date.now();
+    const cacheBustUrl = `${baseUrl}?v=${timestamp}&_refresh=true`;
+    
+    tempImg.onload = function() {
+        console.log('✅ Image refreshed successfully:', cacheBustUrl);
+        
+        // Find and update all images with this src in the page
+        const allImages = document.querySelectorAll('img');
+        allImages.forEach(img => {
+            if (img.src.includes(baseUrl)) {
+                img.src = cacheBustUrl;
+                console.log('🖼️ Updated image src:', img.src);
+            }
+        });
+    };
+    
+    tempImg.onerror = function() {
+        console.warn('⚠️ Failed to refresh image:', cacheBustUrl);
+    };
+    
+    // Force load with cache busting
+    tempImg.src = cacheBustUrl;
+}
+
+// Add global cache clear function
+function clearAllImageCache() {
+    console.log('🗑️ Clearing all image cache...');
+    
+    // Clear service worker cache if available
+    if ('serviceWorker' in navigator && 'caches' in window) {
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.map(function(cacheName) {
+                    console.log('Deleting cache:', cacheName);
+                    return caches.delete(cacheName);
+                })
+            );
+        }).then(function() {
+            console.log('✅ All caches cleared');
+        });
+    }
+    
+    // Force reload of all images on page
+    const allImages = document.querySelectorAll('img[src*="/uploads/"]');
+    allImages.forEach(img => {
+        const currentSrc = img.src;
+        const baseUrl = currentSrc.split('?')[0];
+        const newSrc = `${baseUrl}?v=${Date.now()}&_refresh=true`;
+        img.src = newSrc;
+        console.log('🖼️ Force refreshed:', newSrc);
+    });
+}
+</script>
+
+<style>
+    .admin-page {
+        min-height: 100vh;
+    }
+
+    .admin-page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .admin-page-content {
+        padding: 0 1rem;
+    }
+
+    .nav-tabs .nav-link {
+        border: 1px solid #dee2e6;
+        color: #495057;
+        background: #f8f9fa;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .value-item, .production-step {
+        background: #f8f9fa;
+        transition: all 0.2s ease;
+    }
+
+    .value-item:hover, .production-step:hover {
+        background: #e9ecef;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    @@keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .temp-preview {
+        border: 2px dashed #007bff !important;
+        background: linear-gradient(45deg, #f8f9fa, #e3f2fd) !important;
+    }
+
+    .current-image img {
+        border: 2px solid #28a745;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+    }
+</style>

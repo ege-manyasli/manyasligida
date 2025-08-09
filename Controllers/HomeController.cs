@@ -1,29 +1,27 @@
-﻿using System;
-using System.Diagnostics;
-using manyasligida.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using manyasligida.Data;
-using manyasligida.Services;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
+using manyasligida.Data;
+using manyasligida.Models;
+using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using manyasligida.Services;
 
 namespace manyasligida.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ISiteSettingsService _siteSettingsService;
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public HomeController(IServiceProvider serviceProvider, ISiteSettingsService siteSettingsService, ILogger<HomeController> logger)
+        public HomeController(
+            ILogger<HomeController> logger, 
+            ApplicationDbContext context,
+            IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
-            _siteSettingsService = siteSettingsService;
             _logger = logger;
+            _context = context;
+            _serviceProvider = serviceProvider;
         }
 
         [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
@@ -36,12 +34,25 @@ namespace manyasligida.Controllers
             {
                 _logger.LogInformation("Home page requested");
 
-                // Create separate DbContext instances to avoid threading issues
-                using var productsContext = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                using var categoriesContext = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                // Try to get home service - if fails, use fallback
+                var homeService = scope.ServiceProvider.GetService<manyasligida.Services.Interfaces.IHomeService>();
+                if (homeService == null)
+                {
+                    _logger.LogWarning("HomeService not found, using fallback");
+                    ViewBag.HomeContent = null;
+                }
+                else
+                {
+                    // Get home content from database
+                    var homeResult = await homeService.GetHomeContentAsync();
+                    ViewBag.HomeContent = homeResult.Data;
+                }
 
-                // Get products with separate context
-                var products = await productsContext.Products
+                // Get products
+                var products = await context.Products
                     .Where(p => p.IsActive)
                     .OrderByDescending(p => p.IsPopular)
                     .ThenByDescending(p => p.CreatedAt)
@@ -50,75 +61,57 @@ namespace manyasligida.Controllers
                     {
                         p.Id,
                         p.Name,
-                        p.Description,
-                        p.Price,
                         p.ImageUrl,
-                        p.IsPopular,
-                        p.CreatedAt,
-                        p.Weight,
-                        p.FatContent,
-                        p.OldPrice,
-                        IsNew = p.CreatedAt > DateTime.Now.AddDays(-30)
+                        p.Price
                     })
                     .ToListAsync();
 
-                // Get categories with separate context
-                var categories = await categoriesContext.Categories
+                // Get categories
+                var categories = await context.Categories
                     .Where(c => c.IsActive)
-                    .OrderBy(c => c.Name)
+                    .OrderBy(c => c.DisplayOrder)
                     .Select(c => new
                     {
                         c.Id,
                         c.Name,
-                        c.Description
+                        ProductCount = context.Products.Count(p => p.CategoryId == c.Id && p.IsActive)
                     })
                     .ToListAsync();
 
-                // Get site settings
-                var siteSettings = await Task.Run(() => _siteSettingsService.Get());
+                // Get blog posts
+                var blogs = await context.Blogs
+                    .Where(b => b.IsActive)
+                    .OrderByDescending(b => b.CreatedAt)
+                    .Take(3)
+                    .Select(b => new
+                    {
+                        b.Id,
+                        b.Title,
+                        b.Content,
+                        b.ImageUrl,
+                        b.CreatedAt
+                    })
+                    .Cast<object>()
+                    .ToListAsync();
 
-                // Get current user info from session
-                var currentUser = new
-                {
-                    IsLoggedIn = !string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")),
-                    UserName = HttpContext.Session.GetString("UserName"),
-                    UserEmail = HttpContext.Session.GetString("UserEmail"),
-                    IsAdmin = HttpContext.Session.GetString("IsAdmin") == "True"
-                };
+                // Pass data to view
+                ViewBag.Products = products;
+                ViewBag.Categories = categories;
+                ViewBag.Blogs = blogs;
 
-                var viewModel = new
-                {
-                    Products = products,
-                    Categories = categories,
-                    SiteSettings = siteSettings ?? new SiteSettings(),
-                    CurrentUser = currentUser
-                };
-
-                _logger.LogInformation($"Home page loaded successfully. Products: {products.Count}, Categories: {categories.Count}");
-
-                return View(viewModel);
+                return View();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading home page");
                 
-                // Return empty data instead of throwing
-                var emptyViewModel = new
-                {
-                    Products = new List<object>(),
-                    Categories = new List<object>(),
-                    SiteSettings = _siteSettingsService.Get() ?? new SiteSettings(),
-                    CurrentUser = new
-                    {
-                        IsLoggedIn = !string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")),
-                        UserName = HttpContext.Session.GetString("UserName"),
-                        UserEmail = HttpContext.Session.GetString("UserEmail"),
-                        IsAdmin = HttpContext.Session.GetString("IsAdmin") == "True"
-                    }
-                };
-
+                ViewBag.Products = new List<object>();
+                ViewBag.Categories = new List<object>();
+                ViewBag.Blogs = new List<object>();
+                ViewBag.HomeContent = null;
                 ViewBag.ErrorMessage = "Ürünler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.";
-                return View(emptyViewModel);
+                
+                return View();
             }
         }
 

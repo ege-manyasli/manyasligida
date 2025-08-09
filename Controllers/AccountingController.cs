@@ -1,226 +1,594 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using manyasligida.Data;
-using manyasligida.Models;
-using manyasligida.Services;
-using Microsoft.Extensions.DependencyInjection;
+using manyasligida.Models.DTOs;
+using manyasligida.Services.Interfaces;
+using manyasligida.Attributes;
 
-namespace manyasligida.Controllers
+namespace manyasligida.Controllers;
+
+[Route("Accounting")]
+[AdminAuthorization]
+public class AccountingController : Controller
 {
-    public class AccountingController : Controller
+    private readonly IAccountingService _accountingService;
+    private readonly ILogger<AccountingController> _logger;
+
+    public AccountingController(IAccountingService accountingService, ILogger<AccountingController> logger)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IAuthService _authService;
-        private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
+        _accountingService = accountingService;
+        _logger = logger;
+    }
 
-        public AccountingController(IServiceProvider serviceProvider, IAuthService authService, IConfiguration configuration)
+    #region Dashboard & Overview
+
+    [HttpGet]
+    [HttpGet("Index")]
+    public async Task<IActionResult> Index()
+    {
+        try
         {
-            _serviceProvider = serviceProvider;
-            _authService = authService;
-            _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection")!;
+            var metricsResult = await _accountingService.GetDashboardMetricsAsync();
+            
+            if (metricsResult.Success)
+            {
+                return View(metricsResult.Data);
+            }
+
+            TempData["Error"] = metricsResult.Message;
+            return View(new DashboardMetricsResponse());
         }
-
-        private async Task<bool> IsAdminAsync()
+        catch (Exception ex)
         {
-            return await _authService.IsCurrentUserAdminAsync();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
-        {
-            if (!await IsAdminAsync())
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-
-            using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var now = DateTime.Now;
-            var start = startDate ?? new DateTime(now.Year, now.Month, 1);
-            var end = endDate ?? start.AddMonths(1).AddDays(-1);
-
-            // Ciro (teslim edilen siparişler)
-            decimal revenue = await context.Orders
-                .Where(o => o.OrderStatus == ApplicationConstants.OrderStatus.Delivered && o.OrderDate >= start && o.OrderDate <= end)
-                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
-
-            decimal purchasesTotal = 0m;
-            decimal expensesTotal = 0m;
-            var purchases = new List<PurchaseDto>();
-            var expenses = new List<ExpenseDto>();
-
-            try
-            {
-                using var conn = new SqlConnection(_connectionString);
-                await conn.OpenAsync();
-
-                // Toplam alış maliyetleri (Quantity * UnitPrice)
-                using (var cmd = new SqlCommand(@"SELECT ISNULL(SUM(CAST(Quantity as decimal(18,3)) * CAST(UnitPrice as decimal(18,2))), 0)
-                                                  FROM Purchases WITH (NOLOCK)
-                                                  WHERE [Date] BETWEEN @s AND @e", conn))
-                {
-                    cmd.Parameters.AddWithValue("@s", start);
-                    cmd.Parameters.AddWithValue("@e", end);
-                    purchasesTotal = (decimal)await cmd.ExecuteScalarAsync();
-                }
-
-                // Toplam giderler
-                using (var cmd = new SqlCommand(@"SELECT ISNULL(SUM(CAST(Amount as decimal(18,2))), 0)
-                                                  FROM Expenses WITH (NOLOCK)
-                                                  WHERE [Date] BETWEEN @s AND @e", conn))
-                {
-                    cmd.Parameters.AddWithValue("@s", start);
-                    cmd.Parameters.AddWithValue("@e", end);
-                    expensesTotal = (decimal)await cmd.ExecuteScalarAsync();
-                }
-
-                // Son kayıtlar (liste)
-                using (var cmd = new SqlCommand(@"SELECT TOP 100 Id, [Date], Supplier, Item, Quantity, Unit, UnitPrice, Notes
-                                                  FROM Purchases WITH (NOLOCK)
-                                                  WHERE [Date] BETWEEN @s AND @e
-                                                  ORDER BY [Date] DESC, Id DESC", conn))
-                {
-                    cmd.Parameters.AddWithValue("@s", start);
-                    cmd.Parameters.AddWithValue("@e", end);
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        purchases.Add(new PurchaseDto
-                        {
-                            Id = reader.GetInt32(0),
-                            Date = reader.GetDateTime(1),
-                            Supplier = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            Item = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            Quantity = reader.IsDBNull(4) ? 0 : Convert.ToDecimal(reader[4]),
-                            Unit = reader.IsDBNull(5) ? null : reader.GetString(5),
-                            UnitPrice = reader.IsDBNull(6) ? 0 : Convert.ToDecimal(reader[6]),
-                            Notes = reader.IsDBNull(7) ? null : reader.GetString(7)
-                        });
-                    }
-                }
-
-                using (var cmd = new SqlCommand(@"SELECT TOP 100 Id, [Date], Category, Description, Amount, PaymentMethod
-                                                  FROM Expenses WITH (NOLOCK)
-                                                  WHERE [Date] BETWEEN @s AND @e
-                                                  ORDER BY [Date] DESC, Id DESC", conn))
-                {
-                    cmd.Parameters.AddWithValue("@s", start);
-                    cmd.Parameters.AddWithValue("@e", end);
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        expenses.Add(new ExpenseDto
-                        {
-                            Id = reader.GetInt32(0),
-                            Date = reader.GetDateTime(1),
-                            Category = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            Description = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            Amount = reader.IsDBNull(4) ? 0 : Convert.ToDecimal(reader[4]),
-                            PaymentMethod = reader.IsDBNull(5) ? null : reader.GetString(5)
-                        });
-                    }
-                }
-            }
-            catch (SqlException)
-            {
-                // Tablolar yoksa uyarı gösterelim; sayfa yine de açılır
-                TempData["Info"] = "Muhasebe tabloları bulunamadı. Aşağıdaki örnek SQL ile 'Purchases' ve 'Expenses' tablolarını oluşturabilirsiniz.";
-            }
-
-            var vm = new AccountingDashboardViewModel
-            {
-                StartDate = start,
-                EndDate = end,
-                Revenue = revenue,
-                PurchasesTotal = purchasesTotal,
-                ExpensesTotal = expensesTotal,
-                NetProfit = revenue - (purchasesTotal + expensesTotal),
-                Purchases = purchases,
-                Expenses = expenses
-            };
-
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddPurchase(PurchaseInput input)
-        {
-            if (!await IsAdminAsync())
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-
-            if (input.Date == default)
-            {
-                input.Date = DateTime.Now;
-            }
-
-            try
-            {
-                using var conn = new SqlConnection(_connectionString);
-                await conn.OpenAsync();
-                var cmd = new SqlCommand(@"INSERT INTO Purchases ([Date], Supplier, Item, Quantity, Unit, UnitPrice, Notes)
-                                           VALUES (@Date, @Supplier, @Item, @Quantity, @Unit, @UnitPrice, @Notes)", conn);
-                cmd.Parameters.AddWithValue("@Date", input.Date);
-                cmd.Parameters.AddWithValue("@Supplier", (object?)input.Supplier ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Item", (object?)input.Item ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Quantity", input.Quantity);
-                cmd.Parameters.AddWithValue("@Unit", (object?)input.Unit ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@UnitPrice", input.UnitPrice);
-                cmd.Parameters.AddWithValue("@Notes", (object?)input.Notes ?? DBNull.Value);
-                await cmd.ExecuteNonQueryAsync();
-
-                TempData["Success"] = "Alış kaydı eklendi.";
-            }
-            catch (Exception)
-            {
-                TempData["Error"] = "Alış kaydı eklenemedi. Lütfen tabloların mevcut olduğundan emin olun.";
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddExpense(ExpenseInput input)
-        {
-            if (!await IsAdminAsync())
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-
-            if (input.Date == default)
-            {
-                input.Date = DateTime.Now;
-            }
-
-            try
-            {
-                using var conn = new SqlConnection(_connectionString);
-                await conn.OpenAsync();
-                var cmd = new SqlCommand(@"INSERT INTO Expenses ([Date], Category, Description, Amount, PaymentMethod)
-                                           VALUES (@Date, @Category, @Description, @Amount, @PaymentMethod)", conn);
-                cmd.Parameters.AddWithValue("@Date", input.Date);
-                cmd.Parameters.AddWithValue("@Category", (object?)input.Category ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Description", (object?)input.Description ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Amount", input.Amount);
-                cmd.Parameters.AddWithValue("@PaymentMethod", (object?)input.PaymentMethod ?? DBNull.Value);
-                await cmd.ExecuteNonQueryAsync();
-
-                TempData["Success"] = "Gider kaydı eklendi.";
-            }
-            catch (Exception)
-            {
-                TempData["Error"] = "Gider kaydı eklenemedi. Lütfen tabloların mevcut olduğundan emin olun.";
-            }
-
-            return RedirectToAction(nameof(Index));
+            _logger.LogError(ex, "Error loading accounting dashboard");
+            TempData["Error"] = "Dashboard yüklenirken bir hata oluştu";
+            return View(new DashboardMetricsResponse());
         }
     }
-}
 
+    [HttpGet("Dashboard")]
+    public async Task<IActionResult> Dashboard()
+    {
+        return await Index();
+    }
+
+    #endregion
+
+    #region Sales Reports
+
+    [HttpGet("Sales")]
+    public IActionResult Sales()
+    {
+        var request = new SalesReportRequest
+        {
+            StartDate = DateTime.UtcNow.AddMonths(-1).Date,
+            EndDate = DateTime.UtcNow.Date,
+            Period = "monthly"
+        };
+
+        return View(request);
+    }
+
+    [HttpPost("Sales/Generate")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GenerateSalesReport(SalesReportRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Sales", request);
+            }
+
+            var result = await _accountingService.GenerateSalesReportAsync(request);
+
+            if (result.Success)
+            {
+                ViewBag.ReportData = result.Data;
+                ViewBag.Request = request;
+                return View("SalesReport", result.Data);
+            }
+
+            TempData["Error"] = result.Message;
+            return View("Sales", request);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating sales report");
+            TempData["Error"] = "Satış raporu oluşturulurken bir hata oluştu";
+            return View("Sales", request);
+        }
+    }
+
+    [HttpGet("api/sales-report")]
+    public async Task<IActionResult> GetSalesReportApi([FromQuery] SalesReportRequest request)
+    {
+        try
+        {
+            var result = await _accountingService.GenerateSalesReportAsync(request);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting sales report");
+            return Json(ApiResponse<SalesReportResponse>.FailureResult("Satış raporu alınamadı"));
+        }
+    }
+
+    #endregion
+
+    #region Revenue Analysis
+
+    [HttpGet("Revenue")]
+    public IActionResult Revenue()
+    {
+        var request = new RevenueAnalysisRequest
+        {
+            StartDate = DateTime.UtcNow.AddMonths(-6).Date,
+            EndDate = DateTime.UtcNow.Date,
+            GroupBy = "month"
+        };
+
+        return View(request);
+    }
+
+    [HttpPost("Revenue/Analyze")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AnalyzeRevenue(RevenueAnalysisRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Revenue", request);
+            }
+
+            var result = await _accountingService.GetRevenueAnalysisAsync(request);
+
+            if (result.Success)
+            {
+                ViewBag.AnalysisData = result.Data;
+                ViewBag.Request = request;
+                return View("RevenueAnalysis", result.Data);
+            }
+
+            TempData["Error"] = result.Message;
+            return View("Revenue", request);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error analyzing revenue");
+            TempData["Error"] = "Gelir analizi yapılırken bir hata oluştu";
+            return View("Revenue", request);
+        }
+    }
+
+    [HttpGet("api/revenue-analysis")]
+    public async Task<IActionResult> GetRevenueAnalysisApi([FromQuery] RevenueAnalysisRequest request)
+    {
+        try
+        {
+            var result = await _accountingService.GetRevenueAnalysisAsync(request);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting revenue analysis");
+            return Json(ApiResponse<RevenueAnalysisResponse>.FailureResult("Gelir analizi alınamadı"));
+        }
+    }
+
+    #endregion
+
+    #region Expenses Management
+
+    [HttpGet("Expenses")]
+    public async Task<IActionResult> Expenses()
+    {
+        try
+        {
+            var expensesResult = await _accountingService.GetExpensesAsync();
+            
+            if (expensesResult.Success)
+            {
+                ViewBag.Expenses = expensesResult.Data;
+            }
+            else
+            {
+                ViewBag.Expenses = new List<object>();
+                TempData["Error"] = expensesResult.Message;
+            }
+
+            return View();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading expenses");
+            TempData["Error"] = "Giderler yüklenirken bir hata oluştu";
+            ViewBag.Expenses = new List<object>();
+            return View();
+        }
+    }
+
+    [HttpPost("Expenses/Create")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateExpense(ExpenseRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Json(new { success = false, message = "Geçersiz veri", errors });
+            }
+
+            var result = await _accountingService.CreateExpenseAsync(request);
+
+            _logger.LogInformation("Expense creation attempt: {Success}, Description: {Description}", 
+                result.Success, request.Description);
+
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating expense");
+            return Json(new { success = false, message = "Gider oluşturulamadı" });
+        }
+    }
+
+    [HttpPost("Expenses/Update/{expenseId}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateExpense(int expenseId, ExpenseRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Geçersiz veri" });
+            }
+
+            var result = await _accountingService.UpdateExpenseAsync(expenseId, request);
+
+            _logger.LogInformation("Expense update attempt: {Success}, ExpenseId: {ExpenseId}", 
+                result.Success, expenseId);
+
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating expense");
+            return Json(new { success = false, message = "Gider güncellenemedi" });
+        }
+    }
+
+    [HttpPost("Expenses/Delete/{expenseId}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteExpense(int expenseId)
+    {
+        try
+        {
+            var result = await _accountingService.DeleteExpenseAsync(expenseId);
+
+            _logger.LogInformation("Expense deletion attempt: {Success}, ExpenseId: {ExpenseId}", 
+                result.Success, expenseId);
+
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting expense");
+            return Json(new { success = false, message = "Gider silinemedi" });
+        }
+    }
+
+    [HttpGet("api/expenses")]
+    public async Task<IActionResult> GetExpensesApi(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _accountingService.GetExpensesAsync(startDate, endDate);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting expenses");
+            return Json(ApiResponse<List<object>>.FailureResult("Giderler alınamadı"));
+        }
+    }
+
+    #endregion
+
+    #region Financial Summary & Reports
+
+    [HttpGet("Financial")]
+    public IActionResult Financial()
+    {
+        var startDate = DateTime.UtcNow.AddMonths(-1).Date;
+        var endDate = DateTime.UtcNow.Date;
+
+        ViewBag.StartDate = startDate;
+        ViewBag.EndDate = endDate;
+
+        return View();
+    }
+
+    [HttpPost("Financial/Summary")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GetFinancialSummary(DateTime startDate, DateTime endDate)
+    {
+        try
+        {
+            var result = await _accountingService.GetFinancialSummaryAsync(startDate, endDate);
+
+            if (result.Success)
+            {
+                ViewBag.Summary = result.Data;
+                ViewBag.StartDate = startDate;
+                ViewBag.EndDate = endDate;
+                return View("FinancialSummary", result.Data);
+            }
+
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Financial");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting financial summary");
+            TempData["Error"] = "Mali özet alınırken bir hata oluştu";
+            return RedirectToAction("Financial");
+        }
+    }
+
+    [HttpGet("api/financial-summary")]
+    public async Task<IActionResult> GetFinancialSummaryApi(DateTime startDate, DateTime endDate)
+    {
+        try
+        {
+            var result = await _accountingService.GetFinancialSummaryAsync(startDate, endDate);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting financial summary");
+            return Json(ApiResponse<FinancialSummaryResponse>.FailureResult("Mali özet alınamadı"));
+        }
+    }
+
+    #endregion
+
+    #region Analytics & Insights
+
+    [HttpGet("Analytics")]
+    public IActionResult Analytics()
+    {
+        return View();
+    }
+
+    [HttpGet("api/dashboard-metrics")]
+    public async Task<IActionResult> GetDashboardMetricsApi()
+    {
+        try
+        {
+            var result = await _accountingService.GetDashboardMetricsAsync();
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting dashboard metrics");
+            return Json(ApiResponse<DashboardMetricsResponse>.FailureResult("Dashboard metrikleri alınamadı"));
+        }
+    }
+
+    [HttpGet("api/top-products")]
+    public async Task<IActionResult> GetTopProductsApi(int count = 10, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _accountingService.GetTopSellingProductsAsync(count, startDate, endDate);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting top products");
+            return Json(ApiResponse<List<ProductSalesResponse>>.FailureResult("En çok satan ürünler alınamadı"));
+        }
+    }
+
+    [HttpGet("api/sales-by-category")]
+    public async Task<IActionResult> GetSalesByCategoryApi(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _accountingService.GetSalesByCategoryAsync(startDate, endDate);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting sales by category");
+            return Json(ApiResponse<List<CategorySalesResponse>>.FailureResult("Kategori satışları alınamadı"));
+        }
+    }
+
+    [HttpGet("api/revenue-trends")]
+    public async Task<IActionResult> GetRevenueTrendsApi(string period = "month", int count = 12)
+    {
+        try
+        {
+            var result = await _accountingService.GetRevenueByPeriodAsync(period, count);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting revenue trends");
+            return Json(ApiResponse<List<RevenueByPeriodResponse>>.FailureResult("Gelir trendleri alınamadı"));
+        }
+    }
+
+    [HttpGet("api/expenses-by-category")]
+    public async Task<IActionResult> GetExpensesByCategoryApi(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _accountingService.GetExpensesByCategoryAsync(startDate, endDate);
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "API: Error getting expenses by category");
+            return Json(ApiResponse<Dictionary<string, decimal>>.FailureResult("Kategori giderleri alınamadı"));
+        }
+    }
+
+    #endregion
+
+    #region Data Export
+
+    [HttpPost("Export/Sales")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ExportSalesReport(SalesReportRequest request, string format = "excel")
+    {
+        try
+        {
+            var result = await _accountingService.ExportSalesReportAsync(request, format);
+
+            if (result.Success && result.Data != null)
+            {
+                var contentType = format.ToLower() switch
+                {
+                    "pdf" => "application/pdf",
+                    "excel" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    _ => "application/octet-stream"
+                };
+
+                var fileName = $"SalesReport_{DateTime.UtcNow:yyyyMMdd}.{format}";
+                return File(result.Data, contentType, fileName);
+            }
+
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Sales");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error exporting sales report");
+            TempData["Error"] = "Rapor dışa aktarılamadı";
+            return RedirectToAction("Sales");
+        }
+    }
+
+    [HttpPost("Export/Financial")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ExportFinancialReport(DateTime startDate, DateTime endDate, string format = "pdf")
+    {
+        try
+        {
+            var result = await _accountingService.ExportFinancialReportAsync(startDate, endDate, format);
+
+            if (result.Success && result.Data != null)
+            {
+                var contentType = format.ToLower() switch
+                {
+                    "pdf" => "application/pdf",
+                    "excel" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    _ => "application/octet-stream"
+                };
+
+                var fileName = $"FinancialReport_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}.{format}";
+                return File(result.Data, contentType, fileName);
+            }
+
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Financial");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error exporting financial report");
+            TempData["Error"] = "Mali rapor dışa aktarılamadı";
+            return RedirectToAction("Financial");
+        }
+    }
+
+    #endregion
+
+    #region Background Tasks
+
+    [HttpPost("Tasks/ProcessDailyRevenue")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProcessDailyRevenue()
+    {
+        try
+        {
+            var result = await _accountingService.ProcessDailyRevenueAsync();
+
+            _logger.LogInformation("Daily revenue processing: {Success}", result.Success);
+
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing daily revenue");
+            return Json(new { success = false, message = "Günlük gelir işlemi başarısız" });
+        }
+    }
+
+    [HttpPost("Tasks/UpdateAnalytics")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateAnalytics()
+    {
+        try
+        {
+            var result = await _accountingService.UpdateProductAnalyticsAsync();
+
+            _logger.LogInformation("Analytics update: {Success}", result.Success);
+
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating analytics");
+            return Json(new { success = false, message = "Analitik güncelleme başarısız" });
+        }
+    }
+
+    [HttpPost("Tasks/CleanupOldData")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CleanupOldData(int daysToKeep = 365)
+    {
+        try
+        {
+            var result = await _accountingService.CleanupOldAnalyticsAsync(daysToKeep);
+
+            _logger.LogInformation("Old data cleanup: {Success}, Days: {Days}", result.Success, daysToKeep);
+
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error cleaning up old data");
+            return Json(new { success = false, message = "Eski veri temizleme başarısız" });
+        }
+    }
+
+    #endregion
+}

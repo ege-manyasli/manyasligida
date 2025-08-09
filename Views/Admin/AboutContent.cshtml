@@ -1,0 +1,237 @@
+@model manyasligida.Models.DTOs.AboutContentResponse
+@{
+    ViewData["Title"] = "About Content Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page">
+    <div class="admin-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-white">📝 About Content Yönetimi</h1>
+                <p class="text-white-50 mb-0">Hakkımızda sayfasını yönetin</p>
+            </div>
+            <div>
+                <a href="@Url.Action("EditAboutContent")" class="btn btn-warning">
+                    <i class="fas fa-edit me-2"></i>About Content Düzenle
+                </a>
+                <a href="@Url.Action("Index", "About")" target="_blank" class="btn btn-info">
+                    <i class="fas fa-external-link-alt me-2"></i>Sayfayı Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-page-content">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model != null)
+        {
+            <div class="row g-4">
+                <!-- Ana Bilgiler -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Ana Bilgiler</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Başlık:</strong>
+                                    <p class="text-muted">@Model.Title</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Alt Başlık:</strong>
+                                    <p class="text-muted">@Model.Subtitle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hikaye Bölümü -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-book me-2"></i>Hikaye</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-bold">@Model.StoryTitle</h6>
+                            <p class="text-muted small">@(Model.StoryContent?.Length > 150 ? Model.StoryContent.Substring(0, 150) + "..." : Model.StoryContent)</p>
+                            @if (!string.IsNullOrEmpty(Model.StoryImageUrl))
+                            {
+                                <small class="text-success"><i class="fas fa-image me-1"></i>Resim: @Model.StoryImageUrl</small>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Misyon & Vizyon -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Misyon & Vizyon</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6 class="fw-bold text-primary">@Model.MissionTitle</h6>
+                                <p class="text-muted small">@(Model.MissionContent?.Length > 100 ? Model.MissionContent.Substring(0, 100) + "..." : Model.MissionContent)</p>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-info">@Model.VisionTitle</h6>
+                                <p class="text-muted small">@(Model.VisionContent?.Length > 100 ? Model.VisionContent.Substring(0, 100) + "..." : Model.VisionContent)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Değerler -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Değerler</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-bold">@Model.ValuesTitle</h6>
+                            <p class="text-muted small">@Model.ValuesSubtitle</p>
+                            <div class="mt-3">
+                                @if (Model.ValueItems?.Any() == true)
+                                {
+                                    <div class="row g-2">
+                                        @foreach (var item in Model.ValueItems.Take(4))
+                                        {
+                                            <div class="col-6">
+                                                <span class="badge bg-secondary">@item.Title</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Üretim Süreci -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Üretim Süreci</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-bold">@Model.ProductionTitle</h6>
+                            <p class="text-muted small">@Model.ProductionSubtitle</p>
+                            @if (Model.ProductionSteps?.Any() == true)
+                            {
+                                <div class="mt-3">
+                                    @foreach (var step in Model.ProductionSteps.Take(3))
+                                    {
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-primary rounded-circle me-2">@step.StepNumber</span>
+                                            <small>@step.Title</small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Son Güncelleme -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>ID:</strong>
+                                    <p class="text-muted mb-0">#@Model.Id</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Durum:</strong>
+                                    <p class="mb-0">
+                                        @if (Model.IsActive)
+                                        {
+                                            <span class="badge bg-success">Aktif</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Pasif</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Oluşturulma:</strong>
+                                    <p class="text-muted mb-0">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Son Güncelleme:</strong>
+                                    <p class="text-muted mb-0">@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h4>About Content Bulunamadı</h4>
+                <p class="text-muted">Henüz hiç about content eklenmemiş.</p>
+                <a href="@Url.Action("EditAboutContent")" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>İlk About Content'i Oluştur
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .admin-page {
+        min-height: 100vh;
+    }
+
+    .admin-page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .admin-page-content {
+        padding: 0 1rem;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .card-header {
+        border: none;
+        font-weight: 600;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+    }
+</style>

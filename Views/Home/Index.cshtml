@@ -2,26 +2,26 @@
     ViewData["Title"] = "Ana Sayfa - Manyaslı Gıda";
 }
 
-<!-- Hero Section with Video -->
+<!-- Hero Section -->
 <section class="hero-section position-relative" style="min-height: 100vh; display: flex; align-items: center; overflow: hidden; margin-top: -80px; padding-top: 80px;">
     <!-- Video Background -->
     <div class="video-background">
         <video autoplay muted loop playsinline class="hero-video">
             <source src="~/video/9586240-uhd_4096_2160_25fps.mp4" type="video/mp4">
+            <div style="background-image: url('~/img/carousel-1.jpg'); background-size: cover; background-position: center; width: 100%; height: 100%;"></div>
         </video>
         <div class="video-overlay"></div>
     </div>
-    
+
     <div class="container position-relative z-index-2">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right">
                 <h1 class="display-3 fw-bold text-white mb-4">
-                    Kaliteli Lezzetin<br>
-                    <span class="text-warning">Adresi</span>
+                    Kaliteli Lezzetin
+                    <br><span class="text-warning">Adresi</span>
                 </h1>
                 <p class="lead text-white mb-4">
-                    Uzman ellerden sofralarınıza uzanan kaliteli süt ürünleri. 
-                    Taze ve güvenilir üretimle sağlığınız için en iyisi.
+                    Uzman ellerden sofralarınıza uzanan kaliteli süt ürünleri. Taze ve güvenilir üretimle sağlığınız için en iyisi.
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
                     <a href="@Url.Action("Index", "Products")" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
@@ -38,18 +38,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Floating Elements -->
-    <div class="floating-elements">
-        <div class="floating-element" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
-        <div class="floating-element" style="top: 60%; right: 15%; animation-delay: 2s;"></div>
-        <div class="floating-element" style="bottom: 30%; left: 20%; animation-delay: 4s;"></div>
-    </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="scroll-indicator">
-        <div class="scroll-arrow"></div>
     </div>
 </section>
 
@@ -73,7 +61,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
                 <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
@@ -85,7 +72,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
                 <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
@@ -97,7 +83,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
                 <div class="card text-center h-100 border-0 shadow-sm">
                     <div class="card-body p-4">
@@ -122,54 +107,33 @@
         </div>
         
         <div class="row g-4">
-            @{
-                var products = Model?.Products as List<object> ?? new List<object>();
-                var errorMessage = ViewBag.ErrorMessage as string;
-            }
-            
-            @if (!string.IsNullOrEmpty(errorMessage))
+            @if (ViewBag.Products != null && ((IEnumerable<dynamic>)ViewBag.Products).Any())
             {
-                <div class="col-12">
-                    <div class="alert alert-warning" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        @errorMessage
-                    </div>
-                </div>
-            }
-            
-            @foreach (dynamic product in products.Take(4))
-            {
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(products.IndexOf(product) * 100)">
-                    <div class="card product-card h-100 border-0 shadow-sm">
-                        <div class="product-image position-relative">
-                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                            @if (product.IsNew)
-                            {
-                                <span class="badge bg-success position-absolute top-0 start-0 m-2">Yeni</span>
-                            }
-                            @if (product.OldPrice > product.Price)
-                            {
-                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">İndirim</span>
-                            }
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <h6 class="card-title fw-bold">@product.Name</h6>
-                            <p class="card-text text-muted small mb-2">@product.Weight</p>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <span class="product-price">₺@product.Price.ToString("0.00")</span>
-                                    @if (product.OldPrice > product.Price)
-                                    {
-                                        <span class="product-old-price ms-2">₺@product.OldPrice?.ToString("0.00")</span>
-                                    }
+                foreach (var product in ViewBag.Products)
+                {
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="position-relative overflow-hidden">
+                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                                <div class="card-overlay">
+                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-warning">
+                                        <i class="fas fa-eye"></i> İncele
+                                    </a>
                                 </div>
-                                <span class="badge bg-primary">@product.FatContent</span>
                             </div>
-                            <button class="btn btn-primary mt-auto" onclick="addToCart(@product.Id)">
-                                <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
-                            </button>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="text-primary fw-bold fs-5">@product.Price TL</p>
+                            </div>
                         </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Henüz ürün eklenmemiş.
                 </div>
             }
         </div>
@@ -182,444 +146,88 @@
     </div>
 </section>
 
-<!-- About Section -->
-<section class="section-padding bg-white">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="section-title text-start">
-                    <h2>Geleneksel Lezzet, Modern Üretim</h2>
-                    <p>Manyas'ın bereketli topraklarında, geleneksel yöntemlerle modern teknolojiyi birleştirerek üretim yapıyoruz.</p>
-                </div>
-                
-                <div class="row g-3 mt-4">
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
-                            <div>
-                                <h6 class="fw-bold mb-1">Kaliteli Süt</h6>
-                                <p class="text-muted small mb-0">Çiftliklerden taze süt</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
-                            <div>
-                                <h6 class="fw-bold mb-1">Hijyenik Üretim</h6>
-                                <p class="text-muted small mb-0">Modern tesisler</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
-                            <div>
-                                <h6 class="fw-bold mb-1">Kalite Kontrol</h6>
-                                <p class="text-muted small mb-0">Sürekli denetim</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
-                            <div>
-                                <h6 class="fw-bold mb-1">Hızlı Teslimat</h6>
-                                <p class="text-muted small mb-0">Soğuk zincir</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <a href="@Url.Action("Index", "About")" class="btn btn-primary">
-                        <i class="fas fa-info-circle me-2"></i>Daha Fazla Bilgi
-                    </a>
-                </div>
-            </div>
-            
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="position-relative">
-                    <img src="~/img/slider1-1920x750.jpeg" alt="Manyaslı Gıda Üretim" class="img-fluid rounded-3 shadow-lg">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-10 rounded-3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Stats Section -->
-<section class="section-padding" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
-    <div class="container">
-        <div class="row text-center text-white">
-            @{
-                var stats = ViewBag.Stats as dynamic ?? new { TotalProducts = 0, TotalOrders = 0, TotalUsers = 0, TotalBlogs = 0 };
-            }
-            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalOrders)+</div>
-                    <div class="stat-label">Mutlu Müşteri</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalProducts)+</div>
-                    <div class="stat-label">Ürün Çeşidi</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalUsers)+</div>
-                    <div class="stat-label">Kayıtlı Üye</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
-                <div class="stat-item">
-                    <div class="stat-number display-4 fw-bold mb-2">@(stats.TotalBlogs)+</div>
-                    <div class="stat-label">Blog Yazısı</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Blog Section -->
-<section class="section-padding bg-light">
-    <div class="container">
-        <div class="section-title" data-aos="fade-up">
-            <h2>Blog & Haberler</h2>
-            <p>Sağlıklı beslenme ve peynir dünyasından haberler</p>
-        </div>
-        
-        <div class="row g-4">
-            @{
-                var recentBlogs = ViewBag.RecentBlogs as List<manyasligida.Models.Blog> ?? new List<manyasligida.Models.Blog>();
-            }
-            
-            @foreach (var blog in recentBlogs.Take(3))
-            {
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@(recentBlogs.IndexOf(blog) * 100)">
-                    <div class="card blog-card h-100 border-0 shadow-sm">
-                        <div class="blog-image">
-                            <img src="@blog.ImageUrl" class="card-img-top" alt="@blog.Title">
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="blog-date text-primary fw-bold mb-2">
-                                <i class="fas fa-calendar me-1"></i>@(blog.PublishedAt?.ToString("dd MMM yyyy") ?? blog.CreatedAt.ToString("dd MMM yyyy"))
-                            </div>
-                            <h5 class="card-title fw-bold">@blog.Title</h5>
-                            <p class="card-text text-muted">@blog.Summary</p>
-                            <a href="@Url.Action("Detail", "Blog", new { id = blog.Id })" class="btn btn-outline-primary mt-auto">
-                                <i class="fas fa-arrow-right me-2"></i>Devamını Oku
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-        
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="@Url.Action("Index", "Blog")" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-newspaper me-2"></i>Tüm Yazıları Gör
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Newsletter Section -->
-<section class="section-padding bg-white">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center" data-aos="fade-up">
-                <div class="section-title">
-                    <h2>Bültenimize Katılın</h2>
-                    <p>Yeni ürünler ve özel kampanyalardan haberdar olun</p>
-                </div>
-                
-                <div class="newsletter-form">
-                    <div class="input-group">
-                        <input type="email" class="form-control form-control-lg" placeholder="E-posta adresinizi girin">
-                        <button class="btn btn-primary btn-lg" type="button">
-                            <i class="fas fa-paper-plane me-2"></i>Abone Ol
-                        </button>
-                    </div>
-                    <small class="text-muted mt-2 d-block">Gizlilik politikamızı okudunuz ve kabul ettiniz.</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <style>
-    /* Video Hero Styles */
-    .video-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-    }
-    
-    .hero-video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .video-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        // background: linear-gradient(135deg, rgba(231, 76, 60, 0.7) 0%, rgba(243, 156, 18, 0.7) 100%);
-    }
-    
-    .z-index-2 {
-        z-index: 2;
-    }
-    
-    .hero-logo {
-        animation: logoFloat 3s ease-in-out infinite;
-    }
-    
-    @@keyframes logoFloat {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .scroll-indicator {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2;
-        animation: bounce 2s infinite;
-    }
-    
-    .scroll-arrow {
-        width: 30px;
-        height: 30px;
-        border-right: 3px solid white;
-        border-bottom: 3px solid white;
-        transform: rotate(45deg);
-    }
-    
-    @@keyframes bounce {
-        0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-        40% { transform: translateX(-50%) translateY(-10px); }
-        60% { transform: translateX(-50%) translateY(-5px); }
-    }
-    
-    .hero-section {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .floating-elements {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 2;
-    }
-    
-    .floating-element {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 6s ease-in-out infinite;
-    }
-    
-    @@keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
-    }
-    
-    .product-card {
-        transition: all 0.3s ease;
-    }
-    
-    .product-card:hover {
-        transform: translateY(-10px);
-    }
-    
-    .product-image {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .product-image img {
-        transition: transform 0.3s ease;
-    }
-    
-    .product-card:hover .product-image img {
-        transform: scale(1.1);
-    }
-    
-    .product-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(139, 69, 19, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .product-card:hover .product-overlay {
-        opacity: 1;
-    }
-    
-    .price {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-    
-    .testimonial-card {
-        transition: all 0.3s ease;
-    }
-    
-    .testimonial-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .feature-icon {
-        width: 80px;
-        height: 80px;
-        background: var(--bg-light);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-    }
-    
-    /* Responsive Video */
-    @@media (max-width: 768px) {
-        .hero-video {
-            object-position: center;
-        }
-        
-        .hero-logo {
-            max-height: 250px !important;
-        }
-        
-        .hero-section {
-            min-height: 80vh !important;
-        }
-    }
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 
-    .product-card {
-        transition: all 0.3s ease;
-    }
-    
-    .product-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
-    }
-    
-    .product-image {
-        height: 200px;
-        overflow: hidden;
-    }
-    
-    .product-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    
-    .product-card:hover .product-image img {
-        transform: scale(1.1);
-    }
-    
-    .product-price {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-    
-    .product-old-price {
-        text-decoration: line-through;
-        color: #999;
-        font-size: 0.9rem;
-    }
-    
-    .blog-card {
-        transition: all 0.3s ease;
-    }
-    
-    .blog-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
-    }
-    
-    .blog-image {
-        height: 200px;
-        overflow: hidden;
-    }
-    
-    .blog-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    
-    .blog-card:hover .blog-image img {
-        transform: scale(1.1);
-    }
-    
-    .newsletter-form .input-group {
-        border-radius: 50px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    
-    .newsletter-form .form-control {
-        border: none;
-        padding: 15px 25px;
-    }
-    
-    .newsletter-form .btn {
-        border-radius: 0 50px 50px 0;
-        padding: 15px 30px;
-    }
-    
-    .stat-item {
-        padding: 20px;
-    }
-    
-    .stat-number {
-        color: white;
-    }
-    
-    .stat-label {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.z-index-2 {
+    z-index: 2 !important;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.section-title p {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.section-padding {
+    padding: 80px 0;
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .card-overlay {
+    opacity: 1;
+}
+
+.hero-logo {
+    animation: float 6s ease-in-out infinite;
+}
+
+@@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
 </style>
-
-<script>
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-</script>

@@ -1,0 +1,311 @@
+@model manyasligida.Models.DTOs.HomeContentResponse
+@{
+    ViewData["Title"] = "Ana Sayfa İçerik Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h4 text-primary fw-bold mb-1">
+            <i class="fas fa-home me-2"></i>Ana Sayfa İçerik Yönetimi
+        </h2>
+        <p class="text-muted mb-0">Ana sayfadaki tüm bölümleri buradan yönetebilirsiniz</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("EditHomeContent")" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i>Düzenle
+        </a>
+        <button type="button" class="btn btn-warning" onclick="resetContent()">
+            <i class="fas fa-undo me-2"></i>Sıfırla
+        </button>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model != null)
+{
+    <div class="row g-4">
+        <!-- Hero Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>Hero Bölümü
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-primary">@Model.HeroTitle</h6>
+                    <p class="text-muted small mb-2">@Model.HeroSubtitle</p>
+                    <p class="mb-3">@Model.HeroDescription</p>
+                    
+                    @if (!string.IsNullOrEmpty(Model.HeroImageUrl))
+                    {
+                        <div class="mb-3">
+                            <img src="@Model.HeroImageUrl" alt="Hero Resim" class="img-thumbnail" style="max-height: 100px;">
+                        </div>
+                    }
+                    
+                    <div class="d-flex gap-2">
+                        @if (!string.IsNullOrEmpty(Model.HeroButtonText))
+                        {
+                            <span class="badge bg-primary">@Model.HeroButtonText</span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.HeroSecondButtonText))
+                        {
+                            <span class="badge bg-outline-primary">@Model.HeroSecondButtonText</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>Özellikler Bölümü
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-success">@(Model.FeaturesTitle ?? "Özellikler")</h6>
+                    <p class="text-muted small mb-3">@Model.FeaturesSubtitle</p>
+                    
+                    @if (Model.FeatureItems?.Any() == true)
+                    {
+                        <div class="row g-2">
+                            @foreach (var feature in Model.FeatureItems.Take(4))
+                            {
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="@feature.Icon text-@feature.Color me-2"></i>
+                                        <small class="fw-bold">@feature.Title</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    
+                    <div class="text-end">
+                        <span class="badge bg-success">@(Model.FeatureItems?.Count ?? 0) Özellik</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>Ürünler Bölümü
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-info">@(Model.ProductsTitle ?? "Ürünler")</h6>
+                    <p class="text-muted small mb-3">@Model.ProductsSubtitle</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Gösterim:</span>
+                        <span class="badge bg-info">
+                            @(Model.ShowPopularProducts ? "Açık" : "Kapalı")
+                        </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="text-muted">Maksimum Ürün:</span>
+                        <span class="badge bg-outline-info">@Model.MaxProductsToShow</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-warning text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Hakkımızda Bölümü
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-warning">@(Model.AboutTitle ?? "Hakkımızda")</h6>
+                    <p class="text-muted small">@(Model.AboutContent?.Length > 100 ? Model.AboutContent.Substring(0, 100) + "..." : Model.AboutContent)</p>
+                    
+                    @if (!string.IsNullOrEmpty(Model.AboutImageUrl))
+                    {
+                        <div class="mb-3">
+                            <img src="@Model.AboutImageUrl" alt="About Resim" class="img-thumbnail" style="max-height: 80px;">
+                        </div>
+                    }
+                    
+                    <div class="text-end">
+                        <span class="badge bg-warning">@(Model.AboutFeatures?.Count ?? 0) Özellik</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-secondary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>İstatistikler Bölümü
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-secondary">@(Model.StatsTitle ?? "İstatistikler")</h6>
+                    <p class="text-muted small mb-3">@Model.StatsSubtitle</p>
+                    
+                    @if (Model.StatsItems?.Any() == true)
+                    {
+                        <div class="row g-2">
+                            @foreach (var stat in Model.StatsItems.Take(4))
+                            {
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <i class="@stat.Icon text-@stat.Color"></i>
+                                        <div class="fw-bold">@stat.Value@stat.Suffix</div>
+                                        <small class="text-muted">@stat.Title</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-blog me-2"></i>Blog Bölümü
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-danger">@(Model.BlogTitle ?? "Blog")</h6>
+                    <p class="text-muted small mb-3">@Model.BlogSubtitle</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Gösterim:</span>
+                        <span class="badge bg-danger">
+                            @(Model.ShowLatestBlogs ? "Açık" : "Kapalı")
+                        </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="text-muted">Maksimum Blog:</span>
+                        <span class="badge bg-outline-danger">@Model.MaxBlogsToShow</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meta Information -->
+    <div class="card mt-4 border-0 shadow-sm">
+        <div class="card-header bg-light">
+            <h6 class="card-title mb-0 text-muted">
+                <i class="fas fa-info me-2"></i>Meta Bilgiler
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Durum:</strong><br>
+                    <span class="badge bg-@(Model.IsActive ? "success" : "danger")">
+                        @(Model.IsActive ? "Aktif" : "Pasif")
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Oluşturma:</strong><br>
+                    <span class="text-muted">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Son Güncelleme:</strong><br>
+                    <span class="text-muted">@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>ID:</strong><br>
+                    <span class="text-muted">#@Model.Id</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Henüz home content oluşturulmamış.</strong><br>
+        <a href="@Url.Action("EditHomeContent")" class="btn btn-warning mt-2">
+            <i class="fas fa-plus me-2"></i>İlk İçeriği Oluştur
+        </a>
+    </div>
+}
+
+<!-- Reset Confirmation Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">İçeriği Sıfırla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>DİKKAT:</strong> Bu işlem mevcut home content'i silip varsayılan değerlere sıfırlayacaktır.</p>
+                <p>Bu işlem geri alınamaz. Devam etmek istediğinizden emin misiniz?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>İptal
+                </button>
+                <form asp-action="ResetHomeContent" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-undo me-2"></i>Evet, Sıfırla
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetContent() {
+    const resetModal = new bootstrap.Modal(document.getElementById('resetModal'));
+    resetModal.show();
+}
+</script>
+
+<style>
+.bg-gradient-primary { background: linear-gradient(45deg, #007bff, #0056b3); }
+.bg-gradient-success { background: linear-gradient(45deg, #28a745, #1e7e34); }
+.bg-gradient-info { background: linear-gradient(45deg, #17a2b8, #117a8b); }
+.bg-gradient-warning { background: linear-gradient(45deg, #ffc107, #d39e00); }
+.bg-gradient-danger { background: linear-gradient(45deg, #dc3545, #bd2130); }
+.bg-gradient-secondary { background: linear-gradient(45deg, #6c757d, #545b62); }
+
+.card:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+</style>

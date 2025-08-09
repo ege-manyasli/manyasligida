@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using manyasligida.Models;
+using System.Security.Claims;
 
 namespace manyasligida.Attributes
 {
@@ -14,6 +15,13 @@ namespace manyasligida.Attributes
             
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(isAdmin) || isAdmin != "True")
             {
+                // Fallback to claims
+                var principal = context.HttpContext.User;
+                if (principal?.Identity?.IsAuthenticated == true && principal.IsInRole("Admin"))
+                {
+                    base.OnActionExecuting(context);
+                    return;
+                }
                 context.Result = new RedirectToActionResult(ApplicationConstants.Actions.Login, ApplicationConstants.Controllers.Admin, null);
                 return;
             }

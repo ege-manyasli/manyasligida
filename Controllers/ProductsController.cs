@@ -20,8 +20,14 @@ namespace manyasligida.Controllers
             _siteSettingsService = siteSettingsService;
         }
 
-        // GET: Products/Index
-        [ResponseCache(Duration = 180, Location = ResponseCacheLocation.Any)] // Cache for 3 minutes
+        // EMERGENCY ACTION - Simple test 
+        public IActionResult Emergency()
+        {
+            ViewBag.Message = "Products sayfası çalışıyor! 🎉";
+            return View("Emergency");
+        }
+
+        // GET: Products/Index - EMERGENCY SIMPLE VERSION
         public async Task<IActionResult> Index(int? categoryId, string? searchTerm, string? sortBy, int page = 1, int pageSize = 12)
         {
             try

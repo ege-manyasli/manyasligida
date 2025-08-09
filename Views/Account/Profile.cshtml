@@ -89,6 +89,7 @@
                                 }
 
                                 <form asp-action="UpdateProfile" method="post">
+                                    @Html.AntiForgeryToken()
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label asp-for="FirstName" class="form-label fw-bold">Ad</label>
@@ -415,5 +416,17 @@
                     }, 100);
                 });
             }
+
+            // Submit change password via hidden form
+            $('#changePasswordForm').off('submit').on('submit', function(e) {
+                e.preventDefault();
+                const form = $('<form/>', { method: 'post', action: '@Url.Action("ChangePassword", "Account")' });
+                form.append('@Html.AntiForgeryToken()');
+                form.append($('<input/>', { type: 'hidden', name: 'CurrentPassword', value: $('#currentPassword').val() }));
+                form.append($('<input/>', { type: 'hidden', name: 'NewPassword', value: $('#newPassword').val() }));
+                form.append($('<input/>', { type: 'hidden', name: 'ConfirmPassword', value: $('#confirmPassword').val() }));
+                $(document.body).append(form);
+                form.trigger('submit');
+            });
     </script>
 } 

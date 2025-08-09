@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Account Test</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial; padding: 20px; background: #e8f5e8; }
+        .success { color: green; font-size: 24px; font-weight: bold; }
+        .info { background: white; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="success">✅ ACCOUNT CONTROLLER ÇALIŞIYOR!</div>
+    
+    <div class="info">
+        <h3>@ViewBag.Message</h3>
+        <p>Şu anda: @DateTime.Now</p>
+        <p>Giriş yapılmış mı: @ViewBag.IsAuthenticated</p>
+        <p>Kullanıcı: @ViewBag.UserName</p>
+        
+        <h4>Test Linkleri:</h4>
+        <ul>
+            <li><a href="/">🏠 Ana Sayfa</a></li>
+            <li><a href="/Account/Login">🔐 Giriş</a></li>
+            <li><a href="/Account/Register">📝 Kayıt</a></li>
+            <li><a href="/Account/DebugUsers">🧪 Debug Users</a></li>
+            <li><a href="/Test">🎯 Genel Test</a></li>
+        </ul>
+        
+        <p><strong>NOT:</strong> Bu sayfa account sisteminin çalışıp çalışmadığını test eder.</p>
+    </div>
+</body>
+</html>
