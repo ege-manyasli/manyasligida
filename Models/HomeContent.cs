@@ -23,6 +23,8 @@ namespace manyasligida.Models
 
         public string? HeroButtonText { get; set; }
 
+        public string? HeroButtonUrl { get; set; }
+
         public string? HeroSecondButtonText { get; set; }
 
         // FEATURES SECTION
@@ -38,10 +40,25 @@ namespace manyasligida.Models
 
         // ABOUT SECTION
         public string? AboutTitle { get; set; }
+        public string? AboutSubtitle { get; set; }
         public string? AboutContent { get; set; }
+        public string? AboutDescription { get; set; }
         public string? AboutImageUrl { get; set; }
         public string? AboutButtonText { get; set; }
         public string? AboutFeatures { get; set; } // JSON: [{"title":"", "value":""}]
+
+        // SERVICES SECTION
+        public string? ServicesTitle { get; set; }
+        public string? ServicesSubtitle { get; set; }
+        public string? ServicesDescription { get; set; }
+
+        // CONTACT SECTION
+        public string? ContactTitle { get; set; }
+        public string? ContactSubtitle { get; set; }
+        public string? ContactDescription { get; set; }
+        public string? ContactPhone { get; set; }
+        public string? ContactEmail { get; set; }
+        public string? ContactAddress { get; set; }
 
         // STATS SECTION
         public string? StatsTitle { get; set; }

@@ -21,6 +21,8 @@ namespace manyasligida.Models.DTOs
 
         public string? HeroButtonText { get; init; }
 
+        public string? HeroButtonUrl { get; init; }
+
         public string? HeroSecondButtonText { get; init; }
 
         // FEATURES SECTION
@@ -36,10 +38,24 @@ namespace manyasligida.Models.DTOs
 
         // ABOUT SECTION
         public string? AboutTitle { get; init; }
+        public string? AboutSubtitle { get; init; }
         public string? AboutContent { get; init; }
         public string? AboutImageUrl { get; init; }
         public string? AboutButtonText { get; init; }
         public List<AboutFeatureRequest> AboutFeatures { get; init; } = new();
+
+        // SERVICES SECTION
+        public string? ServicesTitle { get; init; }
+        public string? ServicesSubtitle { get; init; }
+        public string? ServicesDescription { get; init; }
+
+        // CONTACT SECTION
+        public string? ContactTitle { get; init; }
+        public string? ContactSubtitle { get; init; }
+        public string? ContactDescription { get; init; }
+        public string? ContactPhone { get; init; }
+        public string? ContactEmail { get; init; }
+        public string? ContactAddress { get; init; }
 
         // STATS SECTION
         public string? StatsTitle { get; init; }
@@ -99,6 +115,7 @@ namespace manyasligida.Models.DTOs
         public string? HeroVideoUrl { get; init; }
         public string? HeroImageUrl { get; init; }
         public string? HeroButtonText { get; init; }
+        public string? HeroButtonUrl { get; init; }
         public string? HeroSecondButtonText { get; init; }
 
         // FEATURES SECTION
@@ -114,10 +131,24 @@ namespace manyasligida.Models.DTOs
 
         // ABOUT SECTION
         public string? AboutTitle { get; init; }
+        public string? AboutSubtitle { get; init; }
         public string? AboutContent { get; init; }
         public string? AboutImageUrl { get; init; }
         public string? AboutButtonText { get; init; }
         public List<AboutFeatureRequest> AboutFeatures { get; init; } = new();
+
+        // SERVICES SECTION
+        public string? ServicesTitle { get; init; }
+        public string? ServicesSubtitle { get; init; }
+        public string? ServicesDescription { get; init; }
+
+        // CONTACT SECTION
+        public string? ContactTitle { get; init; }
+        public string? ContactSubtitle { get; init; }
+        public string? ContactDescription { get; init; }
+        public string? ContactPhone { get; init; }
+        public string? ContactEmail { get; init; }
+        public string? ContactAddress { get; init; }
 
         // STATS SECTION
         public string? StatsTitle { get; init; }

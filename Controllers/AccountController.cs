@@ -166,28 +166,21 @@ namespace manyasligida.Controllers
             }
         }
 
-        [HttpGet]
-        [HttpPost]
-        [Authorize]
+        // GET: Account/Logout
         public async Task<IActionResult> Logout()
         {
             try
             {
-                var userId = User.FindFirst("UserId")?.Value;
-                _logger.LogInformation("Logout attempt for user: {UserId}", userId);
-
-                // Invalidate session first
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                // Clear session
+                HttpContext.Session.Clear();
+                
+                // Invalidate session in database
                 var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
                 await sessionManager.InvalidateSessionAsync();
                 
-                // Sign out from authentication system
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                
-                // Clear session data
-                HttpContext.Session.Clear();
-
-                _logger.LogInformation("User {UserId} logged out successfully", userId);
-                TempData["Info"] = "Başarıyla çıkış yaptınız.";
+                _logger.LogInformation("User logged out successfully");
                 
                 return RedirectToAction("Index", "Home");
             }
@@ -197,6 +190,179 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+
+        // GET: Account/ForgotPassword
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // POST: Account/ForgotPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    using var scope = HttpContext.RequestServices.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+
+                    // AuthService'i kullanarak şifre sıfırlama kodu gönder
+                    var emailSent = await authService.SendPasswordResetCodeAsync(model.Email);
+                    
+                    if (emailSent)
+                    {
+                        _logger.LogInformation("Şifre sıfırlama e-postası başarıyla gönderildi: {Email}", model.Email);
+                        TempData["Success"] = "Şifre sıfırlama kodu e-posta adresinize gönderildi.";
+                        TempData["Email"] = model.Email; // For next step
+                        return RedirectToAction("VerifyResetCode");
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Şifre sıfırlama e-postası gönderilemedi: {Email}", model.Email);
+                        // Don't reveal if email exists or not for security
+                        TempData["Success"] = "Şifre sıfırlama kodu e-posta adresinize gönderildi.";
+                        TempData["Email"] = model.Email;
+                        return RedirectToAction("VerifyResetCode");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in ForgotPassword");
+                    ModelState.AddModelError("", "Bir hata oluştu. Lütfen tekrar deneyin.");
+                }
+            }
+
+            return View(model);
+        }
+
+        // GET: Account/VerifyResetCode
+        public IActionResult VerifyResetCode()
+        {
+            var email = TempData["Email"]?.ToString();
+            var model = new VerifyResetCodeViewModel
+            {
+                Email = email ?? string.Empty
+            };
+            return View(model);
+        }
+
+        // POST: Account/VerifyResetCode
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyResetCode(VerifyResetCodeViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    using var scope = HttpContext.RequestServices.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+
+                    // AuthService'i kullanarak şifre sıfırlama kodunu doğrula
+                    var isValid = await authService.VerifyPasswordResetCodeAsync(model.Email, model.VerificationCode);
+
+                    if (isValid)
+                    {
+                        // Store email in session for change password step
+                        HttpContext.Session.SetString("ResetEmail", model.Email);
+                        
+                        TempData["Success"] = "Kod doğrulandı. Şimdi yeni şifrenizi belirleyin.";
+                        return RedirectToAction("ChangePassword");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Geçersiz veya süresi dolmuş doğrulama kodu.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in VerifyResetCode");
+                    ModelState.AddModelError("", "Bir hata oluştu. Lütfen tekrar deneyin.");
+                }
+            }
+
+            return View(model);
+        }
+
+        // GET: Account/ChangePassword
+        public IActionResult ChangePassword()
+        {
+            var email = HttpContext.Session.GetString("ResetEmail");
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["Error"] = "Oturum süresi dolmuş. Lütfen tekrar deneyin.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            return View(new ResetPasswordViewModel());
+        }
+
+        // POST: Account/ChangePassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    using var scope = HttpContext.RequestServices.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                    var email = HttpContext.Session.GetString("ResetEmail");
+                    if (string.IsNullOrEmpty(email))
+                    {
+                        TempData["Error"] = "Oturum süresi dolmuş. Lütfen tekrar deneyin.";
+                        return RedirectToAction("ForgotPassword");
+                    }
+
+                    var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
+                    if (user != null)
+                    {
+                        // Hash new password
+                        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+                        user.Password = authService.HashPassword(model.NewPassword);
+                        user.UpdatedAt = DateTimeHelper.NowTurkey;
+                        
+                        // Clear any existing password reset data
+                        user.PasswordResetToken = null;
+                        user.PasswordResetTokenExpiry = null;
+                        user.PasswordResetCode = null;
+                        user.PasswordResetCodeExpiry = null;
+                        
+                        await context.SaveChangesAsync();
+
+                        // Clear session
+                        HttpContext.Session.Remove("ResetEmail");
+
+                        _logger.LogInformation("Password successfully changed for user: {Email}", email);
+                        TempData["Success"] = "Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz.";
+                        return RedirectToAction("Login");
+                    }
+                    else
+                    {
+                        _logger.LogWarning("User not found for password change: {Email}", email);
+                        ModelState.AddModelError("", "Kullanıcı bulunamadı.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in ChangePassword for email: {Email}", HttpContext.Session.GetString("ResetEmail"));
+                    ModelState.AddModelError("", "Bir hata oluştu. Lütfen tekrar deneyin.");
+                }
+            }
+
+            return View(model);
+        }
+
+
 
         [HttpGet]
         [Authorize]
@@ -422,6 +588,169 @@ namespace manyasligida.Controllers
             ViewBag.IsAuthenticated = User.Identity?.IsAuthenticated ?? false;
             ViewBag.UserName = User.Identity?.Name ?? "Anonim";
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TestEmail()
+        {
+            try
+            {
+                var emailService = HttpContext.RequestServices.GetRequiredService<IEmailService>();
+                var testEmail = "test@example.com";
+                var testCode = "123456";
+                
+                _logger.LogInformation("Test e-postası gönderiliyor...");
+                var result = await emailService.SendVerificationEmailAsync(testEmail, testCode);
+                
+                var response = new
+                {
+                    Success = result,
+                    Message = result ? "Test e-postası başarıyla gönderildi" : "Test e-postası gönderilemedi",
+                    Timestamp = DateTime.Now,
+                    TestEmail = testEmail,
+                    TestCode = testCode,
+                    Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown"
+                };
+                
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Test e-postası hatası");
+                
+                var response = new
+                {
+                    Success = false,
+                    Message = $"Test e-postası hatası: {ex.Message}",
+                    Error = ex.ToString(),
+                    Timestamp = DateTime.Now,
+                    Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown"
+                };
+                
+                return Json(response);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EmailConfig()
+        {
+            try
+            {
+                var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+                
+                var smtpServer = configuration["EmailSettings:SmtpServer"];
+                var smtpPort = configuration["EmailSettings:SmtpPort"];
+                var smtpUsername = configuration["EmailSettings:SmtpUsername"];
+                var smtpPassword = configuration["EmailSettings:SmtpPassword"];
+                var fromEmail = configuration["EmailSettings:FromEmail"];
+                var fromName = configuration["EmailSettings:FromName"];
+                var environment = configuration["ASPNETCORE_ENVIRONMENT"];
+                var enableSsl = configuration["EmailSettings:EnableSsl"];
+                var useDefaultCredentials = configuration["EmailSettings:UseDefaultCredentials"];
+                var timeout = configuration["EmailSettings:Timeout"];
+                var deliveryMethod = configuration["EmailSettings:DeliveryMethod"];
+                
+                var configInfo = new
+                {
+                    SmtpServer = smtpServer,
+                    SmtpPort = smtpPort,
+                    SmtpUsername = smtpUsername,
+                    SmtpPassword = string.IsNullOrEmpty(smtpPassword) ? "BOŞ" : "AYARLANMIŞ",
+                    FromEmail = fromEmail,
+                    FromName = fromName,
+                    Environment = environment,
+                    EnableSsl = enableSsl,
+                    UseDefaultCredentials = useDefaultCredentials,
+                    Timeout = timeout,
+                    DeliveryMethod = deliveryMethod,
+                    HasAllSettings = !string.IsNullOrEmpty(smtpServer) && 
+                                   !string.IsNullOrEmpty(smtpPort) && 
+                                   !string.IsNullOrEmpty(smtpUsername) && 
+                                   !string.IsNullOrEmpty(smtpPassword) && 
+                                   !string.IsNullOrEmpty(fromEmail),
+                    CurrentTime = DateTime.Now,
+                    CurrentTimeUtc = DateTime.UtcNow,
+                    ServerTimeZone = TimeZoneInfo.Local.DisplayName
+                };
+                
+                return Json(configInfo);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TestGmailConnection()
+        {
+            try
+            {
+                var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+                
+                var smtpServer = configuration["EmailSettings:SmtpServer"];
+                var smtpPort = int.Parse(configuration["EmailSettings:SmtpPort"]);
+                var smtpUsername = configuration["EmailSettings:SmtpUsername"];
+                var smtpPassword = configuration["EmailSettings:SmtpPassword"];
+                var enableSsl = configuration.GetValue<bool>("EmailSettings:EnableSsl", true);
+                var timeout = configuration.GetValue<int>("EmailSettings:Timeout", 60000);
+
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                
+                using var smtpClient = new System.Net.Mail.SmtpClient(smtpServer, smtpPort)
+                {
+                    EnableSsl = enableSsl,
+                    UseDefaultCredentials = false,
+                    Credentials = new System.Net.NetworkCredential(smtpUsername, smtpPassword),
+                    Timeout = timeout,
+                    DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network
+                };
+
+                // Test connection
+                await smtpClient.SendMailAsync(new System.Net.Mail.MailMessage());
+                
+                stopwatch.Stop();
+                
+                var response = new
+                {
+                    Success = true,
+                    Message = "Gmail SMTP bağlantısı başarılı",
+                    SmtpServer = smtpServer,
+                    Port = smtpPort,
+                    SslEnabled = enableSsl,
+                    ConnectionTime = stopwatch.ElapsedMilliseconds,
+                    Timestamp = DateTime.Now
+                };
+                
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                var suggestions = "";
+                if (ex.Message.Contains("Authentication"))
+                {
+                    suggestions = "1. Gmail'de 2FA'yı etkinleştirin<br>2. App Password oluşturun<br>3. App Password'ü kullanın";
+                }
+                else if (ex.Message.Contains("timeout"))
+                {
+                    suggestions = "1. İnternet bağlantınızı kontrol edin<br>2. Firewall ayarlarını kontrol edin<br>3. Port 587 veya 465'nin açık olduğundan emin olun";
+                }
+                else if (ex.Message.Contains("SSL"))
+                {
+                    suggestions = "1. SSL ayarlarını kontrol edin<br>2. Port 465 (SSL) veya 587 (TLS) kullanın";
+                }
+                
+                var response = new
+                {
+                    Success = false,
+                    Message = $"Gmail SMTP bağlantısı başarısız: {ex.Message}",
+                    Error = ex.ToString(),
+                    Suggestions = suggestions,
+                    Timestamp = DateTime.Now
+                };
+                
+                return Json(response);
+            }
         }
     }
 }

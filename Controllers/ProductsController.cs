@@ -73,7 +73,7 @@ namespace manyasligida.Controllers
                 ViewBag.TotalProducts = products.Count;
                 ViewBag.PageSize = pageSize;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
-                ViewBag.SiteSettings = _siteSettingsService.Get();
+                ViewBag.SiteSettings = await _siteSettingsService.GetAsync();
 
                 return View(products);
             }
@@ -83,7 +83,7 @@ namespace manyasligida.Controllers
                 ViewBag.ErrorMessage = $"Hata oluştu: {ex.Message}";
                 ViewBag.Categories = new List<Category>();
                 ViewBag.CartItemCount = 0;
-                ViewBag.SiteSettings = _siteSettingsService.Get();
+                ViewBag.SiteSettings = await _siteSettingsService.GetAsync();
                 
                 return View(new List<Product>());
             }
@@ -125,7 +125,7 @@ namespace manyasligida.Controllers
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
 
                 ViewBag.RelatedProducts = relatedProducts;
                 ViewBag.PopularProducts = popularProducts;
@@ -141,7 +141,7 @@ namespace manyasligida.Controllers
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
                 
                 ViewBag.Categories = categories;
                 ViewBag.SiteSettings = siteSettings;
@@ -191,7 +191,7 @@ namespace manyasligida.Controllers
 
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
 
                 ViewBag.Category = category;
                 ViewBag.SortBy = sortBy;
@@ -273,7 +273,7 @@ namespace manyasligida.Controllers
 
                 var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
 
                 ViewBag.SearchTerm = q;
                 ViewBag.SortBy = sortBy;
@@ -331,7 +331,7 @@ namespace manyasligida.Controllers
                     .ToListAsync();
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
 
                 ViewBag.FeaturedProducts = featuredProducts;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();

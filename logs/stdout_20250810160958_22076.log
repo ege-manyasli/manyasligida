@@ -1,0 +1,72 @@
+? Turkey timezone detected and configured
+Application starting - database health check deferred to runtime
+info: Program[0]
+      === APPLICATION STARTUP BEGIN ===
+info: Program[0]
+      Environment: Development
+info: Program[0]
+      Content Root: C:\Users\pc\manyasligida
+info: Program[0]
+      Web Root: C:\Users\pc\manyasligida\wwwroot
+info: Program[0]
+      ASPNETCORE_ENVIRONMENT: Development
+info: Program[0]
+      Connection string configured: True
+info: Program[0]
+      Development mode configured
+info: Program[0]
+      Session configured
+info: Program[0]
+      === APPLICATION STARTUP COMPLETE ===
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+Connection string configured: True
+info: manyasligida.Controllers.HomeController[0]
+      Home page requested
+Connection string configured: True
+info: manyasligida.Services.HomeService[0]
+      Getting home content from database
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'Amount' on entity type 'Expense'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'DiscountAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'ShippingCost' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'SubTotal' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TaxAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'OldPrice' on entity type 'Product'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Query[10103]
+      The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (198ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [t].[Value]
+      FROM (
+          SELECT COUNT(*) as [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'HomeContents'
+      ) AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [h].[Id], [h].[AboutButtonText], [h].[AboutContent], [h].[AboutFeatures], [h].[AboutImageUrl], [h].[AboutTitle], [h].[BlogSubtitle], [h].[BlogTitle], [h].[CreatedAt], [h].[FeatureItems], [h].[FeaturesSubtitle], [h].[FeaturesTitle], [h].[HeroBackgroundColor], [h].[HeroButtonText], [h].[HeroDescription], [h].[HeroImageUrl], [h].[HeroSecondButtonText], [h].[HeroSubtitle], [h].[HeroTitle], [h].[HeroVideoUrl], [h].[IsActive], [h].[MaxBlogsToShow], [h].[MaxProductsToShow], [h].[NewsletterButtonText], [h].[NewsletterDescription], [h].[NewsletterTitle], [h].[PrimaryColor], [h].[ProductsSubtitle], [h].[ProductsTitle], [h].[SecondaryColor], [h].[ShowLatestBlogs], [h].[ShowPopularProducts], [h].[StatsItems], [h].[StatsSubtitle], [h].[StatsTitle], [h].[UpdatedAt]
+      FROM [HomeContents] AS [h]
+      WHERE [h].[IsActive] = CAST(1 AS bit)
+      ORDER BY [h].[UpdatedAt] DESC
+info: manyasligida.Services.HomeService[0]
+      Found home content: True
+info: manyasligida.Services.HomeService[0]
+      Successfully retrieved home content with 

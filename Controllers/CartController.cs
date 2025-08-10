@@ -231,6 +231,60 @@ namespace manyasligida.Controllers
                 return Json(new { cartItemCount = 0, cartTotal = 0 });
             }
         }
-    }
 
+        // GET: Cart/GetCartForWhatsApp
+        [HttpGet]
+        public async Task<IActionResult> GetCartForWhatsApp()
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var cart = _cartService.GetCart();
+                var cartItems = new List<object>();
+
+                if (cart.Any())
+                {
+                    var productIds = cart.Select(c => c.ProductId).ToList();
+                    var products = await context.Products
+                        .Where(p => productIds.Contains(p.Id) && p.IsActive)
+                        .ToDictionaryAsync(p => p.Id, p => p);
+
+                    foreach (var item in cart)
+                    {
+                        if (products.TryGetValue(item.ProductId, out var product))
+                        {
+                            cartItems.Add(new
+                            {
+                                productId = item.ProductId,
+                                productName = product.Name,
+                                quantity = item.Quantity,
+                                unitPrice = item.UnitPrice,
+                                totalPrice = item.TotalPrice,
+                                weight = product.Weight
+                            });
+                        }
+                    }
+                }
+
+                return Json(new { 
+                    success = true, 
+                    cartItems = cartItems,
+                    cartTotal = _cartService.GetCartTotal(),
+                    cartItemCount = _cartService.GetCartItemCount()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { 
+                    success = false, 
+                    message = "Sepet verileri alınamadı: " + ex.Message,
+                    cartItems = new List<object>(),
+                    cartTotal = 0,
+                    cartItemCount = 0
+                });
+            }
+        }
+    }
 } 

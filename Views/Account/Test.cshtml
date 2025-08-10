@@ -1,33 +1,150 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Account Test</title>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial; padding: 20px; background: #e8f5e8; }
-        .success { color: green; font-size: 24px; font-weight: bold; }
-        .info { background: white; padding: 15px; border-radius: 5px; margin: 10px 0; }
-    </style>
-</head>
-<body>
-    <div class="success">✅ ACCOUNT CONTROLLER ÇALIŞIYOR!</div>
-    
-    <div class="info">
-        <h3>@ViewBag.Message</h3>
-        <p>Şu anda: @DateTime.Now</p>
-        <p>Giriş yapılmış mı: @ViewBag.IsAuthenticated</p>
-        <p>Kullanıcı: @ViewBag.UserName</p>
-        
-        <h4>Test Linkleri:</h4>
-        <ul>
-            <li><a href="/">🏠 Ana Sayfa</a></li>
-            <li><a href="/Account/Login">🔐 Giriş</a></li>
-            <li><a href="/Account/Register">📝 Kayıt</a></li>
-            <li><a href="/Account/DebugUsers">🧪 Debug Users</a></li>
-            <li><a href="/Test">🎯 Genel Test</a></li>
-        </ul>
-        
-        <p><strong>NOT:</strong> Bu sayfa account sisteminin çalışıp çalışmadığını test eder.</p>
+@{
+    ViewData["Title"] = "E-posta Test";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">E-posta Test Sayfası</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>Test Sonuçları:</h5>
+                        <div id="testResults">
+                            <p>Test sonuçları burada görünecek...</p>
+                        </div>
+                    </div>
+
+                                         <div class="row">
+                         <div class="col-md-3">
+                             <button class="btn btn-success btn-block mb-3" onclick="testEmailConfig()">
+                                 📧 E-posta Ayarlarını Test Et
+                             </button>
+                         </div>
+                         <div class="col-md-3">
+                             <button class="btn btn-warning btn-block mb-3" onclick="testEmailSend()">
+                                 📤 Test E-postası Gönder
+                             </button>
+                         </div>
+                         <div class="col-md-3">
+                             <button class="btn btn-danger btn-block mb-3" onclick="testGmailConnection()">
+                                 🔗 Gmail Bağlantısını Test Et
+                             </button>
+                         </div>
+                         <div class="col-md-3">
+                             <a href="/Account/Test" class="btn btn-info btn-block mb-3">
+                                 🔄 Sayfayı Yenile
+                             </a>
+                         </div>
+                     </div>
+
+                    <div class="mt-4">
+                        <h5>E-posta Konfigürasyonu:</h5>
+                        <div id="emailConfig" class="alert alert-secondary">
+                            <p>Konfigürasyon bilgileri yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<script>
+async function testEmailConfig() {
+    try {
+        const response = await fetch('/Account/EmailConfig');
+        const data = await response.json();
+        
+        let html = '<div class="table-responsive"><table class="table table-sm">';
+        html += '<tr><td><strong>SMTP Server:</strong></td><td>' + (data.SmtpServer || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>SMTP Port:</strong></td><td>' + (data.SmtpPort || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Username:</strong></td><td>' + (data.SmtpUsername || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Password:</strong></td><td>' + (data.SmtpPassword || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>From Email:</strong></td><td>' + (data.FromEmail || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Environment:</strong></td><td>' + (data.Environment || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Enable SSL:</strong></td><td>' + (data.EnableSsl || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Use Default Credentials:</strong></td><td>' + (data.UseDefaultCredentials || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Timeout:</strong></td><td>' + (data.Timeout || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Delivery Method:</strong></td><td>' + (data.DeliveryMethod || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Current Time:</strong></td><td>' + (data.CurrentTime || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Server Timezone:</strong></td><td>' + (data.ServerTimeZone || 'BOŞ') + '</td></tr>';
+        html += '<tr><td><strong>Tüm Ayarlar Mevcut:</strong></td><td>' + (data.HasAllSettings ? '✅ EVET' : '❌ HAYIR') + '</td></tr>';
+        html += '</table></div>';
+        
+        document.getElementById('emailConfig').innerHTML = html;
+        
+        if (data.HasAllSettings) {
+            document.getElementById('testResults').innerHTML = '<div class="alert alert-success">✅ E-posta ayarları doğru görünüyor!</div>';
+        } else {
+            document.getElementById('testResults').innerHTML = '<div class="alert alert-danger">❌ E-posta ayarlarında eksiklikler var!</div>';
+        }
+    } catch (error) {
+        document.getElementById('testResults').innerHTML = '<div class="alert alert-danger">❌ Hata: ' + error.message + '</div>';
+    }
+}
+
+async function testEmailSend() {
+    try {
+        document.getElementById('testResults').innerHTML = '<div class="alert alert-info">📤 Test e-postası gönderiliyor...</div>';
+        
+        const response = await fetch('/Account/TestEmail');
+        const result = await response.json();
+        
+                 if (result.Success) {
+             let successHtml = '<div class="alert alert-success">✅ Test e-postası başarıyla gönderildi!</div>';
+             successHtml += '<div class="alert alert-info"><strong>Test Detayları:</strong><br>';
+             successHtml += 'E-posta: ' + result.TestEmail + '<br>';
+             successHtml += 'Kod: ' + result.TestCode + '<br>';
+             successHtml += 'Ortam: ' + result.Environment + '<br>';
+             successHtml += 'Zaman: ' + result.Timestamp + '</div>';
+             document.getElementById('testResults').innerHTML = successHtml;
+         } else {
+             let errorHtml = '<div class="alert alert-danger">❌ Test e-postası gönderilemedi!</div>';
+             errorHtml += '<div class="alert alert-warning"><strong>Hata Detayı:</strong><br>' + result.Message + '</div>';
+             errorHtml += '<div class="alert alert-info"><strong>Ortam:</strong> ' + result.Environment + '</div>';
+             if (result.Error) {
+                 errorHtml += '<div class="alert alert-secondary"><strong>Teknik Hata:</strong><br><small>' + result.Error + '</small></div>';
+             }
+             document.getElementById('testResults').innerHTML = errorHtml;
+         }
+    } catch (error) {
+        document.getElementById('testResults').innerHTML = '<div class="alert alert-danger">❌ Hata: ' + error.message + '</div>';
+    }
+}
+
+async function testGmailConnection() {
+    try {
+        document.getElementById('testResults').innerHTML = '<div class="alert alert-info">🔗 Gmail bağlantısı test ediliyor...</div>';
+        
+        const response = await fetch('/Account/TestGmailConnection');
+        const result = await response.json();
+        
+        if (result.Success) {
+            let successHtml = '<div class="alert alert-success">✅ Gmail bağlantısı başarılı!</div>';
+            successHtml += '<div class="alert alert-info"><strong>Bağlantı Detayları:</strong><br>';
+            successHtml += 'SMTP Server: ' + result.SmtpServer + '<br>';
+            successHtml += 'Port: ' + result.Port + '<br>';
+            successHtml += 'SSL: ' + (result.SslEnabled ? 'Aktif' : 'Pasif') + '<br>';
+            successHtml += 'Bağlantı Süresi: ' + result.ConnectionTime + 'ms</div>';
+            document.getElementById('testResults').innerHTML = successHtml;
+        } else {
+            let errorHtml = '<div class="alert alert-danger">❌ Gmail bağlantısı başarısız!</div>';
+            errorHtml += '<div class="alert alert-warning"><strong>Hata:</strong> ' + result.Message + '</div>';
+            if (result.Suggestions) {
+                errorHtml += '<div class="alert alert-info"><strong>Öneriler:</strong><br>' + result.Suggestions + '</div>';
+            }
+            document.getElementById('testResults').innerHTML = errorHtml;
+        }
+    } catch (error) {
+        document.getElementById('testResults').innerHTML = '<div class="alert alert-danger">❌ Bağlantı testi hatası: ' + error.message + '</div>';
+    }
+}
+
+// Sayfa yüklendiğinde otomatik olarak konfigürasyonu test et
+document.addEventListener('DOMContentLoaded', function() {
+    testEmailConfig();
+});
+</script>

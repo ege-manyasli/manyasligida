@@ -1,0 +1,169 @@
+? Turkey timezone detected and configured
+Application starting - database health check deferred to runtime
+info: Program[0]
+      === APPLICATION STARTUP BEGIN ===
+info: Program[0]
+      Environment: Development
+info: Program[0]
+      Content Root: C:\Users\pc\manyasligida
+info: Program[0]
+      Web Root: C:\Users\pc\manyasligida\wwwroot
+info: Program[0]
+      ASPNETCORE_ENVIRONMENT: Development
+info: Program[0]
+      Connection string configured: True
+info: Program[0]
+      Development mode configured
+info: Program[0]
+      Session configured
+info: Program[0]
+      === APPLICATION STARTUP COMPLETE ===
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://127.0.0.1:1359
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+Connection string configured: True
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'Amount' on entity type 'Expense'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'DiscountAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'ShippingCost' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'SubTotal' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TaxAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'OldPrice' on entity type 'Product'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (192ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieConsentId], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieConsentId], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId]
+      ORDER BY [t].[Id], [t0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieConsentId], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieConsentId], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId]
+      ORDER BY [t].[Id], [t0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieConsentId], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieConsentId], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId]
+      ORDER BY [t].[Id], [t0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+Connection string configured: True
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (171ms) [Parameters=[@__model_Email_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE [u].[Email] = @__model_Email_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (184ms) [Parameters=[@p2='?' (DbType = Int32), @p0='?' (Size = 4000), @p1='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Users] SET [PasswordResetToken] = @p0, [PasswordResetTokenExpiry] = @p1
+      OUTPUT 1
+      WHERE [Id] = @p2;
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieConsentId], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieConsentId], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId]
+      ORDER BY [t].[Id], [t0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (154ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieConsentId], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieConsentId], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId]
+      ORDER BY [t].[Id], [t0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]

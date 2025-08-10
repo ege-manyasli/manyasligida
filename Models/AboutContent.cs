@@ -18,6 +18,8 @@ namespace manyasligida.Models
         [Required]
         public string StoryTitle { get; set; } = string.Empty;
 
+        public string? StorySubtitle { get; set; }
+
         [Required]
         public string StoryContent { get; set; } = string.Empty;
 
@@ -39,6 +41,7 @@ namespace manyasligida.Models
         // Values Section
         public string? ValuesTitle { get; set; }
         public string? ValuesSubtitle { get; set; }
+        public string? ValuesContent { get; set; }
 
         // Value Items (JSON formatında saklanacak)
         public string? ValueItems { get; set; } // JSON: [{"title":"", "content":"", "icon":""}]
@@ -55,6 +58,7 @@ namespace manyasligida.Models
 
         // Regional Info
         public string? RegionTitle { get; set; }
+        public string? RegionSubtitle { get; set; }
         public string? RegionContent { get; set; }
         public string? RegionImageUrl { get; set; }
         public string? RegionFeatures { get; set; } // JSON format

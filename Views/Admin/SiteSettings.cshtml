@@ -1,0 +1,225 @@
+@model manyasligida.Models.SiteSettings
+
+@{
+    ViewData["Title"] = "Site Ayarları - Admin Panel";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-cog me-2"></i>
+                        Site Ayarları
+                    </h4>
+                    <p class="card-subtitle text-muted">Web sitesinin genel ayarlarını buradan yönetebilirsiniz.</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="SiteSettings" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- İletişim Bilgileri -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-phone me-2"></i>
+                                    İletişim Bilgileri
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Phone" class="form-label">
+                                        <i class="fas fa-phone me-1"></i>
+                                        Telefon Numarası
+                                    </label>
+                                    <input asp-for="Phone" class="form-control" placeholder="+90 266 123 45 67" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">
+                                        <i class="fas fa-envelope me-1"></i>
+                                        E-posta Adresi
+                                    </label>
+                                    <input asp-for="Email" class="form-control" placeholder="info@manyasligida.com" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="Address" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        Adres
+                                    </label>
+                                    <textarea asp-for="Address" class="form-control" rows="3" placeholder="17 Eylül, Hal Cd. No:6 D:8, 10200 Bandırma/Balıkesir"></textarea>
+                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="WorkingHours" class="form-label">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Çalışma Saatleri
+                                    </label>
+                                    <input asp-for="WorkingHours" class="form-control" placeholder="Pzt-Cmt: 08:00-18:00" />
+                                    <span asp-validation-for="WorkingHours" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sosyal Medya Linkleri -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-share-alt me-2"></i>
+                                    Sosyal Medya Linkleri
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FacebookUrl" class="form-label">
+                                        <i class="fab fa-facebook me-1"></i>
+                                        Facebook URL
+                                    </label>
+                                    <input asp-for="FacebookUrl" class="form-control" placeholder="https://facebook.com/manyasligida" />
+                                    <span asp-validation-for="FacebookUrl" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="InstagramUrl" class="form-label">
+                                        <i class="fab fa-instagram me-1"></i>
+                                        Instagram URL
+                                    </label>
+                                    <input asp-for="InstagramUrl" class="form-control" placeholder="https://instagram.com/manyasligida" />
+                                    <span asp-validation-for="InstagramUrl" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="TwitterUrl" class="form-label">
+                                        <i class="fab fa-twitter me-1"></i>
+                                        Twitter URL
+                                    </label>
+                                    <input asp-for="TwitterUrl" class="form-control" placeholder="https://twitter.com/manyasligida" />
+                                    <span asp-validation-for="TwitterUrl" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="YoutubeUrl" class="form-label">
+                                        <i class="fab fa-youtube me-1"></i>
+                                        YouTube URL
+                                    </label>
+                                    <input asp-for="YoutubeUrl" class="form-control" placeholder="https://youtube.com/manyasligida" />
+                                    <span asp-validation-for="YoutubeUrl" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEO Ayarları -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-search me-2"></i>
+                                    SEO Ayarları
+                                </h5>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="SiteTitle" class="form-label">
+                                        <i class="fas fa-heading me-1"></i>
+                                        Site Başlığı
+                                    </label>
+                                    <input asp-for="SiteTitle" class="form-control" placeholder="Manyaslı Süt Ürünleri" />
+                                    <span asp-validation-for="SiteTitle" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="SiteDescription" class="form-label">
+                                        <i class="fas fa-align-left me-1"></i>
+                                        Site Açıklaması
+                                    </label>
+                                    <textarea asp-for="SiteDescription" class="form-control" rows="3" placeholder="Kaliteli ve taze süt ürünleri"></textarea>
+                                    <span asp-validation-for="SiteDescription" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="SiteKeywords" class="form-label">
+                                        <i class="fas fa-tags me-1"></i>
+                                        Site Anahtar Kelimeleri
+                                    </label>
+                                    <input asp-for="SiteKeywords" class="form-control" placeholder="süt, peynir, yoğurt, manyas, gıda" />
+                                    <small class="form-text text-muted">Virgülle ayırarak yazın</small>
+                                    <span asp-validation-for="SiteKeywords" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Görsel Ayarları -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-images me-2"></i>
+                                    Görsel Ayarları
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-image me-1"></i>
+                                        Logo
+                                    </label>
+                                    <input type="file" name="logoFile" class="form-control" accept="image/*" />
+                                    <small class="form-text text-muted">Mevcut logo: @Model.LogoUrl</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-star me-1"></i>
+                                        Favicon
+                                    </label>
+                                    <input type="file" name="faviconFile" class="form-control" accept="image/*" />
+                                    <small class="form-text text-muted">Mevcut favicon: @Model.FaviconUrl</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kaydet Butonu -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>
+                                        Ayarları Kaydet
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

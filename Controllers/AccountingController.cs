@@ -6,7 +6,7 @@ using manyasligida.Attributes;
 
 namespace manyasligida.Controllers;
 
-[Route("Accounting")]
+[Route("Admin/Accounting")]
 [AdminAuthorization]
 public class AccountingController : Controller
 {

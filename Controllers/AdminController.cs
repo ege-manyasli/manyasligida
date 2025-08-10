@@ -11,7 +11,6 @@ using manyasligida.Attributes;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using manyasligida.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace manyasligida.Controllers
@@ -24,8 +23,9 @@ namespace manyasligida.Controllers
         private readonly IAuthService _authService;
         private readonly ILogger<AdminController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly ISiteSettingsService _siteSettingsService;
 
-        public AdminController(IServiceProvider serviceProvider, CartService cartService, IFileUploadService fileUploadService, IAuthService authService, ILogger<AdminController> logger, ApplicationDbContext context)
+        public AdminController(IServiceProvider serviceProvider, CartService cartService, IFileUploadService fileUploadService, IAuthService authService, ILogger<AdminController> logger, ApplicationDbContext context, ISiteSettingsService siteSettingsService)
         {
             _serviceProvider = serviceProvider;
             _cartService = cartService;
@@ -33,6 +33,7 @@ namespace manyasligida.Controllers
             _authService = authService;
             _logger = logger;
             _context = context;
+            _siteSettingsService = siteSettingsService;
         }
 
         // Admin kontrolü
@@ -1694,158 +1695,151 @@ namespace manyasligida.Controllers
         // ============== ABOUT CONTENT MANAGEMENT ==============
 
         // GET: Admin/AboutContent
-        [AdminAuthorization]
         public async Task<IActionResult> AboutContent()
         {
-            try
+            if (!IsAdmin())
             {
-                using var scope = _serviceProvider.CreateScope();
-                var aboutService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IAboutService>();
-                
-                var result = await aboutService.GetAboutContentAsync();
-                
-                if (result.Success && result.Data != null)
-                {
-                    return View(result.Data);
-                }
-                else
-                {
-                    TempData["Error"] = result.Message;
-                    return View();
-                }
+                return RedirectToAction("Login", "Account");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting about content");
-                TempData["Error"] = "About content alınırken hata oluştu.";
-                return View();
-            }
-        }
 
-        // GET: Admin/EditAboutContent
-        [AdminAuthorization]
-        public async Task<IActionResult> EditAboutContent()
-        {
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var aboutService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IAboutService>();
+                var aboutService = scope.ServiceProvider.GetService<manyasligida.Services.Interfaces.IAboutService>();
                 
-                var result = await aboutService.GetAboutContentAsync();
-                
-                if (result.Success && result.Data != null)
+                if (aboutService != null)
                 {
-                    return View(result.Data);
-                }
-                else
-                {
-                    // Create default content if none exists
-                    var defaultResult = await aboutService.CreateDefaultAboutContentAsync();
-                    if (defaultResult.Success && defaultResult.Data != null)
+                    var aboutResult = await aboutService.GetAboutContentAsync();
+                    if (aboutResult.Success && aboutResult.Data != null)
                     {
-                        return View(defaultResult.Data);
+                        return View(aboutResult.Data);
                     }
-                    
-                    TempData["Error"] = "About content oluşturulamadı.";
-                    return RedirectToAction(nameof(AboutContent));
                 }
+
+                // Varsayılan içerik
+                var defaultContent = new manyasligida.Models.DTOs.AboutContentResponse
+                {
+                    Title = "Hakkımızda",
+                    Subtitle = "Gelenekten geleceğe kaliteli lezzetlerin hikayesi",
+                    StoryTitle = "Hikayemiz",
+                    StorySubtitle = "40 Yıllık Deneyim",
+                    StoryContent = "1980 yılında Manyas'ta küçük bir mandıra olarak başladığımız yolculuğumuzda, bugün Türkiye'nin önde gelen süt ürünleri üreticilerinden biri haline geldik. Geleneksel yöntemlerle modern teknolojiyi birleştirerek, en kaliteli ve lezzetli ürünleri üretiyoruz.",
+                    StoryImageUrl = "/img/about-story.jpg",
+                    RegionTitle = "Manyas Bölgesi",
+                    RegionSubtitle = "Doğal Zenginlikler",
+                    RegionContent = "Manyas'ın bereketli toprakları ve temiz havası, süt ürünlerimizin kalitesini artıran en önemli faktörlerden biridir. Bölgemizin doğal zenginlikleri, ürünlerimizin benzersiz lezzetini oluşturur.",
+                    RegionImageUrl = "/img/about-region.jpg",
+                    ValuesTitle = "Değerlerimiz",
+                    ValuesSubtitle = "Kalite ve Güven",
+                    ValuesContent = "Müşteri memnuniyeti, kalite, güven ve sürdürülebilirlik temel değerlerimizdir. Her ürünümüzde bu değerleri yansıtmaya özen gösteriyoruz.",
+                    MissionTitle = "Misyonumuz",
+                    MissionContent = "Geleneksel lezzetleri modern teknoloji ile birleştirerek, en kaliteli süt ürünlerini müşterilerimize sunmak.",
+                    VisionTitle = "Vizyonumuz",
+                    VisionContent = "Türkiye'nin en güvenilir ve tercih edilen süt ürünleri markası olmak."
+                };
+
+                return View(defaultContent);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting about content for edit");
-                TempData["Error"] = "About content edit sayfası yüklenirken hata oluştu.";
-                return RedirectToAction(nameof(AboutContent));
+                _logger.LogError(ex, "Error loading about content");
+                TempData["Error"] = "Hakkımızda içeriği yüklenirken bir hata oluştu";
+                return View(new manyasligida.Models.DTOs.AboutContentResponse());
             }
         }
 
         // POST: Admin/EditAboutContent
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AdminAuthorization]
-        public async Task<IActionResult> EditAboutContent(manyasligida.Models.DTOs.AboutEditRequest request, IFormFile? storyImageFile, IFormFile? regionImageFile)
+        public async Task<IActionResult> EditAboutContent(manyasligida.Models.DTOs.AboutContentResponse model, IFormFile? storyImageFile, IFormFile? regionImageFile)
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             try
             {
-                if (!ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
-                    return Json(new { success = false, message = "Form validation hatası." });
-                }
-
-                // Handle file uploads
-                var updatedRequest = request;
-                
-                // Story Image Upload
-                if (storyImageFile != null && storyImageFile.Length > 0)
-                {
-                    if (!_fileUploadService.IsValidImage(storyImageFile))
-                    {
-                        return Json(new { success = false, message = "Hikaye resmi geçersiz format. Sadece JPG, PNG, GIF ve WEBP kabul edilir." });
-                    }
-
-                    try
-                    {
-                        var storyImageUrl = await _fileUploadService.UploadImageAsync(storyImageFile, "about");
-                        updatedRequest = updatedRequest with { StoryImageUrl = storyImageUrl };
-                        _logger.LogInformation("Story image uploaded successfully: {Url}", storyImageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error uploading story image");
-                        return Json(new { success = false, message = "Hikaye resmi yüklenirken hata oluştu." });
-                    }
-                }
-
-                // Region Image Upload
-                if (regionImageFile != null && regionImageFile.Length > 0)
-                {
-                    if (!_fileUploadService.IsValidImage(regionImageFile))
-                    {
-                        return Json(new { success = false, message = "Bölge resmi geçersiz format. Sadece JPG, PNG, GIF ve WEBP kabul edilir." });
-                    }
-
-                    try
-                    {
-                        var regionImageUrl = await _fileUploadService.UploadImageAsync(regionImageFile, "about");
-                        updatedRequest = updatedRequest with { RegionImageUrl = regionImageUrl };
-                        _logger.LogInformation("Region image uploaded successfully: {Url}", regionImageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error uploading region image");
-                        return Json(new { success = false, message = "Bölge resmi yüklenirken hata oluştu." });
-                    }
-                }
-
-                using var scope = _serviceProvider.CreateScope();
-                var aboutService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IAboutService>();
-                
-                var result = await aboutService.UpdateAboutContentAsync(updatedRequest);
-                
-                if (result.Success)
-                {
-                    _logger.LogInformation("About content updated successfully");
+                    using var scope = _serviceProvider.CreateScope();
+                    var aboutService = scope.ServiceProvider.GetService<manyasligida.Services.Interfaces.IAboutService>();
                     
-                    // Return success with uploaded image URLs for UI update
-                    var responseData = new { 
-                        success = true, 
-                        message = "About content başarıyla güncellendi!",
-                        storyImageUrl = updatedRequest.StoryImageUrl,
-                        regionImageUrl = updatedRequest.RegionImageUrl
-                    };
-                    
-                    return Json(responseData);
+                    if (aboutService != null)
+                    {
+                        // Resim yükleme işlemleri
+                        if (storyImageFile != null && storyImageFile.Length > 0)
+                        {
+                            if (!_fileUploadService.IsValidImage(storyImageFile))
+                            {
+                                ModelState.AddModelError("StoryImageFile", "Geçersiz dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
+                                return View("AboutContent", model);
+                            }
+
+                            var storyImageUrl = await _fileUploadService.UploadImageAsync(storyImageFile, "about");
+                            model = model with { StoryImageUrl = storyImageUrl };
+                        }
+
+                        if (regionImageFile != null && regionImageFile.Length > 0)
+                        {
+                            if (!_fileUploadService.IsValidImage(regionImageFile))
+                            {
+                                ModelState.AddModelError("RegionImageFile", "Geçersiz dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
+                                return View("AboutContent", model);
+                            }
+
+                            var regionImageUrl = await _fileUploadService.UploadImageAsync(regionImageFile, "about");
+                            model = model with { RegionImageUrl = regionImageUrl };
+                        }
+
+                        var result = await aboutService.UpdateAboutContentAsync(new manyasligida.Models.DTOs.AboutEditRequest
+                        {
+                            Title = model.Title,
+                            Subtitle = model.Subtitle,
+                            StoryTitle = model.StoryTitle,
+                            StorySubtitle = model.StorySubtitle,
+                            StoryContent = model.StoryContent,
+                            StoryImageUrl = model.StoryImageUrl,
+                            MissionTitle = model.MissionTitle,
+                            MissionContent = model.MissionContent,
+                            VisionTitle = model.VisionTitle,
+                            VisionContent = model.VisionContent,
+                            ValuesTitle = model.ValuesTitle,
+                            ValuesSubtitle = model.ValuesSubtitle,
+                            ValuesContent = model.ValuesContent,
+                            RegionTitle = model.RegionTitle,
+                            RegionSubtitle = model.RegionSubtitle,
+                            RegionContent = model.RegionContent,
+                            RegionImageUrl = model.RegionImageUrl
+                        });
+                        
+                        if (result.Success)
+                        {
+                            TempData["Success"] = "Hakkımızda içeriği başarıyla güncellendi.";
+                            return RedirectToAction("AboutContent");
+                        }
+                        else
+                        {
+                            TempData["Error"] = result.Message ?? "Hakkımızda içeriği güncellenirken bir hata oluştu.";
+                        }
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Hakkımızda servisi bulunamadı.";
+                    }
                 }
                 else
                 {
-                    _logger.LogWarning("About content update failed: {Message}", result.Message);
-                    return Json(new { success = false, message = result.Message });
+                    TempData["Error"] = "Geçersiz veri. Lütfen tüm alanları kontrol edin.";
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating about content");
-                return Json(new { success = false, message = "About content güncellenirken hata oluştu." });
+                TempData["Error"] = "Hakkımızda içeriği güncellenirken bir hata oluştu: " + ex.Message;
             }
+
+            return View("AboutContent", model);
         }
 
         // POST: Admin/ResetAboutContent
@@ -1896,206 +1890,189 @@ namespace manyasligida.Controllers
         // ============== HOME CONTENT MANAGEMENT ==============
 
         // GET: Admin/HomeContent
-        [AdminAuthorization]
         public async Task<IActionResult> HomeContent()
         {
-            try
+            if (!IsAdmin())
             {
-                using var scope = _serviceProvider.CreateScope();
-                var homeService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IHomeService>();
-                
-                var result = await homeService.GetHomeContentAsync();
-                
-                if (result.Success && result.Data != null)
-                {
-                    return View(result.Data);
-                }
-                else
-                {
-                    TempData["Error"] = result.Message;
-                    return View();
-                }
+                return RedirectToAction("Login", "Account");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting home content");
-                TempData["Error"] = "Home content alınırken hata oluştu.";
-                return View();
-            }
-        }
 
-        // GET: Admin/EditHomeContent
-        [AdminAuthorization]
-        public async Task<IActionResult> EditHomeContent()
-        {
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var homeService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IHomeService>();
+                var homeService = scope.ServiceProvider.GetService<manyasligida.Services.Interfaces.IHomeService>();
                 
-                var result = await homeService.GetHomeContentAsync();
-                
-                if (result.Success && result.Data != null)
+                if (homeService != null)
                 {
-                    return View(result.Data);
-                }
-                else
-                {
-                    // Create default content if none exists
-                    var defaultResult = await homeService.CreateDefaultHomeContentAsync();
-                    if (defaultResult.Success && defaultResult.Data != null)
+                    var homeResult = await homeService.GetHomeContentAsync();
+                    if (homeResult.Success && homeResult.Data != null)
                     {
-                        return View(defaultResult.Data);
+                        return View(homeResult.Data);
                     }
-                    
-                    TempData["Error"] = "Home content oluşturulamadı.";
-                    return RedirectToAction(nameof(HomeContent));
                 }
+
+                // Varsayılan içerik
+                var defaultContent = new manyasligida.Models.DTOs.HomeContentResponse
+                {
+                    HeroTitle = "Manyaslı Süt Ürünleri",
+                    HeroSubtitle = "Gelenekten geleceğe kaliteli lezzetler",
+                    HeroDescription = "1980'den beri geleneksel yöntemlerle üretilen kaliteli süt ürünleri",
+                    HeroButtonText = "Ürünlerimizi Keşfedin",
+                    HeroButtonUrl = "/Products",
+                    HeroImageUrl = "/img/carousel-1.jpg",
+                    AboutTitle = "Hakkımızda",
+                    AboutSubtitle = "Kalite ve Lezzetin Adresi",
+                    AboutContent = "40 yılı aşkın deneyimimizle, geleneksel yöntemlerle modern teknolojiyi birleştirerek en kaliteli süt ürünlerini üretiyoruz.",
+                    AboutImageUrl = "/img/about-us.jpg",
+                    ServicesTitle = "Hizmetlerimiz",
+                    ServicesSubtitle = "Size Sunduğumuz Değerler",
+                    ServicesDescription = "Müşteri memnuniyeti odaklı hizmet anlayışımızla, en taze ve kaliteli ürünleri sizlere sunuyoruz.",
+                    ContactTitle = "İletişim",
+                    ContactSubtitle = "Bizimle İletişime Geçin",
+                    ContactDescription = "Sorularınız için bize ulaşabilir, özel siparişlerinizi verebilirsiniz.",
+                    ContactPhone = "+90 266 123 45 67",
+                    ContactEmail = "info@manyasligida.com",
+                    ContactAddress = "Manyas, Balıkesir, Türkiye"
+                };
+
+                return View(defaultContent);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting home content for edit");
-                TempData["Error"] = "Home content edit sayfası yüklenirken hata oluştu.";
-                return RedirectToAction(nameof(HomeContent));
+                _logger.LogError(ex, "Error loading home content");
+                TempData["Error"] = "Ana sayfa içeriği yüklenirken bir hata oluştu";
+                return View(new manyasligida.Models.DTOs.HomeContentResponse());
             }
         }
 
         // POST: Admin/EditHomeContent
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AdminAuthorization]
-        [RequestSizeLimit(100_000_000)] // 100MB
-        [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
-        public async Task<IActionResult> EditHomeContent(manyasligida.Models.DTOs.HomeEditRequest request, IFormFile? heroImageFile, IFormFile? heroVideoFile, IFormFile? aboutImageFile)
+        public async Task<IActionResult> EditHomeContent(manyasligida.Models.DTOs.HomeContentResponse model, IFormFile? heroImageFile, IFormFile? aboutImageFile, IFormFile? heroVideoFile)
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             try
             {
-                _logger.LogInformation("EditHomeContent POST started");
-                
-                // Clear model validation errors for complex types that come from JSON
-                ModelState.Remove("FeatureItems");
-                ModelState.Remove("AboutFeatures");
-                ModelState.Remove("StatsItems");
-                
-                // Debug: Log received data
-                _logger.LogInformation("Received HeroTitle: {HeroTitle}", request.HeroTitle);
-                _logger.LogInformation("Received request: {@Request}", request);
-                
-                // Validate only required fields
-                if (string.IsNullOrEmpty(request.HeroTitle))
+                if (ModelState.IsValid)
                 {
-                    _logger.LogWarning("Hero title is empty");
-                    return Json(new { success = false, message = "Hero başlığı zorunludur." });
-                }
-
-                // Handle file uploads
-                var updatedRequest = request;
-                
-                // Hero Image Upload
-                if (heroImageFile != null && heroImageFile.Length > 0)
-                {
-                    if (!_fileUploadService.IsValidImage(heroImageFile))
-                    {
-                        return Json(new { success = false, message = "Hero resmi geçersiz format. Sadece JPG, PNG, GIF ve WEBP kabul edilir." });
-                    }
-
-                    try
-                    {
-                        var heroImageUrl = await _fileUploadService.UploadImageAsync(heroImageFile, "home");
-                        updatedRequest = updatedRequest with { HeroImageUrl = heroImageUrl };
-                        _logger.LogInformation("Hero image uploaded successfully: {Url}", heroImageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error uploading hero image");
-                        return Json(new { success = false, message = "Hero resmi yüklenirken hata oluştu." });
-                    }
-                }
-
-                // Hero Video Upload
-                if (heroVideoFile != null && heroVideoFile.Length > 0)
-                {
-                    // Check if it's a valid video file
-                    var allowedVideoTypes = new[] { ".mp4", ".webm", ".avi", ".mov" };
-                    var extension = Path.GetExtension(heroVideoFile.FileName).ToLowerInvariant();
+                    using var scope = _serviceProvider.CreateScope();
+                    var homeService = scope.ServiceProvider.GetService<manyasligida.Services.Interfaces.IHomeService>();
                     
-                    _logger.LogInformation("Video upload attempt - File: {FileName}, Size: {Size}, Extension: {Extension}", 
-                        heroVideoFile.FileName, heroVideoFile.Length, extension);
-                    
-                    if (!allowedVideoTypes.Contains(extension))
+                    if (homeService != null)
                     {
-                        return Json(new { success = false, message = "Video geçersiz format. Sadece MP4, WEBM, AVI ve MOV kabul edilir." });
-                    }
+                        // Video yükleme işlemi
+                        if (heroVideoFile != null && heroVideoFile.Length > 0)
+                        {
+                            if (!_fileUploadService.IsValidVideo(heroVideoFile))
+                            {
+                                ModelState.AddModelError("HeroVideoFile", "Geçersiz video formatı. Sadece MP4, AVI, MOV dosyaları kabul edilir.");
+                                return View("HomeContent", model);
+                            }
 
-                    try
-                    {
-                        var heroVideoUrl = await _fileUploadService.UploadVideoAsync(heroVideoFile, "home");
-                        updatedRequest = updatedRequest with { HeroVideoUrl = heroVideoUrl };
-                        _logger.LogInformation("Hero video uploaded successfully: {Url}", heroVideoUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error uploading hero video");
-                        return Json(new { success = false, message = "Hero video yüklenirken hata oluştu." });
-                    }
-                }
-                else if (!string.IsNullOrEmpty(updatedRequest.HeroVideoUrl))
-                {
-                    _logger.LogInformation("Using existing hero video URL: {Url}", updatedRequest.HeroVideoUrl);
-                }
+                            var heroVideoUrl = await _fileUploadService.UploadVideoAsync(heroVideoFile, "home");
+                            model = model with { HeroVideoUrl = heroVideoUrl };
+                        }
 
-                // About Image Upload
-                if (aboutImageFile != null && aboutImageFile.Length > 0)
-                {
-                    if (!_fileUploadService.IsValidImage(aboutImageFile))
-                    {
-                        return Json(new { success = false, message = "About resmi geçersiz format. Sadece JPG, PNG, GIF ve WEBP kabul edilir." });
-                    }
+                        // Resim yükleme işlemleri
+                        if (heroImageFile != null && heroImageFile.Length > 0)
+                        {
+                            if (!_fileUploadService.IsValidImage(heroImageFile))
+                            {
+                                ModelState.AddModelError("HeroImageFile", "Geçersiz dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
+                                return View("HomeContent", model);
+                            }
 
-                    try
-                    {
-                        var aboutImageUrl = await _fileUploadService.UploadImageAsync(aboutImageFile, "home");
-                        updatedRequest = updatedRequest with { AboutImageUrl = aboutImageUrl };
-                        _logger.LogInformation("About image uploaded successfully: {Url}", aboutImageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error uploading about image");
-                        return Json(new { success = false, message = "About resmi yüklenirken hata oluştu." });
-                    }
-                }
+                            var heroImageUrl = await _fileUploadService.UploadImageAsync(heroImageFile, "home");
+                            model = model with { HeroImageUrl = heroImageUrl };
+                        }
 
-                using var scope = _serviceProvider.CreateScope();
-                var homeService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IHomeService>();
-                
-                var result = await homeService.UpdateHomeContentAsync(updatedRequest);
-                
-                if (result.Success)
-                {
-                    _logger.LogInformation("Home content updated successfully");
-                    
-                    // Return success with uploaded file URLs for UI update
-                    var responseData = new { 
-                        success = true, 
-                        message = "Home content başarıyla güncellendi!",
-                        heroImageUrl = updatedRequest.HeroImageUrl,
-                        heroVideoUrl = updatedRequest.HeroVideoUrl,
-                        aboutImageUrl = updatedRequest.AboutImageUrl
-                    };
-                    
-                    return Json(responseData);
+                        if (aboutImageFile != null && aboutImageFile.Length > 0)
+                        {
+                            if (!_fileUploadService.IsValidImage(aboutImageFile))
+                            {
+                                ModelState.AddModelError("AboutImageFile", "Geçersiz dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
+                                return View("HomeContent", model);
+                            }
+
+                            var aboutImageUrl = await _fileUploadService.UploadImageAsync(aboutImageFile, "home");
+                            model = model with { AboutImageUrl = aboutImageUrl };
+                        }
+
+                        var result = await homeService.UpdateHomeContentAsync(new manyasligida.Models.DTOs.HomeEditRequest
+                        {
+                            HeroTitle = model.HeroTitle,
+                            HeroSubtitle = model.HeroSubtitle,
+                            HeroDescription = model.HeroDescription,
+                            HeroVideoUrl = model.HeroVideoUrl,
+                            HeroImageUrl = model.HeroImageUrl,
+                            HeroButtonText = model.HeroButtonText,
+                            HeroButtonUrl = model.HeroButtonUrl,
+                            HeroSecondButtonText = model.HeroSecondButtonText,
+                            HeroBackgroundColor = model.HeroBackgroundColor,
+                            FeaturesTitle = model.FeaturesTitle,
+                            FeaturesSubtitle = model.FeaturesSubtitle,
+                            ProductsTitle = model.ProductsTitle,
+                            ProductsSubtitle = model.ProductsSubtitle,
+                            ShowPopularProducts = model.ShowPopularProducts,
+                            MaxProductsToShow = model.MaxProductsToShow,
+                            AboutTitle = model.AboutTitle,
+                            AboutSubtitle = model.AboutSubtitle,
+                            AboutContent = model.AboutContent,
+                            AboutImageUrl = model.AboutImageUrl,
+                            AboutButtonText = model.AboutButtonText,
+                            ServicesTitle = model.ServicesTitle,
+                            ServicesSubtitle = model.ServicesSubtitle,
+                            ServicesDescription = model.ServicesDescription,
+                            StatsTitle = model.StatsTitle,
+                            StatsSubtitle = model.StatsSubtitle,
+                            BlogTitle = model.BlogTitle,
+                            BlogSubtitle = model.BlogSubtitle,
+                            ShowLatestBlogs = model.ShowLatestBlogs,
+                            MaxBlogsToShow = model.MaxBlogsToShow,
+                            NewsletterTitle = model.NewsletterTitle,
+                            NewsletterDescription = model.NewsletterDescription,
+                            NewsletterButtonText = model.NewsletterButtonText,
+                            ContactTitle = model.ContactTitle,
+                            ContactSubtitle = model.ContactSubtitle,
+                            ContactDescription = model.ContactDescription,
+                            ContactPhone = model.ContactPhone,
+                            ContactEmail = model.ContactEmail,
+                            ContactAddress = model.ContactAddress,
+                            PrimaryColor = model.PrimaryColor,
+                            SecondaryColor = model.SecondaryColor
+                        });
+                        
+                        if (result.Success)
+                        {
+                            TempData["Success"] = "Ana sayfa içeriği başarıyla güncellendi.";
+                            return RedirectToAction("HomeContent");
+                        }
+                        else
+                        {
+                            TempData["Error"] = result.Message ?? "Ana sayfa içeriği güncellenirken bir hata oluştu.";
+                        }
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Ana sayfa servisi bulunamadı.";
+                    }
                 }
                 else
                 {
-                    _logger.LogWarning("Home content update failed: {Message}", result.Message);
-                    return Json(new { success = false, message = result.Message });
+                    TempData["Error"] = "Geçersiz veri. Lütfen tüm alanları kontrol edin.";
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating home content - Exception: {Message}, StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
-                return Json(new { success = false, message = $"Home content güncellenirken hata oluştu: {ex.Message}" });
+                _logger.LogError(ex, "Error updating home content");
+                TempData["Error"] = "Ana sayfa içeriği güncellenirken bir hata oluştu: " + ex.Message;
             }
+
+            return View("HomeContent", model);
         }
 
         // POST: Admin/ResetHomeContent
@@ -2141,6 +2118,84 @@ namespace manyasligida.Controllers
         private bool HomeContentExists(int id)
         {
             return _context.HomeContents.Any(e => e.Id == id);
+        }
+
+        // GET: Admin/SiteSettings
+        [AdminAuthorization]
+        public async Task<IActionResult> SiteSettings()
+        {
+            try
+            {
+                var settings = await _siteSettingsService.GetAsync();
+                return View(settings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading site settings");
+                TempData["Error"] = "Site ayarları yüklenirken bir hata oluştu.";
+                return View(new SiteSettings());
+            }
+        }
+
+        // POST: Admin/SiteSettings
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AdminAuthorization]
+        public async Task<IActionResult> SiteSettings(SiteSettings settings, IFormFile? logoFile, IFormFile? faviconFile)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    // Logo yükleme
+                    if (logoFile != null && logoFile.Length > 0)
+                    {
+                        if (!_fileUploadService.IsValidImage(logoFile))
+                        {
+                            ModelState.AddModelError("LogoFile", "Geçersiz logo dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
+                            return View(settings);
+                        }
+
+                        var logoUrl = await _fileUploadService.UploadImageAsync(logoFile, "site");
+                        settings.LogoUrl = logoUrl;
+                    }
+
+                    // Favicon yükleme
+                    if (faviconFile != null && faviconFile.Length > 0)
+                    {
+                        if (!_fileUploadService.IsValidImage(faviconFile))
+                        {
+                            ModelState.AddModelError("FaviconFile", "Geçersiz favicon dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
+                            return View(settings);
+                        }
+
+                        var faviconUrl = await _fileUploadService.UploadImageAsync(faviconFile, "site");
+                        settings.FaviconUrl = faviconUrl;
+                    }
+
+                    var success = await _siteSettingsService.UpdateAsync(settings);
+                    if (success)
+                    {
+                        TempData["Success"] = "Site ayarları başarıyla güncellendi.";
+                        return RedirectToAction(nameof(SiteSettings));
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Site ayarları güncellenirken bir hata oluştu.";
+                    }
+                }
+                else
+                {
+                    TempData["Error"] = "Lütfen tüm gerekli alanları doldurun.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating site settings");
+                TempData["Error"] = "Site ayarları güncellenirken bir hata oluştu: " + ex.Message;
+            }
+
+            return View(settings);
         }
     }
 } 

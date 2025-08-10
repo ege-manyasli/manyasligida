@@ -489,6 +489,133 @@ namespace manyasligida.Services
             }
         }
 
+        public async Task<bool> SendPasswordResetCodeAsync(string email)
+        {
+            try
+            {
+                // Kullanıcının var olup olmadığını kontrol et
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.IsActive);
+                if (user == null)
+                {
+                    _logger.LogWarning("Password reset requested for non-existent user: {Email}", email);
+                    return false;
+                }
+
+                // Şifre sıfırlama kodu gönderme işlemi
+                var resetCode = GenerateVerificationCode();
+                
+                // User tablosuna da kaydet (daha güvenli)
+                user.PasswordResetCode = resetCode;
+                user.PasswordResetCodeExpiry = DateTimeHelper.GetEmailVerificationExpiry(10); // 10 dakika Türkiye saati
+                
+                // EmailVerifications tablosuna da kaydet (mevcut sistem için)
+                var existing = await _context.EmailVerifications.FirstOrDefaultAsync(v => v.Email.ToLower() == email.ToLower());
+                if (existing == null)
+                {
+                    _context.EmailVerifications.Add(new EmailVerification
+                    {
+                        Email = email.ToLower(),
+                        VerificationCode = resetCode,
+                        CreatedAt = DateTimeHelper.NowTurkey,
+                        ExpiresAt = DateTimeHelper.GetEmailVerificationExpiry(10), // 10 dakika Türkiye saati
+                        IsUsed = false
+                    });
+                }
+                else
+                {
+                    existing.VerificationCode = resetCode;
+                    existing.ExpiresAt = DateTimeHelper.GetEmailVerificationExpiry(10); // 10 dakika Türkiye saati
+                    existing.IsUsed = false;
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Send via email service - şifre sıfırlama e-postası
+                await _emailService.SendPasswordResetEmailAsync(email, resetCode);
+                _logger.LogInformation("Password reset code sent to {Email}: {Code}", email, resetCode);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending password reset code to {Email}", email);
+                return false;
+            }
+        }
+
+        public async Task<bool> VerifyPasswordResetCodeAsync(string email, string resetCode)
+        {
+            try
+            {
+                email = (email ?? string.Empty).Trim().ToLowerInvariant();
+                resetCode = (resetCode ?? string.Empty).Trim();
+                
+                _logger.LogInformation("Password reset verification attempt - Email: {Email}, Code: {Code}", email, resetCode);
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email && u.IsActive);
+                if (user == null) 
+                {
+                    _logger.LogWarning("User not found for password reset: {Email}", email);
+                    return false;
+                }
+
+                // Önce User tablosundaki kodu kontrol et
+                if (!string.IsNullOrEmpty(user.PasswordResetCode) && 
+                    user.PasswordResetCodeExpiry.HasValue &&
+                    user.PasswordResetCodeExpiry > DateTimeHelper.NowTurkey)
+                {
+                    if (string.Equals(user.PasswordResetCode, resetCode, StringComparison.Ordinal))
+                    {
+                        // Kodu temizle
+                        user.PasswordResetCode = null;
+                        user.PasswordResetCodeExpiry = null;
+                        await _context.SaveChangesAsync();
+                        
+                        _logger.LogInformation("Password reset code verified successfully from User table for: {Email}", email);
+                        return true;
+                    }
+                }
+
+                // Fallback: EmailVerifications tablosunu kontrol et
+                var record = await _context.EmailVerifications
+                    .FirstOrDefaultAsync(v => v.Email.ToLower() == email && !v.IsUsed);
+                
+                if (record == null) 
+                {
+                    _logger.LogWarning("No password reset record found for email: {Email}", email);
+                    return false;
+                }
+                
+                _logger.LogInformation("Password reset record found - Code: {StoredCode}, Expires: {ExpiresAt}, IsUsed: {IsUsed}", 
+                    record.VerificationCode, record.ExpiresAt, record.IsUsed);
+                
+                if (record.ExpiresAt <= DateTimeHelper.NowTurkey) 
+                {
+                    _logger.LogWarning("Password reset code expired for email: {Email}. Expires: {ExpiresAt}, Now: {Now}", 
+                        email, record.ExpiresAt, DateTimeHelper.NowTurkey);
+                    return false;
+                }
+                
+                if (!string.Equals(record.VerificationCode, resetCode, StringComparison.Ordinal)) 
+                {
+                    _logger.LogWarning("Password reset code mismatch for email: {Email}. Expected: {Expected}, Provided: {Provided}", 
+                        email, record.VerificationCode, resetCode);
+                    return false;
+                }
+
+                // Kodu kullanıldı olarak işaretle
+                record.IsUsed = true;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Password reset code verified successfully from EmailVerifications table for: {Email}", email);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error verifying password reset code for {Email}", email);
+                return false;
+            }
+        }
+
         private string GenerateVerificationCode()
         {
             var random = new Random();

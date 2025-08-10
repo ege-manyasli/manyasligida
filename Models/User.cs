@@ -44,6 +44,12 @@ namespace manyasligida.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         
+        // Password reset fields
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpiry { get; set; }
+        public string? PasswordResetCode { get; set; }
+        public DateTime? PasswordResetCodeExpiry { get; set; }
+        
         // Google OAuth
         public string? GoogleId { get; set; }
         

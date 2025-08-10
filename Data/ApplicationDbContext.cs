@@ -42,6 +42,9 @@ namespace manyasligida.Data
 
         // HOME CONTENT
         public DbSet<HomeContent> HomeContents { get; set; }
+        
+        // SITE SETTINGS
+        public DbSet<SiteSettings> SiteSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

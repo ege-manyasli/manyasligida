@@ -21,6 +21,8 @@ namespace manyasligida.Services
 
         // Password management
         Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
+        Task<bool> SendPasswordResetCodeAsync(string email);
+        Task<bool> VerifyPasswordResetCodeAsync(string email, string resetCode);
 
         // Session management methods
         Task<User?> GetCurrentUserAsync();

@@ -91,51 +91,57 @@
                         </div>
                     </div>
 
-                    <!-- Order Summary -->
-                    <div class="col-lg-4">
+                    <!-- Cart Summary -->
+                    <div class="col-lg-4 mb-4">
                         <div class="card">
-                            <div class="card-header bg-primary text-white">
+                            <div class="card-header">
                                 <h5 class="mb-0">
-                                    <i class="fas fa-receipt me-2"></i>
-                                    Sipariş Özeti
+                                    <i class="fas fa-calculator me-2 text-primary"></i>
+                                    Sepet Özeti
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div class="order-summary">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Ara Toplam:</span>
-                                        <span>₺@cartTotal.ToString("0.00")</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Kargo:</span>
-                                        <span class="text-success">Ücretsiz</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>KDV (%18):</span>
-                                        <span>₺@((cartTotal * 0.18m).ToString("0.00"))</span>
-                                    </div>
-                                    <hr>
-                                    <div class="d-flex justify-content-between mb-3">
-                                        <span class="fw-bold fs-5">Toplam:</span>
-                                        <span class="fw-bold fs-5 text-primary">₺@((cartTotal * 1.18m).ToString("0.00"))</span>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Ara Toplam:</span>
+                                    <span>@cartTotal.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</span>
                                 </div>
-
-                                <div class="mb-4">
-                                    <div class="d-flex align-items-center text-success mb-2">
-                                        <i class="fas fa-shield-alt me-2"></i>
-                                        <small>Güvenli Ödeme</small>
-                                    </div>
-                                    <div class="d-flex align-items-center text-success">
-                                        <i class="fas fa-truck me-2"></i>
-                                        <small>Hızlı Teslimat</small>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>KDV (%18):</span>
+                                    <span>@((cartTotal * 0.18m).ToString("C", new System.Globalization.CultureInfo("tr-TR")))</span>
                                 </div>
-
-                                <a href="@Url.Action("Checkout", "Order")" class="btn btn-primary btn-lg w-100 mb-3">
-                                    <i class="fas fa-credit-card me-2"></i>
-                                    Ödemeye Geç
-                                </a>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Kargo:</span>
+                                    <span class="text-success">Ücretsiz</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="fw-bold fs-5">Toplam:</span>
+                                    <span class="fw-bold fs-5 text-primary">@((cartTotal * 1.18m).ToString("C", new System.Globalization.CultureInfo("tr-TR")))</span>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="@Url.Action("Checkout", "Order")" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-credit-card me-2"></i>
+                                        Siparişi Tamamla
+                                    </a>
+                                    
+                                    <button onclick="openWhatsApp()" class="btn btn-success btn-lg">
+                                        <i class="fab fa-whatsapp me-2"></i>
+                                        WhatsApp ile Sipariş Ver
+                                    </button>
+                                    
+                                    <button onclick="clearCart()" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash me-2"></i>
+                                        Sepeti Temizle
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        WhatsApp ile sipariş verirken sepetinizdeki tüm ürünler otomatik olarak mesaja dahil edilir.
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>

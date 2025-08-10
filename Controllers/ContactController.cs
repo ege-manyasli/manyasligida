@@ -30,7 +30,7 @@ namespace manyasligida.Controllers
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
                 
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
 
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 ViewBag.Categories = categories;

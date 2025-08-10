@@ -793,7 +793,7 @@
             
             <!-- Muhasebe -->
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Accounting" ? "active" : "")" href="@Url.Action("Index", "Accounting")">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Accounting" ? "active" : "")" href="@Url.Action("Index", "Accounting", new { area = "" })">
                     <i class="fas fa-calculator"></i>
                     <span>Muhasebe</span>
                 </a>
@@ -818,6 +818,14 @@
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CookieConsent" ? "active" : "")" href="@Url.Action("Management", "CookieConsent")">
                     <i class="fas fa-cookie-bite"></i>
                     <span>Cookie Yönetimi</span>
+                </a>
+            </li>
+
+            <!-- Site Ayarları -->
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "SiteSettings" ? "active" : "")" href="@Url.Action("SiteSettings", "Admin")">
+                    <i class="fas fa-cog"></i>
+                    <span>Site Ayarları</span>
                 </a>
             </li>
 

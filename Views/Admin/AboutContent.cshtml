@@ -1,237 +1,224 @@
 @model manyasligida.Models.DTOs.AboutContentResponse
 @{
-    ViewData["Title"] = "About Content Yönetimi";
+    ViewData["Title"] = "Hakkımızda İçerik Yönetimi";
     Layout = "_AdminLayout";
 }
 
-<div class="admin-page">
-    <div class="admin-page-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 mb-0 text-white">📝 About Content Yönetimi</h1>
-                <p class="text-white-50 mb-0">Hakkımızda sayfasını yönetin</p>
-            </div>
-            <div>
-                <a href="@Url.Action("EditAboutContent")" class="btn btn-warning">
-                    <i class="fas fa-edit me-2"></i>About Content Düzenle
-                </a>
-                <a href="@Url.Action("Index", "About")" target="_blank" class="btn btn-info">
-                    <i class="fas fa-external-link-alt me-2"></i>Sayfayı Görüntüle
-                </a>
-            </div>
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Hakkımızda İçerik Yönetimi</h1>
+            <p class="page-subtitle">Hakkımızda sayfası içeriğini düzenleyin</p>
         </div>
-    </div>
-
-    <div class="admin-page-content">
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        @if (Model != null)
-        {
-            <div class="row g-4">
-                <!-- Ana Bilgiler -->
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Ana Bilgiler</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <strong>Başlık:</strong>
-                                    <p class="text-muted">@Model.Title</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <strong>Alt Başlık:</strong>
-                                    <p class="text-muted">@Model.Subtitle</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hikaye Bölümü -->
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fas fa-book me-2"></i>Hikaye</h5>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="fw-bold">@Model.StoryTitle</h6>
-                            <p class="text-muted small">@(Model.StoryContent?.Length > 150 ? Model.StoryContent.Substring(0, 150) + "..." : Model.StoryContent)</p>
-                            @if (!string.IsNullOrEmpty(Model.StoryImageUrl))
-                            {
-                                <small class="text-success"><i class="fas fa-image me-1"></i>Resim: @Model.StoryImageUrl</small>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Misyon & Vizyon -->
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-warning text-white">
-                            <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Misyon & Vizyon</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <h6 class="fw-bold text-primary">@Model.MissionTitle</h6>
-                                <p class="text-muted small">@(Model.MissionContent?.Length > 100 ? Model.MissionContent.Substring(0, 100) + "..." : Model.MissionContent)</p>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold text-info">@Model.VisionTitle</h6>
-                                <p class="text-muted small">@(Model.VisionContent?.Length > 100 ? Model.VisionContent.Substring(0, 100) + "..." : Model.VisionContent)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Değerler -->
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Değerler</h5>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="fw-bold">@Model.ValuesTitle</h6>
-                            <p class="text-muted small">@Model.ValuesSubtitle</p>
-                            <div class="mt-3">
-                                @if (Model.ValueItems?.Any() == true)
-                                {
-                                    <div class="row g-2">
-                                        @foreach (var item in Model.ValueItems.Take(4))
-                                        {
-                                            <div class="col-6">
-                                                <span class="badge bg-secondary">@item.Title</span>
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Üretim Süreci -->
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Üretim Süreci</h5>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="fw-bold">@Model.ProductionTitle</h6>
-                            <p class="text-muted small">@Model.ProductionSubtitle</p>
-                            @if (Model.ProductionSteps?.Any() == true)
-                            {
-                                <div class="mt-3">
-                                    @foreach (var step in Model.ProductionSteps.Take(3))
-                                    {
-                                        <div class="d-flex align-items-center mb-2">
-                                            <span class="badge bg-primary rounded-circle me-2">@step.StepNumber</span>
-                                            <small>@step.Title</small>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Son Güncelleme -->
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <strong>ID:</strong>
-                                    <p class="text-muted mb-0">#@Model.Id</p>
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Durum:</strong>
-                                    <p class="mb-0">
-                                        @if (Model.IsActive)
-                                        {
-                                            <span class="badge bg-success">Aktif</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">Pasif</span>
-                                        }
-                                    </p>
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Oluşturulma:</strong>
-                                    <p class="text-muted mb-0">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Son Güncelleme:</strong>
-                                    <p class="text-muted mb-0">@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="text-center py-5">
-                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                <h4>About Content Bulunamadı</h4>
-                <p class="text-muted">Henüz hiç about content eklenmemiş.</p>
-                <a href="@Url.Action("EditAboutContent")" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>İlk About Content'i Oluştur
-                </a>
-            </div>
-        }
     </div>
 </div>
 
-<style>
-    .admin-page {
-        min-height: 100vh;
-    }
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Hakkımızda İçeriği</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditAboutContent" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-heading me-2 text-primary"></i>Sayfa Başlığı
+                    </h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ana Başlık</label>
+                        <input asp-for="Title" class="form-control" placeholder="Hakkımızda">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alt Başlık</label>
+                        <input asp-for="Subtitle" class="form-control" placeholder="Gelenekten geleceğe kaliteli lezzetlerin hikayesi">
+                        <span asp-validation-for="Subtitle" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
 
-    .admin-page-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        margin: -1.5rem -1.5rem 2rem -1.5rem;
-        border-radius: 0 0 1rem 1rem;
-    }
+            <!-- Story Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-book me-2 text-success"></i>Hikayemiz Bölümü
+                    </h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hikaye Başlık</label>
+                        <input asp-for="StoryTitle" class="form-control" placeholder="Hikayemiz">
+                        <span asp-validation-for="StoryTitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hikaye Alt Başlık</label>
+                        <input asp-for="StorySubtitle" class="form-control" placeholder="40 Yıllık Deneyim">
+                        <span asp-validation-for="StorySubtitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hikaye İçeriği</label>
+                        <textarea asp-for="StoryContent" class="form-control" rows="6" placeholder="Hikaye içeriği..."></textarea>
+                        <span asp-validation-for="StoryContent" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hikaye Resmi</label>
+                        <input type="file" name="storyImageFile" class="form-control" accept="image/*">
+                        @if (!string.IsNullOrEmpty(Model.StoryImageUrl))
+                        {
+                            <div class="mt-2">
+                                <img src="@Model.StoryImageUrl" alt="Story" class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
 
-    .admin-page-content {
-        padding: 0 1rem;
-    }
+            <!-- Region Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-map-marker-alt me-2 text-warning"></i>Bölge Bölümü
+                    </h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bölge Başlık</label>
+                        <input asp-for="RegionTitle" class="form-control" placeholder="Manyas Bölgesi">
+                        <span asp-validation-for="RegionTitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bölge Alt Başlık</label>
+                        <input asp-for="RegionSubtitle" class="form-control" placeholder="Doğal Zenginlikler">
+                        <span asp-validation-for="RegionSubtitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bölge İçeriği</label>
+                        <textarea asp-for="RegionContent" class="form-control" rows="6" placeholder="Bölge içeriği..."></textarea>
+                        <span asp-validation-for="RegionContent" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bölge Resmi</label>
+                        <input type="file" name="regionImageFile" class="form-control" accept="image/*">
+                        @if (!string.IsNullOrEmpty(Model.RegionImageUrl))
+                        {
+                            <div class="mt-2">
+                                <img src="@Model.RegionImageUrl" alt="Region" class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
 
-    .card {
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: transform 0.2s ease;
-    }
+            <!-- Values Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-heart me-2 text-danger"></i>Değerlerimiz Bölümü
+                    </h4>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Değerler Başlık</label>
+                        <input asp-for="ValuesTitle" class="form-control" placeholder="Değerlerimiz">
+                        <span asp-validation-for="ValuesTitle" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Değerler Alt Başlık</label>
+                        <input asp-for="ValuesSubtitle" class="form-control" placeholder="Kalite ve Güven">
+                        <span asp-validation-for="ValuesSubtitle" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Değerler İçeriği</label>
+                        <textarea asp-for="ValuesContent" class="form-control" rows="4" placeholder="Değerler içeriği..."></textarea>
+                        <span asp-validation-for="ValuesContent" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
 
-    .card:hover {
-        transform: translateY(-2px);
-    }
+            <!-- Mission & Vision Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-bullseye me-2 text-info"></i>Misyon ve Vizyon
+                    </h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Misyon Başlık</label>
+                        <input asp-for="MissionTitle" class="form-control" placeholder="Misyonumuz">
+                        <span asp-validation-for="MissionTitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Misyon İçeriği</label>
+                        <textarea asp-for="MissionContent" class="form-control" rows="4" placeholder="Misyon içeriği..."></textarea>
+                        <span asp-validation-for="MissionContent" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Vizyon Başlık</label>
+                        <input asp-for="VisionTitle" class="form-control" placeholder="Vizyonumuz">
+                        <span asp-validation-for="VisionTitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Vizyon İçeriği</label>
+                        <textarea asp-for="VisionContent" class="form-control" rows="4" placeholder="Vizyon içeriği..."></textarea>
+                        <span asp-validation-for="VisionContent" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
 
-    .card-header {
-        border: none;
-        font-weight: 600;
-    }
+            <div class="d-flex justify-content-end gap-2">
+                <a href="@Url.Action("Index", "Admin")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-    .badge {
-        font-size: 0.75rem;
-    }
-</style>
+@section Scripts {
+    <script>
+        // Form validation
+        $(document).ready(function() {
+            $('form').on('submit', function() {
+                var isValid = true;
+                
+                // Check required fields
+                $('input[required], textarea[required]').each(function() {
+                    if (!$(this).val()) {
+                        $(this).addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Lütfen tüm zorunlu alanları doldurun.');
+                    return false;
+                }
+                
+                return true;
+            });
+        });
+    </script>
+}

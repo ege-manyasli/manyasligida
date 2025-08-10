@@ -49,4 +49,13 @@
     <Folder Include="wwwroot\uploads\products\" />
   </ItemGroup>
 
+  <!-- Web.config için özel ayarlar -->
+  <PropertyGroup>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
+  </PropertyGroup>
+
+  <!-- Web.config dosyasını publish'te koru -->
+  <!-- Not: web.config dosyası .NET SDK tarafından otomatik olarak dahil edilir -->
+
 </Project>

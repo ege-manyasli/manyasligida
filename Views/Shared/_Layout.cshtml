@@ -1747,18 +1747,22 @@
         </div>
     </footer>
 
-    <!-- Scroll to Top Button -->
-    <button class="scroll-to-top" id="scrollToTop" title="Yukarı Çık">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+    <!-- WhatsApp Floating Button -->
+    <div id="whatsapp-button" class="whatsapp-float" onclick="openWhatsApp()" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; z-index: 9999; cursor: pointer; box-shadow: 2px 2px 3px #999;">
+        <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-tooltip">WhatsApp ile Sipariş Ver</span>
+    </div>
+
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="~/js/site.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
+    <!-- WhatsApp Integration Script -->
     <script>
         // Initialize AOS
         AOS.init({
@@ -1775,20 +1779,10 @@
                 $('.header-fixed').removeClass('scrolled');
             }
 
-            // Scroll to top button visibility
-            if ($(window).scrollTop() > 300) {
-                $('#scrollToTop').addClass('show');
-            } else {
-                $('#scrollToTop').removeClass('show');
-            }
+
         });
 
-        // Scroll to top functionality
-        $('#scrollToTop').on('click', function() {
-            $('html, body').animate({
-                scrollTop: 0
-            }, 800, 'easeInOutQuart');
-        });
+
 
         // Enhanced Toast notification function
         function showToast(message, type = 'info') {
@@ -1819,6 +1813,7 @@
             $.get('/Cart/GetCartCount')
                 .done(function(response) {
                     $('.cart-count').text(response.cartItemCount);
+                    updateWhatsAppButton(); // WhatsApp butonunu da güncelle
                 });
         }
 
@@ -1965,20 +1960,140 @@
                     }, 800, 'easeInOutQuart');
                 }
             });
+
+            // Initialize WhatsApp button
+            updateWhatsAppButton();
         });
+
+        // WhatsApp Integration Functions
+        function openWhatsApp() {
+            const cart = getCartItems();
+            const phoneNumber = determineWhatsAppNumber(cart);
+            const message = formatWhatsAppMessage(cart, phoneNumber);
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function getCartItems() {
+            // Session'dan sepet verilerini al
+            const cartItems = [];
+            
+            // AJAX ile sepet verilerini al
+            $.ajax({
+                url: '/Cart/GetCartForWhatsApp',
+                type: 'GET',
+                async: false,
+                success: function(response) {
+                    if (response.success) {
+                        cartItems.push(...response.cartItems);
+                    }
+                },
+                error: function() {
+                    console.log('Sepet verileri alınamadı');
+                }
+            });
+            
+            return cartItems;
+        }
+
+        function determineWhatsAppNumber(cartItems) {
+            // WhatsApp numaraları
+            const CEMAL_NUMBER = "905449202625"; // Cemal Manyaslı
+            const MUSTAFA_NUMBER = "905449202625"; // Mustafa Manyaslı
+            
+            if (cartItems.length === 0) {
+                return CEMAL_NUMBER; // Varsayılan olarak Cemal'e yönlendir
+            }
+            
+            // Sepetteki ürünleri analiz et
+            let hasDairyProducts = false;
+            let hasCheeseProducts = false;
+            
+            cartItems.forEach(item => {
+                const productName = item.productName.toLowerCase();
+                
+                // Süt ürünleri kategorisi
+                if (productName.includes('süt') || productName.includes('yoğurt') || 
+                    productName.includes('ayran') || productName.includes('kaymak')) {
+                    hasDairyProducts = true;
+                }
+                
+                // Peynir ürünleri kategorisi
+                if (productName.includes('peynir') || productName.includes('kaşar') || 
+                    productName.includes('beyaz') || productName.includes('tulum') ||
+                    productName.includes('lor') || productName.includes('çökelek')) {
+                    hasCheeseProducts = true;
+                }
+            });
+            
+            // Yönlendirme mantığı
+            if (hasCheeseProducts && !hasDairyProducts) {
+                return MUSTAFA_NUMBER; // Sadece peynir ürünleri varsa Mustafa'ya
+            } else if (hasDairyProducts && !hasCheeseProducts) {
+                return CEMAL_NUMBER; // Sadece süt ürünleri varsa Cemal'e
+            } else if (hasCheeseProducts && hasDairyProducts) {
+                return CEMAL_NUMBER; // Her ikisi de varsa Cemal'e (ana sorumlu)
+            } else {
+                return CEMAL_NUMBER; // Varsayılan olarak Cemal'e
+            }
+        }
+
+        function formatWhatsAppMessage(cartItems, phoneNumber) {
+            const isCemal = phoneNumber === "905449202625";
+            const contactName = isCemal ? "Cemal Manyaslı" : "Mustafa Manyaslı";
+            
+            let message = `🛒 *Manyaslı Süt Ürünleri - Sipariş*\n`;
+            message += `📞 *${contactName}*\n\n`;
+            
+            if (cartItems.length === 0) {
+                message += "Merhaba! Manyaslı Süt Ürünleri'nden sipariş vermek istiyorum.\n\n";
+                message += "Sepetimde henüz ürün bulunmuyor. Hangi ürünleri sipariş etmek istediğinizi söyleyebilir misiniz?\n\n";
+                message += "💳 Ödeme bilgilerini de paylaşabilir misiniz?";
+            } else {
+                message += "Merhaba! Manyaslı Süt Ürünleri'nden sipariş vermek istiyorum.\n\n";
+                message += "*Sepetimdeki Ürünler:*\n";
+                
+                let total = 0;
+                cartItems.forEach(item => {
+                    message += `• ${item.productName}: ${item.quantity} adet - ${item.totalPrice} TL\n`;
+                    total += item.totalPrice;
+                });
+                
+                message += `\n*Toplam: ${total} TL*\n\n`;
+                message += "Bu siparişimi tamamlamak istiyorum. Teslimat bilgilerimi verebilir miyim?\n\n";
+                message += "💳 Ödeme bilgilerini de paylaşabilir misiniz?";
+            }
+            
+            return message;
+        }
+
+        // Sepet güncellendiğinde WhatsApp butonunu güncelle
+        function updateWhatsAppButton() {
+            const cartItemCount = $('.cart-count').text() || '0';
+            const whatsappButton = $('#whatsapp-button');
+            
+            if (parseInt(cartItemCount) > 0) {
+                whatsappButton.addClass('has-items');
+                whatsappButton.find('.whatsapp-tooltip').text(`${cartItemCount} ürün ile WhatsApp'tan sipariş ver`);
+            } else {
+                whatsappButton.removeClass('has-items');
+                whatsappButton.find('.whatsapp-tooltip').text('WhatsApp ile Sipariş Ver');
+            }
+        }
 
         // Show TempData messages
         @if (TempData["Success"] != null)
         {
-                            <text>showToast('@Html.Raw(TempData["Success"])', 'success');</text>
+            <text>showToast('@Html.Raw(TempData["Success"])', 'success');</text>
         }
         @if (TempData["Error"] != null)
         {
-                            <text>showToast('@Html.Raw(TempData["Error"])', 'error');</text>
+            <text>showToast('@Html.Raw(TempData["Error"])', 'error');</text>
         }
         @if (TempData["Info"] != null)
         {
-                            <text>showToast('@Html.Raw(TempData["Info"])', 'info');</text>
+            <text>showToast('@Html.Raw(TempData["Info"])', 'info');</text>
         }
 
         // Session check on page load

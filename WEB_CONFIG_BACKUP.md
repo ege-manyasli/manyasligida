@@ -60,9 +60,3 @@ ASPNETCORE_ENVIRONMENT = Production
 
 - `/health` - Basic health check
 - `/health/startup` - Startup completion
-- `/health/detailed` - Database connection test
-
-### Son Güncelleme:
-- Tarih: 8 Ağustos 2025
-- Durum: 500.30 hatası çözüldü
-- Web.config: Minimal ve stabil

@@ -92,6 +92,13 @@ CSS STRUCTURE:
      */
     --header-height       : 160px;
     --header-height-min   : 80px;
+    
+    /* Color variables for login page */
+    --primary-color       : #e74c3c;
+    --secondary-color     : #c0392b;
+    --danger-color        : #dc3545;
+    --border-radius       : 8px;
+    --border-radius-lg    : 12px;
 }
 /* on mobile devices below 600px
  */

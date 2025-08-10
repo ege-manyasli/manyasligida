@@ -29,7 +29,7 @@ namespace manyasligida.Controllers
                 var aboutService = scope.ServiceProvider.GetRequiredService<manyasligida.Services.Interfaces.IAboutService>();
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                var siteSettings = _siteSettingsService.Get();
+                var siteSettings = await _siteSettingsService.GetAsync();
 
                 // Get about content from database
                 var aboutResult = await aboutService.GetAboutContentAsync();

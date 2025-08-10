@@ -128,7 +128,7 @@ builder.Services.AddScoped<manyasligida.Services.Interfaces.ICookieConsentServic
 builder.Services.AddScoped<manyasligida.Services.Interfaces.IAccountingService, AccountingService>();
 builder.Services.AddScoped<manyasligida.Services.Interfaces.IAboutService, AboutService>();
 builder.Services.AddScoped<manyasligida.Services.Interfaces.IHomeService, HomeService>();
-builder.Services.AddScoped<SiteSettingsService>();
+builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 
 
 // Legacy Services (keeping for compatibility)
@@ -137,7 +137,6 @@ builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISessionManager, SessionManager>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddSingleton<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddSingleton<IPerformanceMonitorService, PerformanceMonitorService>();
 
 var app = builder.Build();

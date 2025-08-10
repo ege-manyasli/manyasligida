@@ -16,6 +16,8 @@ namespace manyasligida.Models.DTOs
         [Required]
         public string StoryTitle { get; init; } = string.Empty;
 
+        public string? StorySubtitle { get; init; }
+
         [Required]
         public string StoryContent { get; init; } = string.Empty;
 
@@ -35,6 +37,7 @@ namespace manyasligida.Models.DTOs
 
         public string? ValuesTitle { get; init; }
         public string? ValuesSubtitle { get; init; }
+        public string? ValuesContent { get; init; }
         public List<ValueItemRequest> ValueItems { get; init; } = new();
 
         public string? ProductionTitle { get; init; }
@@ -46,6 +49,7 @@ namespace manyasligida.Models.DTOs
         public List<CertificateItemRequest> CertificateItems { get; init; } = new();
 
         public string? RegionTitle { get; init; }
+        public string? RegionSubtitle { get; init; }
         public string? RegionContent { get; init; }
         public string? RegionImageUrl { get; init; }
         public List<RegionFeatureRequest> RegionFeatures { get; init; } = new();
@@ -110,6 +114,7 @@ namespace manyasligida.Models.DTOs
         public string Title { get; init; } = string.Empty;
         public string Subtitle { get; init; } = string.Empty;
         public string StoryTitle { get; init; } = string.Empty;
+        public string? StorySubtitle { get; init; }
         public string StoryContent { get; init; } = string.Empty;
         public string? StoryImageUrl { get; init; }
         public string MissionTitle { get; init; } = string.Empty;
@@ -118,6 +123,7 @@ namespace manyasligida.Models.DTOs
         public string VisionContent { get; init; } = string.Empty;
         public string? ValuesTitle { get; init; }
         public string? ValuesSubtitle { get; init; }
+        public string? ValuesContent { get; init; }
         public List<ValueItemRequest> ValueItems { get; init; } = new();
         public string? ProductionTitle { get; init; }
         public string? ProductionSubtitle { get; init; }
@@ -126,6 +132,7 @@ namespace manyasligida.Models.DTOs
         public string? CertificatesSubtitle { get; init; }
         public List<CertificateItemRequest> CertificateItems { get; init; } = new();
         public string? RegionTitle { get; init; }
+        public string? RegionSubtitle { get; init; }
         public string? RegionContent { get; init; }
         public string? RegionImageUrl { get; init; }
         public List<RegionFeatureRequest> RegionFeatures { get; init; } = new();
