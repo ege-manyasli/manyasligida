@@ -273,9 +273,9 @@ namespace manyasligida.Controllers
                     }
 
                     // Ürün özelliklerini ayarla
-                    product.CreatedAt = DateTime.Now;
+                    product.CreatedAt = DateTimeHelper.NowTurkey;
                     product.IsActive = true;
-                    product.UpdatedAt = DateTime.Now;
+                    product.UpdatedAt = DateTimeHelper.NowTurkey;
 
                     _context.Products.Add(product);
                     await _context.SaveChangesAsync();
@@ -406,7 +406,7 @@ namespace manyasligida.Controllers
                     }
 
                     // Ürün özelliklerini güncelle
-                    product.UpdatedAt = DateTime.Now;
+                    product.UpdatedAt = DateTimeHelper.NowTurkey;
                     product.CreatedAt = existingProduct.CreatedAt; // Mevcut oluşturma tarihini koru
 
                     // Mevcut ürünü güncelle
@@ -533,7 +533,7 @@ namespace manyasligida.Controllers
                         blog.ImageUrl = imageUrl;
                     }
 
-                    blog.CreatedAt = DateTime.Now;
+                    blog.CreatedAt = DateTimeHelper.NowTurkey;
                     blog.IsActive = true;
 
                     _context.Blogs.Add(blog);
@@ -631,7 +631,7 @@ namespace manyasligida.Controllers
                     }
 
                     // Blog özelliklerini güncelle
-                    blog.UpdatedAt = DateTime.Now;
+                    blog.UpdatedAt = DateTimeHelper.NowTurkey;
                     blog.CreatedAt = existingBlog.CreatedAt; // Mevcut oluşturma tarihini koru
 
                     // Mevcut blog'u güncelle
@@ -742,7 +742,7 @@ namespace manyasligida.Controllers
                         gallery.ImageUrl = imageUrl;
                     }
 
-                    gallery.CreatedAt = DateTime.Now;
+                    gallery.CreatedAt = DateTimeHelper.NowTurkey;
                     gallery.IsActive = true;
 
                     _context.Galleries.Add(gallery);
@@ -840,7 +840,7 @@ namespace manyasligida.Controllers
                     }
 
                     // Galeri özelliklerini güncelle
-                    gallery.UpdatedAt = DateTime.Now;
+                    gallery.UpdatedAt = DateTimeHelper.NowTurkey;
                     gallery.CreatedAt = existingGallery.CreatedAt; // Mevcut oluşturma tarihini koru
 
                     // Mevcut galeri öğesini güncelle
@@ -936,7 +936,7 @@ namespace manyasligida.Controllers
 
             if (ModelState.IsValid)
             {
-                faq.CreatedAt = DateTime.Now;
+                faq.CreatedAt = DateTimeHelper.NowTurkey;
                 faq.IsActive = true;
 
                 _context.FAQs.Add(faq);
@@ -1003,7 +1003,7 @@ namespace manyasligida.Controllers
                     }
 
                     // FAQ özelliklerini güncelle
-                    faq.UpdatedAt = DateTime.Now;
+                    faq.UpdatedAt = DateTimeHelper.NowTurkey;
                     faq.CreatedAt = existingFAQ.CreatedAt; // Mevcut oluşturma tarihini koru
 
                     // Mevcut FAQ'yu güncelle
@@ -1107,7 +1107,7 @@ namespace manyasligida.Controllers
             {
                 try
                 {
-                    video.CreatedAt = DateTime.Now;
+                    video.CreatedAt = DateTimeHelper.NowTurkey;
                     video.IsActive = true;
                     video.ViewCount = 0;
 
@@ -1188,7 +1188,7 @@ namespace manyasligida.Controllers
                     existingVideo.IsActive = video.IsActive;
                     existingVideo.IsFeatured = video.IsFeatured;
                     existingVideo.DisplayOrder = video.DisplayOrder;
-                    existingVideo.UpdatedAt = DateTime.Now;
+                    existingVideo.UpdatedAt = DateTimeHelper.NowTurkey;
 
                     await _context.SaveChangesAsync();
 
@@ -1272,7 +1272,7 @@ namespace manyasligida.Controllers
 
             if (ModelState.IsValid)
             {
-                category.CreatedAt = DateTime.Now;
+                category.CreatedAt = DateTimeHelper.NowTurkey;
                 category.IsActive = true;
 
                 _context.Categories.Add(category);
@@ -1314,7 +1314,7 @@ namespace manyasligida.Controllers
                     existingCategory.Description = category.Description;
                     existingCategory.DisplayOrder = category.DisplayOrder;
                     existingCategory.IsActive = category.IsActive;
-                    existingCategory.UpdatedAt = DateTime.Now;
+                    existingCategory.UpdatedAt = DateTimeHelper.NowTurkey;
 
                     await _context.SaveChangesAsync();
 
@@ -1429,11 +1429,11 @@ namespace manyasligida.Controllers
                     
                     if (status == ApplicationConstants.OrderStatus.Shipped)
                     {
-                        order.ShippedDate = DateTime.Now;
+                        order.ShippedDate = DateTimeHelper.NowTurkey;
                     }
                     else if (status == ApplicationConstants.OrderStatus.Delivered)
                     {
-                        order.DeliveredDate = DateTime.Now;
+                        order.DeliveredDate = DateTimeHelper.NowTurkey;
                     }
 
                     await _context.SaveChangesAsync();
@@ -1509,7 +1509,7 @@ namespace manyasligida.Controllers
                 {
                     // Mesaj yanıtını güncelle
                     message.IsReplied = true;
-                    message.RepliedAt = DateTime.Now;
+                    message.RepliedAt = DateTimeHelper.NowTurkey;
                     message.ReplyMessage = replyMessage;
 
                     await _context.SaveChangesAsync();
@@ -1592,7 +1592,7 @@ namespace manyasligida.Controllers
                     existingUser.Phone = user.Phone;
                     existingUser.IsAdmin = user.IsAdmin;
                     existingUser.IsActive = user.IsActive;
-                    existingUser.UpdatedAt = DateTime.Now;
+                    existingUser.UpdatedAt = DateTimeHelper.NowTurkey;
 
                     await _context.SaveChangesAsync();
 
@@ -1628,7 +1628,7 @@ namespace manyasligida.Controllers
                 {
                     // Kullanıcı durumunu güncelle
                     user.IsActive = isActive;
-                    user.UpdatedAt = DateTime.Now;
+                    user.UpdatedAt = DateTimeHelper.NowTurkey;
 
                     await _context.SaveChangesAsync();
 

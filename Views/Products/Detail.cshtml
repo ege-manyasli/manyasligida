@@ -1,6 +1,6 @@
 @model manyasligida.Models.Product
 @{
-    ViewData["Title"] = $"{Model.Name} - Manyaslı Gıda";
+    ViewData["Title"] = $"{Model.Name} - Manyaslı Süt Ürünleri";
 }
 
 <!-- Page Header -->
@@ -389,71 +389,71 @@
             <p>Bu ürünle birlikte alabileceğiniz diğer lezzetler</p>
         </div>
         
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/taze-kasar-peyniri-1000-gr.-63a593.jpg" class="card-img-top" alt="Taze Kaşar">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 2 })" class="btn btn-primary">İncele</a>
+        @if (ViewBag.RelatedProducts != null && ((List<manyasligida.Models.Product>)ViewBag.RelatedProducts).Any())
+        {
+            <div class="row g-4">
+                @{
+                    var relatedProducts = (List<manyasligida.Models.Product>)ViewBag.RelatedProducts;
+                    int delayCounter = 100;
+                }
+                @foreach (var product in relatedProducts)
+                {
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@delayCounter">
+                        <div class="card product-card h-100">
+                            <div class="product-image">
+                                <img src="@product.GetMainImageUrl()" class="card-img-top" alt="@product.Name" loading="lazy">
+                                <div class="product-overlay">
+                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-primary">İncele</a>
+                                    <button class="btn btn-outline-light ms-2" onclick="addToCartFromRelated(@product.Id)" title="Sepete Ekle">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">@product.Name</h5>
+                                                        @if (!string.IsNullOrEmpty(product.Description) && product.Description.Length > 50)
+                                {
+                                    <p class="text-muted">@(product.Description.Substring(0, Math.Min(50, product.Description.Length)))...</p>
+                                }
+                                else if (!string.IsNullOrEmpty(product.Description))
+                                {
+                                    <p class="text-muted">@product.Description</p>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">@(product.Category?.Name ?? "Lezzetli ürün")</p>
+                                }
+                                
+                                <div class="price-section">
+                                    @if (product.OldPrice.HasValue && product.OldPrice > product.Price)
+                                    {
+                                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
+                                            <span class="price fw-bold text-primary">₺@product.Price.ToString("0.00")</span>
+                                            <span class="old-price text-muted text-decoration-line-through small">₺@product.OldPrice?.ToString("0.00")</span>
+                                        </div>
+                                        var discountPercent = ((product.OldPrice!.Value - product.Price) / product.OldPrice.Value * 100).ToString("0");
+                                        <small class="badge bg-danger">%@discountPercent İndirim</small>
+                                    }
+                                    else
+                                    {
+                                        <div class="price fw-bold text-primary">₺@product.Price.ToString("0.00")</div>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Taze Kaşar</h5>
-                        <p class="text-muted">Yumuşak ve lezzetli</p>
-                        <div class="price">₺35.00</div>
-                    </div>
+                    delayCounter += 100;
+                }
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted">Benzer ürün bulunamadı.</p>
                 </div>
             </div>
-
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/mihalic-peyniri-350-gr.-122f.jpg" class="card-img-top" alt="Mihaliç Peyniri">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 3 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Mihaliç Peyniri</h5>
-                        <p class="text-muted">Geleneksel lezzet</p>
-                        <div class="price">₺28.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/corek-otlu-sepet-peyniri-350-gr.-8c96.jpg" class="card-img-top" alt="Çörek Otlu Peynir">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 4 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Çörek Otlu Peynir</h5>
-                        <p class="text-muted">Aromatik sepet peyniri</p>
-                        <div class="price">₺32.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="~/img/eski-kasar-peyniri-300-g.-6a1-d2.jpg" class="card-img-top" alt="Eski Kars Kaşarı">
-                        <div class="product-overlay">
-                            <a href="@Url.Action("Detail", "Products", new { id = 6 })" class="btn btn-primary">İncele</a>
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Eski Kars Kaşarı</h5>
-                        <p class="text-muted">Olgunlaştırılmış</p>
-                        <div class="price">₺42.00</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </section>
 
@@ -846,6 +846,57 @@
         });
     }
 
+    // Benzer ürünler için sepete ekleme fonksiyonu
+    function addToCartFromRelated(productId) {
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
+        
+        // Show loading state
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        button.disabled = true;
+
+        // Send AJAX request with default quantity 1
+        fetch('/Products/AddToCart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `productId=${productId}&quantity=1`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.classList.remove('btn-outline-light');
+                button.classList.add('btn-success');
+                
+                // Show success message
+                showToast(data.message, 'success');
+                
+                // Update cart count in navbar
+                updateCartCount();
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-light');
+                    button.disabled = false;
+                }, 2000);
+            } else {
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+                showToast(data.message || 'Bir hata oluştu', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            showToast('Bir hata oluştu', 'error');
+        });
+    }
+
     function updateCartCount() {
         fetch('/Cart/GetCartCount')
             .then(response => response.json())
@@ -875,14 +926,14 @@
     function shareProduct() {
         if (navigator.share) {
             navigator.share({
-                title: '@Model.Name - Manyaslı Gıda',
+                title: '@Model.Name - Manyaslı Süt Ürünleri',
                 text: 'Harika bir lezzet!',
                 url: window.location.href
             });
         } else {
             // Fallback for browsers that don't support Web Share API
             const url = window.location.href;
-            const text = '@Model.Name - Manyaslı Gıda';
+            const text = '@Model.Name - Manyaslı Süt Ürünleri';
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(`${text}\n${url}`).then(() => {

@@ -1,3 +1,5 @@
+using manyasligida.Services;
+
 namespace manyasligida.Models
 {
     public class Gallery
@@ -9,7 +11,7 @@ namespace manyasligida.Models
         public string? ThumbnailUrl { get; set; }
         public bool IsActive { get; set; } = true;
         public int DisplayOrder { get; set; } = 0;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         public DateTime? UpdatedAt { get; set; }
 
         // EKLENEN SATIR

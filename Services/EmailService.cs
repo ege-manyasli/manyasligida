@@ -17,7 +17,7 @@ namespace manyasligida.Services
         {
             try
             {
-                var subject = "E-posta Doğrulama Kodu - Manyaslı Gıda";
+                var subject = "E-posta Doğrulama Kodu - Manyaslı Süt Ürünleri";
                 var body = GenerateVerificationEmailBody(verificationCode);
                 
                 return await SendEmailAsync(email, subject, body);
@@ -38,7 +38,7 @@ namespace manyasligida.Services
         {
             try
             {
-                var subject = "Şifre Sıfırlama Kodu - Manyaslı Gıda";
+                var subject = "Şifre Sıfırlama Kodu - Manyaslı Süt Ürünleri";
                 var body = GeneratePasswordResetEmailBody(resetCode);
                 
                 return await SendEmailAsync(email, subject, body);
@@ -97,8 +97,13 @@ namespace manyasligida.Services
             sb.AppendLine("<html><body style='font-family: Arial, sans-serif;'>");
             sb.AppendLine("<div style='max-width: 600px; margin: 0 auto; padding: 20px;'>");
             sb.AppendLine("<div style='text-align: center; margin-bottom: 30px;'>");
-            sb.AppendLine("<h2 style='color: #28a745; margin: 0; font-size: 28px; font-weight: bold;'>Manyaslı Gıda</h2>");
-            sb.AppendLine("<p style='color: #6c757d; margin: 5px 0 0; font-size: 16px;'>Kaliteli ve Taze Ürünler</p>");
+            sb.AppendLine("<div style='background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);'>");
+            sb.AppendLine("<div style='display: inline-block; background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;'>");
+            sb.AppendLine("<img src='https://manyasligida-web-new-gyaygrckfpbtg7ey.westeurope-01.azurewebsites.net/img/manyasli-gida.png' alt='Manyaslı Süt Ürünleri' style='max-height: 50px; display: block;'>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("<h2 style='color: white; margin: 0; font-size: 24px; font-weight: bold;'>Manyaslı Süt Ürünleri</h2>");
+            sb.AppendLine("<p style='color: rgba(255,255,255,0.9); margin: 5px 0 0; font-size: 14px;'>Kaliteli ve Taze Ürünler</p>");
+            sb.AppendLine("</div>");
             sb.AppendLine("</div>");
             sb.AppendLine("<div style='background-color: #ecf0f1; padding: 20px; border-radius: 10px;'>");
             sb.AppendLine("<h3 style='color: #e74c3c;'>E-posta Doğrulama</h3>");
@@ -110,7 +115,7 @@ namespace manyasligida.Services
             sb.AppendLine("<p style='color: #7f8c8d; font-size: 14px;'>Bu e-postayı siz talep etmediyseniz, lütfen dikkate almayın.</p>");
             sb.AppendLine("</div>");
             sb.AppendLine("<div style='text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 12px;'>");
-            sb.AppendLine("<p>© 2024 Manyaslı Gıda. Tüm hakları saklıdır.</p>");
+            sb.AppendLine("<p>© 2024 Manyaslı Süt Ürünleri. Tüm hakları saklıdır.</p>");
             sb.AppendLine("</div>");
             sb.AppendLine("</div></body></html>");
             
@@ -123,8 +128,13 @@ namespace manyasligida.Services
             sb.AppendLine("<html><body style='font-family: Arial, sans-serif;'>");
             sb.AppendLine("<div style='max-width: 600px; margin: 0 auto; padding: 20px;'>");
             sb.AppendLine("<div style='text-align: center; margin-bottom: 30px;'>");
-            sb.AppendLine("<h2 style='color: #28a745; margin: 0; font-size: 28px; font-weight: bold;'>Manyaslı Gıda</h2>");
-            sb.AppendLine("<p style='color: #6c757d; margin: 5px 0 0; font-size: 16px;'>Kaliteli ve Taze Ürünler</p>");
+            sb.AppendLine("<div style='background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);'>");
+            sb.AppendLine("<div style='display: inline-block; background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;'>");
+            sb.AppendLine("<img src='https://manyasligida-web-new-gyaygrckfpbtg7ey.westeurope-01.azurewebsites.net/img/manyasli-gida.png' alt='Manyaslı Süt Ürünleri' style='max-height: 50px; display: block;'>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("<h2 style='color: white; margin: 0; font-size: 24px; font-weight: bold;'>Manyaslı Süt Ürünleri</h2>");
+            sb.AppendLine("<p style='color: rgba(255,255,255,0.9); margin: 5px 0 0; font-size: 14px;'>Kaliteli ve Taze Ürünler</p>");
+            sb.AppendLine("</div>");
             sb.AppendLine("</div>");
             sb.AppendLine("<div style='background-color: #ecf0f1; padding: 20px; border-radius: 10px;'>");
             sb.AppendLine("<h3 style='color: #e74c3c;'>Şifre Sıfırlama</h3>");
@@ -136,7 +146,7 @@ namespace manyasligida.Services
             sb.AppendLine("<p style='color: #7f8c8d; font-size: 14px;'>Bu e-postayı siz talep etmediyseniz, lütfen dikkate almayın.</p>");
             sb.AppendLine("</div>");
             sb.AppendLine("<div style='text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 12px;'>");
-            sb.AppendLine("<p>© 2024 Manyaslı Gıda. Tüm hakları saklıdır.</p>");
+            sb.AppendLine("<p>© 2024 Manyaslı Süt Ürünleri. Tüm hakları saklıdır.</p>");
             sb.AppendLine("</div>");
             sb.AppendLine("</div></body></html>");
             

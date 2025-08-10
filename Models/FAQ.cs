@@ -1,3 +1,5 @@
+using manyasligida.Services;
+
 namespace manyasligida.Models
 {
     public class FAQ
@@ -8,7 +10,7 @@ namespace manyasligida.Models
         public string? Category { get; set; }
         public bool IsActive { get; set; } = true;
         public int DisplayOrder { get; set; } = 0;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         public DateTime? UpdatedAt { get; set; }
     }
 } 

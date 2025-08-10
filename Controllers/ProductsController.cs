@@ -21,10 +21,27 @@ namespace manyasligida.Controllers
         }
 
         // EMERGENCY ACTION - Simple test 
-        public IActionResult Emergency()
+        public async Task<IActionResult> Emergency()
         {
-            ViewBag.Message = "Products sayfası çalışıyor! 🎉";
-            return View("Emergency");
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                
+                var productCount = await context.Products.CountAsync();
+                var categoryCount = await context.Categories.CountAsync();
+                
+                ViewBag.Message = $"Products sayfası çalışıyor! 🎉 Ürün sayısı: {productCount}, Kategori sayısı: {categoryCount}";
+                ViewBag.ProductCount = productCount;
+                ViewBag.CategoryCount = categoryCount;
+                
+                return View("Emergency");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = $"Hata oluştu: {ex.Message}";
+                return View("Emergency");
+            }
         }
 
         // GET: Products/Index - EMERGENCY SIMPLE VERSION
@@ -35,72 +52,39 @@ namespace manyasligida.Controllers
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                var query = context.Products
+                // Basit sorgu - sadece aktif ürünleri al
+                var products = await context.Products
                     .Include(p => p.Category)
-                    .Where(p => p.IsActive);
+                    .Where(p => p.IsActive)
+                    .OrderBy(p => p.Name)
+                    .ToListAsync();
 
-                // Kategori filtresi
-                if (categoryId.HasValue)
-                {
-                    query = query.Where(p => p.CategoryId == categoryId.Value);
-                }
+                var categories = await context.Categories
+                    .Where(c => c.IsActive)
+                    .ToListAsync();
 
-                // Arama filtresi
-                if (!string.IsNullOrEmpty(searchTerm))
-                {
-                    query = query.Where(p => p.Name.Contains(searchTerm) || 
-                                           (p.Description != null && p.Description.Contains(searchTerm)) ||
-                                           (p.Ingredients != null && p.Ingredients.Contains(searchTerm)));
-                }
-
-                // Sıralama
-                query = sortBy switch
-                {
-                    "price_asc" => query.OrderBy(p => p.Price),
-                    "price_desc" => query.OrderByDescending(p => p.Price),
-                    "name_asc" => query.OrderBy(p => p.Name),
-                    "name_desc" => query.OrderByDescending(p => p.Name),
-                    "newest" => query.OrderByDescending(p => p.CreatedAt),
-                    "popular" => query.OrderByDescending(p => p.IsPopular).ThenByDescending(p => p.CreatedAt),
-                    "featured" => query.OrderByDescending(p => p.IsFeatured).ThenByDescending(p => p.CreatedAt),
-                    _ => query.OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAt)
-                };
-
-                // Sıralı sorgular - paralel sorgular yerine
-                var totalProducts = await query.CountAsync();
-                var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-
-                var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
-
-                var siteSettings = _siteSettingsService.Get();
-
+                // Basit ViewBag değerleri
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategoryId = categoryId;
                 ViewBag.SearchTerm = searchTerm;
                 ViewBag.SortBy = sortBy;
-                ViewBag.CurrentPage = page;
-                ViewBag.TotalPages = totalPages;
-                ViewBag.TotalProducts = totalProducts;
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalProducts = products.Count;
                 ViewBag.PageSize = pageSize;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
-                ViewBag.SiteSettings = siteSettings;
+                ViewBag.SiteSettings = _siteSettingsService.Get();
 
                 return View(products);
             }
             catch (Exception ex)
             {
-                using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                // Hata durumunda basit bir mesaj döndür
+                ViewBag.ErrorMessage = $"Hata oluştu: {ex.Message}";
+                ViewBag.Categories = new List<Category>();
+                ViewBag.CartItemCount = 0;
+                ViewBag.SiteSettings = _siteSettingsService.Get();
                 
-                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
-                var siteSettings = _siteSettingsService.Get();
-                
-                ViewBag.Categories = categories;
-                ViewBag.SiteSettings = siteSettings;
-                ViewBag.CartItemCount = _cartService.GetCartItemCount();
-                
-                TempData["Error"] = "Ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
         }

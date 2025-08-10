@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -39,7 +40,7 @@ namespace manyasligida.Models
         public bool IsActive { get; set; } = true;
         public bool IsAdmin { get; set; } = false;
         public bool EmailConfirmed { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         

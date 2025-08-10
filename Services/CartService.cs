@@ -20,10 +20,13 @@ namespace manyasligida.Services
             if (session == null)
                 return new List<CartItem>();
             
-            // Session ID kontrolü ekle
+            // Ensure session ID exists
             var sessionId = session.GetString("SessionId");
             if (string.IsNullOrEmpty(sessionId))
-                return new List<CartItem>();
+            {
+                sessionId = Guid.NewGuid().ToString();
+                session.SetString("SessionId", sessionId);
+            }
                 
             var cartJson = session.GetString(CartSessionKey);
             

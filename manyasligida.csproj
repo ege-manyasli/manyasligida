@@ -20,10 +20,10 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     
     <!-- Assembly Bilgileri -->
-    <AssemblyTitle>Manyaslı Gıda</AssemblyTitle>
-    <AssemblyDescription>Manyaslı Gıda E-ticaret Uygulaması</AssemblyDescription>
-    <AssemblyCompany>Manyaslı Gıda</AssemblyCompany>
-    <AssemblyProduct>Manyaslı Gıda Web Uygulaması</AssemblyProduct>
+    <AssemblyTitle>Manyaslı Süt Ürünleri</AssemblyTitle>
+    <AssemblyDescription>Manyaslı Süt Ürünleri E-ticaret Uygulaması</AssemblyDescription>
+    <AssemblyCompany>Manyaslı Süt Ürünleri</AssemblyCompany>
+    <AssemblyProduct>Manyaslı Süt Ürünleri Web Uygulaması</AssemblyProduct>
     <AssemblyCopyright>Copyright © 2024</AssemblyCopyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>

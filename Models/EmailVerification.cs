@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -12,7 +13,7 @@ namespace manyasligida.Models
         [Required]
         public string VerificationCode { get; set; } = string.Empty;
         
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         
         public DateTime ExpiresAt { get; set; }
         

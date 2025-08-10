@@ -1,3 +1,5 @@
+using manyasligida.Services;
+
 namespace manyasligida.Models
 {
     public class ContactMessage
@@ -11,7 +13,7 @@ namespace manyasligida.Models
         public bool IsRead { get; set; } = false;
         public bool IsReplied { get; set; } = false;
         public string? ReplyMessage { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         public DateTime? RepliedAt { get; set; }
     }
 } 

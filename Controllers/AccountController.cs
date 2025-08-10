@@ -78,10 +78,19 @@ namespace manyasligida.Controllers
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
                         new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                    // Set session manually (simplified)
+                    // Clear any existing session data first to prevent conflicts
+                    HttpContext.Session.Clear();
+                    
+                    // Create unique session for this user/device combination
+                    var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
+                    await sessionManager.CreateUserSessionAsync(user);
+                    
+                    // Set session data with unique identifiers
                     HttpContext.Session.SetString("UserId", user.Id.ToString());
                     HttpContext.Session.SetString("UserName", user.FullName);
                     HttpContext.Session.SetString("IsAdmin", user.IsAdmin.ToString());
+                    HttpContext.Session.SetString("LoginTime", DateTimeHelper.NowTurkeyString("yyyy-MM-dd HH:mm:ss"));
+                    HttpContext.Session.SetString("DeviceId", Guid.NewGuid().ToString()); // Unique device identifier
 
                     _logger.LogInformation("User {Email} logged in successfully", model.Email);
                     
@@ -167,8 +176,14 @@ namespace manyasligida.Controllers
                 var userId = User.FindFirst("UserId")?.Value;
                 _logger.LogInformation("Logout attempt for user: {UserId}", userId);
 
-                // Sign out
+                // Invalidate session first
+                var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
+                await sessionManager.InvalidateSessionAsync();
+                
+                // Sign out from authentication system
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                // Clear session data
                 HttpContext.Session.Clear();
 
                 _logger.LogInformation("User {UserId} logged out successfully", userId);
@@ -260,6 +275,15 @@ namespace manyasligida.Controllers
 
                 _logger.LogInformation("Email verification attempt for: {Email}", email);
 
+                // Önce kullanıcının zaten doğrulanmış olup olmadığını kontrol et
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                if (user != null && user.EmailConfirmed)
+                {
+                    _logger.LogInformation("Email already verified, redirecting to login: {Email}", email);
+                    TempData["Success"] = "E-posta adresiniz zaten doğrulanmış! Giriş yapabilirsiniz.";
+                    return RedirectToAction("Login");
+                }
+
                 var result = await _authService.VerifyEmailAsync(email, verificationCode);
                 if (result)
                 {
@@ -270,6 +294,14 @@ namespace manyasligida.Controllers
                 else
                 {
                     _logger.LogWarning("Email verification failed for: {Email}", email);
+                    
+                    // Eğer kullanıcı zaten doğrulanmışsa ama bir şekilde buraya geldiyse
+                    if (user != null && user.EmailConfirmed)
+                    {
+                        TempData["Success"] = "E-posta adresiniz zaten doğrulanmış! Giriş yapabilirsiniz.";
+                        return RedirectToAction("Login");
+                    }
+                    
                     ModelState.AddModelError("", "Doğrulama kodu hatalı veya süresi dolmuş. Lütfen tekrar deneyin.");
                     ViewBag.Email = email;
                     return View();
@@ -296,6 +328,14 @@ namespace manyasligida.Controllers
                     return RedirectToAction("Register");
                 }
 
+                // Önce kullanıcının zaten doğrulanmış olup olmadığını kontrol et
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                if (user != null && user.EmailConfirmed)
+                {
+                    TempData["Success"] = "E-posta adresiniz zaten doğrulanmış! Giriş yapabilirsiniz.";
+                    return RedirectToAction("Login");
+                }
+
                 _logger.LogInformation("Resend verification code for: {Email}", email);
 
                 var result = await _authService.ResendVerificationCodeAsync(email);
@@ -318,7 +358,7 @@ namespace manyasligida.Controllers
             }
         }
 
-        // Debug Email Verification
+        // Debug Email Verification - DETAYLI
         [HttpGet]
         public async Task<IActionResult> DebugEmailVerification(string email)
         {
@@ -329,6 +369,9 @@ namespace manyasligida.Controllers
                     return Json(new { error = "Email required" });
                 }
 
+                // Kullanıcı bilgilerini al
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                
                 var verifications = await _context.EmailVerifications
                     .Where(v => v.Email.ToLower() == email.ToLower())
                     .OrderByDescending(v => v.CreatedAt)
@@ -338,16 +381,30 @@ namespace manyasligida.Controllers
                         v.CreatedAt,
                         v.ExpiresAt,
                         v.IsUsed,
-                        IsExpired = v.ExpiresAt <= DateTime.Now,
-                        MinutesToExpire = (v.ExpiresAt - DateTime.Now).TotalMinutes
+                        IsExpired = v.ExpiresAt <= DateTimeHelper.NowTurkey,
+                        MinutesToExpire = (v.ExpiresAt - DateTimeHelper.NowTurkey).TotalMinutes
                     })
                     .ToListAsync();
 
                 return Json(new { 
                     email = email,
+                    user = user != null ? new {
+                        user.Id,
+                        user.Email,
+                        user.EmailConfirmed,
+                        user.IsActive,
+                        user.CreatedAt
+                    } : null,
                     verifications = verifications,
-                    currentTime = DateTime.Now,
-                    currentTimeUtc = DateTime.UtcNow
+                    currentTime = DateTimeHelper.NowTurkey,
+                    currentTimeUtc = DateTimeHelper.NowTurkey,
+                    debugInfo = new {
+                        userExists = user != null,
+                        emailConfirmed = user?.EmailConfirmed ?? false,
+                        activeVerifications = verifications.Count(v => !v.IsUsed),
+                        usedVerifications = verifications.Count(v => v.IsUsed),
+                        expiredVerifications = verifications.Count(v => v.IsExpired)
+                    }
                 });
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -14,6 +15,6 @@ namespace manyasligida.Models
         
         public bool IsAccepted { get; set; }
         
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
     }
 }

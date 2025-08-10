@@ -1,4 +1,4 @@
-# Manyaslı Gıda - Sorun Giderme Rehberi
+# Manyaslı Süt Ürünleri - Sorun Giderme Rehberi
 
 ## Yaygın Sorunlar ve Çözümleri
 

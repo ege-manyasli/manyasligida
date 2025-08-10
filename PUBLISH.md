@@ -1,4 +1,4 @@
-# Manyaslı Gıda - Publish Ayarları
+# Manyaslı Süt Ürünleri - Publish Ayarları
 
 ## 📋 Publish Profilleri
 

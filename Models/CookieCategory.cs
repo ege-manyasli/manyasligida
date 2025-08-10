@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -19,7 +20,7 @@ namespace manyasligida.Models
         
         public int SortOrder { get; set; } = 0;
         
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         
         // Navigation property
         public ICollection<CookieConsentDetail> ConsentDetails { get; set; } = new List<CookieConsentDetail>();

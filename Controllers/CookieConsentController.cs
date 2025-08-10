@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using manyasligida.Models.DTOs;
 using manyasligida.Services.Interfaces;
+using manyasligida.Services;
 using manyasligida.Attributes;
 
 namespace manyasligida.Controllers;
@@ -498,7 +499,7 @@ namespace manyasligida.Controllers;
                 TotalActiveConsents = totalConsentsResult.Success ? totalConsentsResult.Data : 0,
                 ConsentRate = consentRateResult.Success ? consentRateResult.Data : 0.0,
                 IsCompliant = consentRateResult.Success && consentRateResult.Data > 0,
-                LastUpdated = DateTime.UtcNow
+                LastUpdated = DateTimeHelper.NowTurkey
             };
 
             return Json(ApiResponse<object>.SuccessResult(complianceStatus));

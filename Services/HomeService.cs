@@ -157,7 +157,7 @@ namespace manyasligida.Services
                     ShowPopularProducts = true,
                     MaxProductsToShow = 8,
                     
-                    AboutTitle = "Manyaslı Gıda Ailesi",
+                    AboutTitle = "Manyaslı Süt Ürünleri Ailesi",
                     AboutContent = "1985'ten beri Balıkesir'in bereketli topraklarında üretim yaparak, kaliteli süt ürünlerini sofralarınıza taşıyoruz. Geleneksel lezzetleri modern teknoloji ile birleştirerek, her ürünümüzde kalite ve güven sunuyoruz.",
                     AboutImageUrl = "~/img/carousel-1.jpg",
                     AboutButtonText = "Hikayemizi Keşfet",
@@ -181,8 +181,8 @@ namespace manyasligida.Services
                     SecondaryColor = "#D2691E",
                     
                     IsActive = true,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = DateTimeHelper.NowTurkey,
+                    UpdatedAt = DateTimeHelper.NowTurkey
                 };
 
                 _context.HomeContents.Add(defaultContent);
@@ -225,7 +225,7 @@ namespace manyasligida.Services
                 }
 
                 content.IsActive = false;
-                content.UpdatedAt = DateTime.Now;
+                content.UpdatedAt = DateTimeHelper.NowTurkey;
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Home content deleted: {Id}", id);
@@ -358,8 +358,8 @@ namespace manyasligida.Services
                 PrimaryColor = request.PrimaryColor,
                 SecondaryColor = request.SecondaryColor,
                 IsActive = true,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                CreatedAt = DateTimeHelper.NowTurkey,
+                UpdatedAt = DateTimeHelper.NowTurkey
             };
         }
 
@@ -397,7 +397,7 @@ namespace manyasligida.Services
             existing.HeroBackgroundColor = request.HeroBackgroundColor;
             existing.PrimaryColor = request.PrimaryColor;
             existing.SecondaryColor = request.SecondaryColor;
-            existing.UpdatedAt = DateTime.Now;
+            existing.UpdatedAt = DateTimeHelper.NowTurkey;
         }
 
         // JSON Deserialization helpers

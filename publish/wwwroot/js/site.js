@@ -1,4 +1,4 @@
-﻿// Manyaslı Gıda - Site JavaScript
+﻿// Manyaslı Süt Ürünleri - Site JavaScript
 
 // Document ready function
 $(document).ready(function() {

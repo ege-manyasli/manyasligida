@@ -1,47 +1,70 @@
 @model IEnumerable<manyasligida.Models.Product>
 @{
-    ViewData["Title"] = "Ürünlerimiz - Manyaslı Gıda";
+    ViewData["Title"] = "Ürünlerimiz - Manyaslı Süt Ürünleri";
 }
-<section class="page-header" style="background: var(--gradient-primary); padding: 140px 0 100px; position: relative; overflow: hidden;">
-    <div class="container text-center position-relative" style="z-index: 2;">
-        <h1 class="text-white fw-bold mb-4" style="font-size: 3.5rem; text-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-            <i class="fas fa-box-open me-3"></i>Ürünlerimiz
-        </h1>
-        <p class="text-white lead mb-0" style="font-size: 1.25rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-            Balıkesir Bandırma'dan sofralarınıza uzanan kaliteli lezzetler
-        </p>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger alert-modern" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle me-3" style="font-size: 1.5rem;"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Hata!</h5>
+                <p class="mb-0">@ViewBag.ErrorMessage</p>
+            </div>
+        </div>
     </div>
-    
-    <!-- Decorative Elements -->
-    <div class="position-absolute top-0 left-0 w-100 h-100" style="z-index: 1;">
-        <div class="position-absolute" style="top: 20%; left: 10%; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
-        <div class="position-absolute" style="top: 60%; right: 15%; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 8s ease-in-out infinite reverse;"></div>
-        <div class="position-absolute" style="bottom: 30%; left: 20%; width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 7s ease-in-out infinite;"></div>
+}
+
+<!-- Hero Section with Parallax Effect -->
+<section class="hero-section">
+    <div class="hero-background">
+        <div class="hero-pattern"></div>
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="container">
+        <div class="hero-content text-center">
+            <div class="hero-badge mb-4">
+                <span class="badge-text">Premium Kalite</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line">Ürünlerimiz</span>
+                <span class="title-accent">Kaliteli Lezzetler</span>
+            </h1>
+                         <p class="hero-subtitle">
+                 Balıkesir Bandırma'dan sofralarınıza uzanan, doğal ve taze süt ürünleri
+             </p>
+        </div>
+    </div>
+    <div class="hero-scroll-indicator">
+        <div class="scroll-arrow"></div>
     </div>
 </section>
 
-<section class="section-padding bg-light">
+<!-- Search and Filter Section -->
+<section class="search-section">
     <div class="container">
-        <!-- Modern Search and Filter Section -->
-        <div class="row mb-5">
-            <div class="col-lg-8">
+        <div class="search-container">
+            <!-- Advanced Search Bar -->
+            <div class="search-bar-wrapper">
                 <form method="get" action="@Url.Action("Search", "Products")" class="search-form">
-                    <div class="input-group input-group-lg shadow-sm">
-                        <span class="input-group-text bg-white border-end-0">
-                            <i class="fas fa-search text-muted"></i>
-                        </span>
-                        <input type="text" name="q" class="form-control border-start-0 ps-0" 
-                               placeholder="Ürün ara..." value="@ViewBag.SearchTerm"
-                               style="border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;">
-                        <button class="btn btn-primary px-4" type="submit" 
-                                style="border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;">
-                            <i class="fas fa-search me-2"></i>Ara
+                    <div class="search-input-group">
+                        <div class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <input type="text" name="q" class="search-input" 
+                               placeholder="Ürün ara..." value="@ViewBag.SearchTerm">
+                        <button class="search-button" type="submit">
+                            <i class="fas fa-search"></i>
+                            <span>Ara</span>
                         </button>
                     </div>
                 </form>
             </div>
-            <div class="col-lg-4">
-                <select class="form-select form-select-lg shadow-sm" id="sortSelect" onchange="changeSort(this.value)">
+
+            <!-- Sort Dropdown -->
+            <div class="sort-wrapper">
+                <select class="sort-select" id="sortSelect" onchange="changeSort(this.value)">
                     <option value="name">İsme Göre Sırala</option>
                     <option value="price">Fiyat (Düşük-Yüksek)</option>
                     <option value="price_desc">Fiyat (Yüksek-Düşük)</option>
@@ -51,93 +74,125 @@
             </div>
         </div>
 
-        <!-- Modern Category Filter -->
-        <div class="row mb-5">
-            <div class="col-12">
-                <div class="filter-section" data-aos="fade-up">
-                    <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <a href="@Url.Action("Index", "Products")" 
-                           class="btn @(ViewBag.SelectedCategoryId == null ? "btn-primary" : "btn-outline-primary") btn-lg px-4 py-3 rounded-pill shadow-sm">
-                            <i class="fas fa-th-large me-2"></i>Tümü
-                        </a>
-                        @foreach (var category in ViewBag.Categories)
-                        {
-                            <a href="@Url.Action("Index", "Products", new { categoryId = category.Id })"
-                               class="btn @(ViewBag.SelectedCategoryId == category.Id ? "btn-primary" : "btn-outline-primary") btn-lg px-4 py-3 rounded-pill shadow-sm">
-                                <i class="fas fa-tag me-2"></i>@category.Name
-                            </a>
-                        }
-                    </div>
-                </div>
+        <!-- Category Filter Pills -->
+        <div class="category-filter">
+            <div class="filter-pills">
+                <a href="@Url.Action("Index", "Products")" 
+                   class="filter-pill @(ViewBag.SelectedCategoryId == null ? "active" : "")">
+                    <i class="fas fa-th-large"></i>
+                    <span>Tümü</span>
+                </a>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <a href="@Url.Action("Index", "Products", new { categoryId = category.Id })"
+                       class="filter-pill @(ViewBag.SelectedCategoryId == category.Id ? "active" : "")">
+                        <i class="fas fa-tag"></i>
+                        <span>@category.Name</span>
+                    </a>
+                }
             </div>
         </div>
+    </div>
+</section>
 
+<!-- Products Section -->
+<section class="products-section">
+    <div class="container">
         @if (!Model.Any())
         {
-            <div class="text-center py-5" data-aos="fade-up">
-                <div class="mb-4">
-                    <i class="fas fa-search" style="font-size: 4rem; color: var(--text-muted);"></i>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
                 </div>
-                <h3 class="mb-3 fw-bold">Aradığınız kriterlere uygun ürün bulunamadı</h3>
-                <p class="text-muted mb-4 lead">Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.</p>
-                <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-modern btn-lg">
+                <h3 class="empty-title">Aradığınız kriterlere uygun ürün bulunamadı</h3>
+                <p class="empty-description">
+                    Farklı arama kriterleri deneyebilir veya tüm ürünlerimize göz atabilirsiniz.
+                </p>
+                <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-modern">
                     <i class="fas fa-th-large me-2"></i>Tüm Ürünleri Gör
                 </a>
             </div>
         }
         else
         {
-            <div class="row g-4">
+            <div class="products-grid">
                 @foreach (var product in Model)
                 {
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="card product-card h-100">
-                            <div class="product-image position-relative">
-                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                                
-
-
+                    <div class="product-card-wrapper" data-aos="fade-up" data-aos-delay="@(Model.ToList().IndexOf(product) * 100)">
+                        <div class="product-card">
+                            <!-- Product Image Container -->
+                            <div class="product-image-container">
+                                @if (!string.IsNullOrEmpty(product.GetMainImageUrl()))
+                                {
+                                    <img src="@product.GetMainImageUrl()" class="product-image" alt="@product.Name">
+                                }
+                                else
+                                {
+                                    <div class="product-image-placeholder">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                }
                                 
                                 <!-- Product Overlay -->
                                 <div class="product-overlay">
-                                    <div class="overlay-content">
-                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-light">
-                                            <i class="fas fa-eye me-2"></i>İncele
+                                    <div class="overlay-actions">
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" 
+                                           class="overlay-btn overlay-btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                            <span>İncele</span>
                                         </a>
-                                        <button class="btn btn-primary" onclick="addToCart(@product.Id)" data-product-id="@product.Id">
-                                            <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                        <button class="overlay-btn overlay-btn-secondary" 
+                                                onclick="testAddToCart(@product.Id)" 
+                                                data-product-id="@product.Id">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span>Sepete Ekle</span>
                                         </button>
                                     </div>
+                                </div>
+
+                                <!-- Product Badges -->
+                                <div class="product-badges">
+                                    <span class="badge badge-new">Yeni</span>
                                 </div>
                             </div>
-                            
-                            <div class="card-body d-flex flex-column">
-                                <!-- Product Title -->
-                                <h5 class="card-title fw-bold mb-2">@product.Name</h5>
-                                
-                                <!-- Product Weight -->
-                                <p class="card-text text-muted mb-2">
-                                    <i class="fas fa-weight-hanging me-1"></i>@product.Weight
-                                </p>
-                                
-                                <!-- Price Section -->
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="price-section">
-                                        <span class="product-price">₺@product.Price.ToString("0.00")</span>
+
+                            <!-- Product Content -->
+                            <div class="product-content">
+                                <!-- Product Header -->
+                                <div class="product-header">
+                                    <h3 class="product-title">@product.Name</h3>
+                                    <div class="product-weight">
+                                        <i class="fas fa-weight-hanging"></i>
+                                        <span>@product.Weight</span>
                                     </div>
-                                    <span class="badge bg-primary px-2 py-1 rounded-pill">
-                                        <i class="fas fa-percentage me-1"></i>@product.FatContent
-                                    </span>
                                 </div>
-                                
-                                <!-- Action Buttons -->
-                                <div class="mt-auto">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary btn-sm" onclick="addToCart(@product.Id)" data-product-id="@product.Id">
-                                            <i class="fas fa-shopping-cart me-1"></i>Sepete Ekle
+
+                                <!-- Product Details -->
+                                <div class="product-details">
+                                    <div class="product-price-section">
+                                        <div class="price-container">
+                                            <span class="current-price">₺@product.Price.ToString("0.00")</span>
+                                        </div>
+                                        <div class="fat-content">
+                                            <span class="fat-badge">
+                                                <i class="fas fa-percentage"></i>
+                                                @product.FatContent
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Product Actions -->
+                                    <div class="product-actions">
+                                        <button class="action-btn action-btn-primary" 
+                                                onclick="testAddToCart(@product.Id)" 
+                                                data-product-id="@product.Id">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span>Sepete Ekle</span>
                                         </button>
-                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-info-circle me-1"></i>Detayları Gör
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" 
+                                           class="action-btn action-btn-secondary">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>Detaylar</span>
                                         </a>
                                     </div>
                                 </div>
@@ -147,39 +202,45 @@
                 }
             </div>
 
+            <!-- Pagination -->
             @if (ViewBag.TotalPages > 1)
             {
-                <div class="row mt-5">
-                    <div class="col-12">
-                        <nav aria-label="Sayfalama" class="d-flex justify-content-center">
-                            <ul class="pagination pagination-lg">
-                                @if (ViewBag.CurrentPage > 1)
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link rounded-pill me-2" href="@Url.Action("Index", "Products", new { page = ViewBag.CurrentPage - 1, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
-                                            <i class="fas fa-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                }
-                                
-                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                                {
-                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                        <a class="page-link rounded-pill mx-1" href="@Url.Action("Index", "Products", new { page = i, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">@i</a>
-                                    </li>
-                                }
-                                
-                                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link rounded-pill ms-2" href="@Url.Action("Index", "Products", new { page = ViewBag.CurrentPage + 1, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
-                        </nav>
-                    </div>
+                <div class="pagination-wrapper">
+                    <nav class="pagination-nav" aria-label="Sayfalama">
+                        <ul class="pagination-list">
+                            @if (ViewBag.CurrentPage > 1)
+                            {
+                                <li class="pagination-item">
+                                    <a class="pagination-link pagination-prev" 
+                                       href="@Url.Action("Index", "Products", new { page = ViewBag.CurrentPage - 1, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
+                                        <i class="fas fa-chevron-left"></i>
+                                        <span>Önceki</span>
+                                    </a>
+                                </li>
+                            }
+                            
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="pagination-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                    <a class="pagination-link" 
+                                       href="@Url.Action("Index", "Products", new { page = i, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                            
+                            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                            {
+                                <li class="pagination-item">
+                                    <a class="pagination-link pagination-next" 
+                                       href="@Url.Action("Index", "Products", new { page = ViewBag.CurrentPage + 1, categoryId = ViewBag.SelectedCategoryId, sort = ViewBag.SortOrder })">
+                                        <span>Sonraki</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
                 </div>
             }
         }
@@ -187,101 +248,744 @@
 </section>
 
 <style>
-    .product-card {
-        border-radius: 18px;
-        background: #fff;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.07);
-        border: none;
-        transition: all 0.3s ease;
-        overflow: hidden;
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 35vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--gradient-primary);
+    margin-top: -5rem;
+    z-index: 1;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.hero-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(194, 65, 12, 0.1) 0%, transparent 50%);
+    animation: patternFloat 20s ease-in-out infinite;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 50px;
+    padding: 8px 20px;
+    backdrop-filter: blur(10px);
+}
+
+.badge-text {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-title {
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.title-line {
+    display: block;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.title-accent {
+    display: block;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+    color: white;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.hero-scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.scroll-arrow {
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+    animation: scrollBounce 2s infinite;
+}
+
+/* Search Section */
+.search-section {
+    background: white;
+    padding: 1.5rem 0;
+    position: relative;
+    z-index: 2;
+    margin-top: -0.5rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.search-bar-wrapper {
+    flex: 1;
+}
+
+.search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.search-input-group:focus-within {
+    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.2);
+    transform: translateY(-2px);
+}
+
+.search-icon {
+    padding: 0 1.5rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    padding: 1.25rem 0;
+    font-size: 1rem;
+    background: transparent;
+    outline: none;
+    color: var(--text-color);
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-button {
+    background: var(--gradient-secondary);
+    border: none;
+    padding: 1.25rem 2rem;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-button:hover {
+    background: var(--secondary-dark);
+    transform: translateX(2px);
+}
+
+.sort-wrapper {
+    min-width: 200px;
+}
+
+.sort-select {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    border: 2px solid var(--gray-200);
+    border-radius: 15px;
+    background: white;
+    font-size: 1rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Category Filter */
+.category-filter {
+    margin-top: 2rem;
+}
+
+.filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.filter-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 25px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.filter-pill:hover {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+}
+
+.filter-pill.active {
+    background: var(--gradient-secondary);
+    border-color: var(--secondary-color);
+    color: white;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
+}
+
+/* Products Section */
+.products-section {
+    padding: 1.5rem 0;
+    background: var(--bg-light);
+    position: relative;
+    z-index: 1;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.product-card-wrapper {
+    perspective: 1000px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-10px) rotateX(5deg);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-container {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.1);
+}
+
+.product-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.overlay-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.overlay-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.overlay-btn-primary {
+    background: white;
+    color: var(--primary-color);
+}
+
+.overlay-btn-primary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.overlay-btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.overlay-btn-secondary:hover {
+    background: var(--secondary-dark);
+    transform: translateY(-2px);
+}
+
+.product-badges {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-new {
+    background: var(--success-color);
+    color: white;
+}
+
+.badge-discount {
+    background: var(--danger-color);
+    color: white;
+}
+
+.product-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-header {
+    margin-bottom: 1rem;
+}
+
+.product-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.product-weight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.product-details {
+    margin-top: auto;
+}
+
+.product-price-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.price-container {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.current-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+}
+
+.old-price {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.fat-content {
+    display: flex;
+    align-items: center;
+}
+
+.fat-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.product-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.action-btn-primary {
+    background: var(--gradient-secondary);
+    color: white;
+}
+
+.action-btn-primary:hover {
+    background: var(--secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
+}
+
+.action-btn-secondary {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.action-btn-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.empty-description {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+/* Pagination */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.pagination-nav {
+    display: flex;
+    align-items: center;
+}
+
+.pagination-list {
+    display: flex;
+    list-style: none;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination-item {
+    display: flex;
+    align-items: center;
+}
+
+.pagination-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 44px;
+    justify-content: center;
+}
+
+.pagination-link:hover {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+}
+
+.pagination-item.active .pagination-link {
+    background: var(--gradient-secondary);
+    border-color: var(--secondary-color);
+    color: white;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
+}
+
+.pagination-prev,
+.pagination-next {
+    min-width: 120px;
+}
+
+/* Alert Modern */
+.alert-modern {
+    border: none;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.1);
+}
+
+/* Animations */
+@@keyframes patternFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(1deg); }
+}
+
+@@keyframes scrollBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+    40% { transform: translateY(-10px) rotate(45deg); }
+    60% { transform: translateY(-5px) rotate(45deg); }
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .title-line {
+        font-size: 2.5rem;
     }
-
-    .product-card .card-body {
-        padding: 1.25rem;
+    
+    .title-accent {
+        font-size: 1.8rem;
     }
-
-        .product-card:hover {
-            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-            transform: translateY(-5px);
-        }
-
-    .product-image {
-        height: 280px;
-        overflow: hidden;
-        position: relative;
-        border-radius: 18px 18px 0 0;
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
     }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-image img {
-            transform: scale(1.05);
-        }
-
-    .product-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
+    
+    .stat-divider {
+        display: none;
     }
-
-    .product-card:hover .product-overlay {
-        opacity: 1;
+    
+    .search-container {
+        flex-direction: column;
     }
-
-    .overlay-content {
-        text-align: center;
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
-
-    .product-price {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--accent-color);
+    
+    .product-actions {
+        grid-template-columns: 1fr;
     }
-
-
-
-    .filter-section .btn-group {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 8px;
+    
+    .pagination-prev,
+    .pagination-next {
+        min-width: auto;
     }
-
-        .filter-section .btn-group::-webkit-scrollbar {
-            display: none;
-        }
-
-    .pagination .page-link {
-        border: none;
-        color: var(--primary-color);
-        padding: 12px 16px;
-        margin: 0 2px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
+    
+    .pagination-link span {
+        display: none;
     }
+}
 
-        .pagination .page-link:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-    .pagination .page-item.active .page-link {
-        background: var(--primary-color);
-        color: white;
+@@media (max-width: 576px) {
+    .hero-section {
+        min-height: 30vh;
     }
+    
+    .title-line {
+        font-size: 1.8rem;
+    }
+    
+    .title-accent {
+        font-size: 1.3rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .search-section {
+        padding: 1rem 0;
+    }
+    
+    .products-section {
+        padding: 1rem 0;
+    }
+}
 </style>
 
 <script>
@@ -295,5 +999,42 @@
         const urlParams = new URLSearchParams(window.location.search);
         const currentSort = urlParams.get('sort') || 'name';
         document.getElementById('sortSelect').value = currentSort;
+        
+        // Initialize AOS animations
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 100
+            });
+        }
+        
+        // Test addToCart function
+        console.log('Products page loaded, addToCart function available:', typeof addToCart);
     });
+    
+    // Simple test function for debugging
+    function testAddToCart(productId) {
+        console.log('Testing addToCart for product:', productId);
+        if (typeof addToCart === 'function') {
+            addToCart(productId);
+        } else {
+            console.error('addToCart function not found!');
+            // Fallback: direct AJAX call
+            $.post('/Cart/AddToCart', { productId: productId, quantity: 1 })
+                .done(function(response) {
+                    console.log('Direct AJAX response:', response);
+                    if (response.success) {
+                        alert('Ürün sepete eklendi!');
+                        location.reload();
+                    } else {
+                        alert('Hata: ' + response.message);
+                    }
+                })
+                .fail(function() {
+                    alert('AJAX hatası!');
+                });
+        }
+    }
 </script>

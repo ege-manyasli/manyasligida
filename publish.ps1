@@ -1,11 +1,11 @@
-# Manyaslı Gıda Publish Scripti
+# Manyaslı Süt Ürünleri Publish Scripti
 param(
     [Parameter(Mandatory=$false)]
     [ValidateSet("Azure", "Local")]
     [string]$Target = "Azure"
 )
 
-Write-Host "=== Manyaslı Gıda Publish ===" -ForegroundColor Green
+Write-Host "=== Manyaslı Süt Ürünleri Publish ===" -ForegroundColor Green
 Write-Host "Hedef: $Target" -ForegroundColor Yellow
 
 try {

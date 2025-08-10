@@ -49,13 +49,13 @@ namespace manyasligida.Services
                 // Get active session from database
                 var userSession = await _context.UserSessions
                     .Include(us => us.User)
-                    .FirstOrDefaultAsync(us => us.SessionId == sessionId && us.IsActive && us.ExpiresAt > DateTime.UtcNow);
+                    .FirstOrDefaultAsync(us => us.SessionId == sessionId && us.IsActive && us.ExpiresAt > DateTimeHelper.NowTurkey);
 
                 if (userSession?.User == null)
                     return null;
 
                 // Update last activity
-                userSession.LastActivity = DateTime.UtcNow;
+                userSession.LastActivity = DateTimeHelper.NowTurkey;
                 await _context.SaveChangesAsync();
 
                 return userSession.User;
@@ -96,6 +96,19 @@ namespace manyasligida.Services
         {
             try
             {
+                // First, invalidate any existing active sessions for this user to prevent conflicts
+                var existingSessions = await _context.UserSessions
+                    .Where(us => us.UserId == user.Id && us.IsActive)
+                    .ToListAsync();
+                
+                foreach (var existingSession in existingSessions)
+                {
+                    existingSession.IsActive = false;
+                    existingSession.LastActivity = DateTimeHelper.NowTurkey;
+                    _logger.LogInformation("Invalidated existing session {SessionId} for user {UserId}", 
+                        existingSession.SessionId, user.Id);
+                }
+
                 // Generate unique session ID
                 var sessionId = GenerateUniqueSessionId();
                 
@@ -106,7 +119,7 @@ namespace manyasligida.Services
                 var deviceInfo = GetDeviceInfo(httpContext?.Request.Headers["User-Agent"].ToString());
 
                 // Create session expiry (2 hours from now)
-                var expiresAt = DateTime.UtcNow.AddHours(2);
+                var expiresAt = DateTimeHelper.GetSessionExpiry(2);
 
                 // Create new user session
                 var userSession = new UserSession
@@ -116,8 +129,8 @@ namespace manyasligida.Services
                     IpAddress = ipAddress,
                     UserAgent = userAgent,
                     DeviceInfo = deviceInfo,
-                    CreatedAt = DateTime.UtcNow,
-                    LastActivity = DateTime.UtcNow,
+                    CreatedAt = DateTimeHelper.NowTurkey,
+                    LastActivity = DateTimeHelper.NowTurkey,
                     ExpiresAt = expiresAt,
                     IsActive = true
                 };
@@ -137,7 +150,7 @@ namespace manyasligida.Services
                         session.SetString("UserName", user.FullName);
                         session.SetString("UserEmail", user.Email);
                         session.SetString("IsAdmin", user.IsAdmin.ToString());
-                        session.SetString("LoginTime", DateTime.UtcNow.ToString("O"));
+                        session.SetString("LoginTime", DateTimeHelper.NowTurkeyString("O"));
                     }
                     catch (Exception sessionEx)
                     {
@@ -188,14 +201,14 @@ namespace manyasligida.Services
                 var userSession = await _context.UserSessions
                     .FirstOrDefaultAsync(us => us.SessionId == sessionId && us.IsActive);
 
-                if (userSession == null || userSession.ExpiresAt <= DateTime.UtcNow)
+                if (userSession == null || userSession.ExpiresAt <= DateTimeHelper.NowTurkey)
                 {
                     await InvalidateSessionAsync();
                     return false;
                 }
 
                 // Update last activity
-                userSession.LastActivity = DateTime.UtcNow;
+                userSession.LastActivity = DateTimeHelper.NowTurkey;
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -239,8 +252,8 @@ namespace manyasligida.Services
                     return false;
 
                 // Extend session by 2 hours
-                userSession.ExpiresAt = DateTime.UtcNow.AddHours(2);
-                userSession.LastActivity = DateTime.UtcNow;
+                userSession.ExpiresAt = DateTimeHelper.GetSessionExpiry(2);
+                userSession.LastActivity = DateTimeHelper.NowTurkey;
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -327,7 +340,7 @@ namespace manyasligida.Services
                 var userSession = await _context.UserSessions
                     .FirstOrDefaultAsync(us => us.SessionId == sessionId);
 
-                return userSession?.ExpiresAt <= DateTime.UtcNow;
+                return userSession?.ExpiresAt <= DateTimeHelper.NowTurkey;
             }
             catch (Exception ex)
             {
@@ -388,8 +401,8 @@ namespace manyasligida.Services
                     return false;
 
                 // Refresh session expiry
-                userSession.ExpiresAt = DateTime.UtcNow.AddHours(2);
-                userSession.LastActivity = DateTime.UtcNow;
+                userSession.ExpiresAt = DateTimeHelper.GetSessionExpiry(2);
+                userSession.LastActivity = DateTimeHelper.NowTurkey;
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -433,7 +446,7 @@ namespace manyasligida.Services
             try
             {
                 return await _context.UserSessions
-                    .CountAsync(us => us.UserId == userId && us.IsActive && us.ExpiresAt > DateTime.UtcNow);
+                    .CountAsync(us => us.UserId == userId && us.IsActive && us.ExpiresAt > DateTimeHelper.NowTurkey);
             }
             catch (Exception ex)
             {
@@ -447,7 +460,7 @@ namespace manyasligida.Services
             try
             {
                 var expiredSessions = await _context.UserSessions
-                    .Where(us => us.ExpiresAt <= DateTime.UtcNow && us.IsActive)
+                    .Where(us => us.ExpiresAt <= DateTimeHelper.NowTurkey && us.IsActive)
                     .ToListAsync();
 
                 foreach (var session in expiredSessions)

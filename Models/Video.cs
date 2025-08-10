@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -30,7 +31,7 @@ namespace manyasligida.Models
 
         public int DisplayOrder { get; set; } = 0;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
 
         public DateTime? UpdatedAt { get; set; }
     }

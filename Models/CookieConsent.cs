@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -18,9 +19,9 @@ namespace manyasligida.Models
         [StringLength(500)]
         public string? UserAgent { get; set; }
         
-        public DateTime ConsentDate { get; set; } = DateTime.Now;
+        public DateTime ConsentDate { get; set; } = DateTimeHelper.NowTurkey;
         
-        public DateTime ExpiryDate { get; set; } = DateTime.Now.AddYears(1);
+        public DateTime ExpiryDate { get; set; } = DateTimeHelper.NowTurkey.AddYears(1);
         
         public bool IsActive { get; set; } = true;
         
@@ -29,7 +30,7 @@ namespace manyasligida.Models
         [StringLength(1000)]
         public string? Preferences { get; set; } // JSON string for detailed preferences
         
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         
         // Navigation property
         public ICollection<CookieConsentDetail> ConsentDetails { get; set; } = new List<CookieConsentDetail>();

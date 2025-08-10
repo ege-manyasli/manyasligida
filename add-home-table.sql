@@ -108,7 +108,7 @@ BEGIN
         1,
         8,
         
-        N'Manyaslı Gıda Ailesi',
+        N'Manyaslı Süt Ürünleri Ailesi',
         N'1985''ten beri Balıkesir''in bereketli topraklarında üretim yaparak, kaliteli süt ürünlerini sofralarınıza taşıyoruz. Geleneksel lezzetleri modern teknoloji ile birleştirerek, her ürünümüzde kalite ve güven sunuyoruz.',
         N'~/img/carousel-1.jpg',
         N'Hikayemizi Keşfet',

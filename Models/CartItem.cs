@@ -1,3 +1,5 @@
+using manyasligida.Services;
+
 namespace manyasligida.Models
 {
     public class CartItem
@@ -8,7 +10,7 @@ namespace manyasligida.Models
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
-        public DateTime AddedAt { get; set; } = DateTime.Now;
+        public DateTime AddedAt { get; set; } = DateTimeHelper.NowTurkey;
         
         // Navigation properties (only for database operations)
         public Cart? Cart { get; set; }

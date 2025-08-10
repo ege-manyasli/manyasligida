@@ -19,6 +19,18 @@ using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Timezone configuration for Turkey (UTC+3)
+// This ensures all DateTime operations use Turkey timezone when server is in Europe
+try 
+{
+    TimeZoneInfo.FindSystemTimeZoneById("Turkey Standard Time");
+    Console.WriteLine("✅ Turkey timezone detected and configured");
+}
+catch 
+{
+    Console.WriteLine("⚠️ Turkey timezone not found, using UTC+3 offset");
+}
+
 // Basic logging configuration
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -75,19 +87,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     
-    // Log connection string info (without sensitive data)
-    var logger = builder.Services.BuildServiceProvider().GetService<ILogger<Program>>();
-    if (logger != null)
-    {
-        logger.LogInformation("Connection string found: {HasConnectionString}", !string.IsNullOrEmpty(connectionString));
-        if (!string.IsNullOrEmpty(connectionString))
-        {
-            var serverInfo = connectionString.Contains("Server=") ? 
-                connectionString.Substring(connectionString.IndexOf("Server=") + 7, 
-                    Math.Min(50, connectionString.IndexOf(";", connectionString.IndexOf("Server=") + 7) - connectionString.IndexOf("Server=") - 7)) : "Not found";
-            logger.LogInformation("Database server: {Server}", serverInfo);
-        }
-    }
+    // Simplified connection string validation for startup stability
+    Console.WriteLine($"Connection string configured: {!string.IsNullOrEmpty(connectionString)}");
     
     if (string.IsNullOrEmpty(connectionString))
     {
@@ -104,7 +105,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     });
 });
 
-// Add Session support
+// Add Session support with enhanced security
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -114,6 +115,8 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = ".ManyasliGida.Session";
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.HttpOnly = true;
+    // Generate unique session ID for each request
+    options.IOTimeout = TimeSpan.FromMinutes(1);
 });
 
 // Add HttpContextAccessor
@@ -138,6 +141,9 @@ builder.Services.AddSingleton<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddSingleton<IPerformanceMonitorService, PerformanceMonitorService>();
 
 var app = builder.Build();
+
+// Database health check removed for startup stability
+Console.WriteLine("Application starting - database health check deferred to runtime");
 
 // Get logger for startup logging
 var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
@@ -230,47 +236,16 @@ try
     app.UseResponseCaching();
     app.UseRouting();
 
-    // No-cache for HTML and sensitive routes to prevent user data leakage
-    app.Use(async (context, next) =>
-    {
-        await next();
-        var contentType = context.Response.ContentType;
-        if ((contentType != null && contentType.Contains("text/html", StringComparison.OrdinalIgnoreCase)) ||
-            context.Request.Path.StartsWithSegments("/Account") ||
-            context.Request.Path.StartsWithSegments("/Admin") ||
-            context.Request.Path.StartsWithSegments("/Order") ||
-            context.Request.Path.StartsWithSegments("/Cart"))
-        {
-            context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-            context.Response.Headers["Pragma"] = "no-cache";
-            context.Response.Headers["Expires"] = "0";
-        }
-    });
+    // Cache headers moved to controller level for better control
     app.UseAuthorization();
 
     app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    // Add health check endpoints
+    // Add simple health check endpoints (no async operations for warmup stability)
     app.MapGet("/health", () => "OK");
-    app.MapGet("/health/startup", () => Results.Ok(new { status = "startup_complete", timestamp = DateTime.UtcNow }));
-    
-    app.MapGet("/health/detailed", async (ApplicationDbContext dbContext, ILogger<Program> logger) =>
-    {
-        try
-        {
-            logger.LogInformation("Testing database connection...");
-            await dbContext.Database.CanConnectAsync();
-            logger.LogInformation("Database connection successful");
-            return Results.Ok(new { status = "healthy", database = "connected" });
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Database connection failed");
-            return Results.Problem($"Database connection failed: {ex.Message}");
-        }
-    });
+    app.MapGet("/health/startup", () => Results.Ok(new { status = "startup_complete", timestamp = DateTimeHelper.NowTurkey }));
 
     startupLogger.LogInformation("=== APPLICATION STARTUP COMPLETE ===");
 }

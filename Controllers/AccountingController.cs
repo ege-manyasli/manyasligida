@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using manyasligida.Models.DTOs;
 using manyasligida.Services.Interfaces;
+using manyasligida.Services;
 using manyasligida.Attributes;
 
 namespace manyasligida.Controllers;
@@ -59,8 +60,8 @@ public class AccountingController : Controller
     {
         var request = new SalesReportRequest
         {
-            StartDate = DateTime.UtcNow.AddMonths(-1).Date,
-            EndDate = DateTime.UtcNow.Date,
+            StartDate = DateTimeHelper.TodayTurkey.AddMonths(-1),
+            EndDate = DateTimeHelper.TodayTurkey,
             Period = "monthly"
         };
 
@@ -122,8 +123,8 @@ public class AccountingController : Controller
     {
         var request = new RevenueAnalysisRequest
         {
-            StartDate = DateTime.UtcNow.AddMonths(-6).Date,
-            EndDate = DateTime.UtcNow.Date,
+            StartDate = DateTimeHelper.TodayTurkey.AddMonths(-6),
+            EndDate = DateTimeHelper.TodayTurkey,
             GroupBy = "month"
         };
 

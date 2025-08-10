@@ -14,5 +14,10 @@ namespace manyasligida.Controllers
             ViewBag.Message = "Basit test sayfası çalışıyor!";
             return View();
         }
+
+        public IActionResult ImageTest()
+        {
+            return View();
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -14,6 +15,11 @@ namespace manyasligida.Models
         [StringLength(1000, ErrorMessage = "Açıklama en fazla 1000 karakter olmalıdır")]
         [Display(Name = "Açıklama")]
         public string? Description { get; set; }
+
+        // Temporarily commented out until migration is applied
+        // [StringLength(200, ErrorMessage = "Kısa açıklama en fazla 200 karakter olmalıdır")]
+        // [Display(Name = "Kısa Açıklama")]
+        // public string? ShortDescription { get; set; }
 
         [Required(ErrorMessage = "Fiyat gereklidir")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Fiyat 0'dan büyük olmalıdır")]
@@ -63,7 +69,7 @@ namespace manyasligida.Models
         public string? Slug { get; set; }
 
         // Zaman damgaları
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? PublishedAt { get; set; }
 

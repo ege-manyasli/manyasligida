@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -79,7 +80,7 @@ namespace manyasligida.Models
         public string? Notes { get; set; }
         
         [Display(Name = "Sipariş Tarihi")]
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime OrderDate { get; set; } = DateTimeHelper.NowTurkey;
         
         [Display(Name = "Gönderim Tarihi")]
         public DateTime? ShippedDate { get; set; }

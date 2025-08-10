@@ -1,0 +1,58 @@
+@{
+    ViewData["Title"] = "Image Test";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2>Image Test Page</h2>
+            <p>This page tests if images are loading correctly.</p>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Test Image 1</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="/uploads/products/03d797a9-8bd3-41a2-a94d-48633bd2be86.jpg" 
+                                 class="img-fluid" alt="Test Image 1" 
+                                 style="height: 200px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Test Image 2</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="/uploads/products/121127ce-5603-4f18-982d-49c65dae539a.jpg" 
+                                 class="img-fluid" alt="Test Image 2" 
+                                 style="height: 200px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Test Image 3</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="/uploads/products/149931be-9c48-4837-af05-a1db4b2a9607.jpg" 
+                                 class="img-fluid" alt="Test Image 3" 
+                                 style="height: 200px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Go to Products Page</a>
+                <a href="@Url.Action("Emergency", "Products")" class="btn btn-secondary">Emergency Test</a>
+            </div>
+        </div>
+    </div>
+</div>

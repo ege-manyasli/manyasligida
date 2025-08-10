@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
+using manyasligida.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -94,7 +95,7 @@ namespace manyasligida.Services
                         }
 
                         // Update last login
-                        user.LastLoginAt = DateTime.Now;
+                        user.LastLoginAt = DateTimeHelper.NowTurkey;
                         await _context.SaveChangesAsync();
 
                         // Enforce single active session per user
@@ -154,7 +155,7 @@ namespace manyasligida.Services
                     IsActive = true,
                     IsAdmin = false,
                     EmailConfirmed = false,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTimeHelper.NowTurkey
                 };
 
                 _context.Users.Add(user);
@@ -338,22 +339,37 @@ namespace manyasligida.Services
                     return false;
                 }
 
+                // Önce kullanıcının zaten doğrulanmış olup olmadığını kontrol et
+                if (user.EmailConfirmed)
+                {
+                    _logger.LogInformation("Email already verified for user: {Email}", email);
+                    return true; // Zaten doğrulanmış, başarılı döndür
+                }
+
                 var record = await _context.EmailVerifications
                     .FirstOrDefaultAsync(v => v.Email.ToLower() == email && !v.IsUsed);
                 
                 if (record == null) 
                 {
                     _logger.LogWarning("No verification record found for email: {Email}", email);
+                    
+                    // Eğer kullanılmış kayıt varsa, kullanıcıyı bilgilendir
+                    var usedRecord = await _context.EmailVerifications
+                        .FirstOrDefaultAsync(v => v.Email.ToLower() == email && v.IsUsed);
+                    if (usedRecord != null)
+                    {
+                        _logger.LogWarning("Used verification record found for email: {Email}. Code was already used.", email);
+                    }
                     return false;
                 }
                 
                 _logger.LogInformation("Verification record found - Code: {StoredCode}, Expires: {ExpiresAt}, IsUsed: {IsUsed}", 
                     record.VerificationCode, record.ExpiresAt, record.IsUsed);
                 
-                if (record.ExpiresAt <= DateTime.Now) 
+                if (record.ExpiresAt <= DateTimeHelper.NowTurkey) 
                 {
                     _logger.LogWarning("Verification code expired for email: {Email}. Expires: {ExpiresAt}, Now: {Now}", 
-                        email, record.ExpiresAt, DateTime.Now);
+                        email, record.ExpiresAt, DateTimeHelper.NowTurkey);
                     return false;
                 }
                 
@@ -365,7 +381,7 @@ namespace manyasligida.Services
                 }
 
                 user.EmailConfirmed = true;
-                user.UpdatedAt = DateTime.Now;
+                user.UpdatedAt = DateTimeHelper.NowTurkey;
                 record.IsUsed = true;
                 await _context.SaveChangesAsync();
 
@@ -414,7 +430,7 @@ namespace manyasligida.Services
                 if (!VerifyPassword(currentPassword, user.Password)) return false;
 
                 user.Password = HashPassword(newPassword);
-                user.UpdatedAt = DateTime.Now;
+                user.UpdatedAt = DateTimeHelper.NowTurkey;
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Password changed for user {UserId}", userId);
                 return true;
@@ -449,15 +465,15 @@ namespace manyasligida.Services
                     {
                         Email = email.ToLower(),
                         VerificationCode = verificationCode,
-                        CreatedAt = DateTime.Now,
-                        ExpiresAt = DateTime.Now.AddMinutes(15), // 15 dakika ve local time
+                        CreatedAt = DateTimeHelper.NowTurkey,
+                        ExpiresAt = DateTimeHelper.GetEmailVerificationExpiry(15), // 15 dakika Türkiye saati
                         IsUsed = false
                     });
                 }
                 else
                 {
                     existing.VerificationCode = verificationCode;
-                    existing.ExpiresAt = DateTime.Now.AddMinutes(15); // 15 dakika ve local time
+                    existing.ExpiresAt = DateTimeHelper.GetEmailVerificationExpiry(15); // 15 dakika Türkiye saati
                     existing.IsUsed = false;
                 }
 
