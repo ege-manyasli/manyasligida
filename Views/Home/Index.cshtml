@@ -1,35 +1,55 @@
 ﻿@{
     ViewData["Title"] = "Ana Sayfa - Manyaslı Süt Ürünleri";
+    var homeContent = ViewBag.HomeContent as manyasligida.Models.DTOs.HomeContentResponse;
 }
 
 <!-- Hero Section -->
-<section class="hero-section position-relative" style="min-height: 100vh; display: flex; align-items: center; overflow: hidden; margin-top: -80px; padding-top: 80px;">
+<section class="hero-section position-relative" style="min-height: 100vh; display: flex; align-items: center; overflow: hidden; margin-top: -80px; padding-top: 80px; background: @(homeContent?.HeroBackgroundColor ?? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)");">
     <!-- Video Background -->
-    <div class="video-background">
-        <video autoplay muted loop playsinline class="hero-video">
-            <source src="~/video/9586240-uhd_4096_2160_25fps.mp4" type="video/mp4">
-            <div style="background-image: url('~/img/carousel-1.jpg'); background-size: cover; background-position: center; width: 100%; height: 100%;"></div>
-        </video>
-        <div class="video-overlay"></div>
-    </div>
+    @if (!string.IsNullOrEmpty(homeContent?.HeroVideoUrl))
+    {
+        <div class="video-background">
+            <video autoplay muted loop playsinline class="hero-video">
+                <source src="@homeContent.HeroVideoUrl" type="video/mp4">
+                @if (!string.IsNullOrEmpty(homeContent?.HeroImageUrl))
+                {
+                    <div style="background-image: url('@homeContent.HeroImageUrl'); background-size: cover; background-position: center; width: 100%; height: 100%;"></div>
+                }
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(homeContent?.HeroImageUrl))
+    {
+        <div class="video-background">
+            <div style="background-image: url('@homeContent.HeroImageUrl'); background-size: cover; background-position: center; width: 100%; height: 100%;"></div>
+            <div class="video-overlay"></div>
+        </div>
+    }
 
     <div class="container position-relative z-index-2">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right">
                 <h1 class="display-3 fw-bold text-white mb-4">
-                    Kaliteli Lezzetin
-                    <br><span class="text-warning">Adresi</span>
+                    @(homeContent?.HeroTitle ?? "Kaliteli Lezzetin")
+                    <br><span class="text-warning">@(homeContent?.HeroSubtitle ?? "Adresi")</span>
                 </h1>
                 <p class="lead text-white mb-4">
-                    Uzman ellerden sofralarınıza uzanan kaliteli süt ürünleri. Taze ve güvenilir üretimle sağlığınız için en iyisi.
+                    @(homeContent?.HeroDescription ?? "Uzman ellerden sofralarınıza uzanan kaliteli süt ürünleri. Taze ve güvenilir üretimle sağlığınız için en iyisi.")
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
-                    <a href="@Url.Action("Index", "Products")" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
-                        <i class="fas fa-shopping-cart me-2"></i>Ürünleri Keşfet
-                    </a>
-                    <a href="@Url.Action("Index", "About")" class="btn btn-outline-light btn-lg px-4 py-3">
-                        <i class="fas fa-info-circle me-2"></i>Hakkımızda
-                    </a>
+                    @if (!string.IsNullOrEmpty(homeContent?.HeroButtonText))
+                    {
+                        <a href="@(homeContent?.HeroButtonUrl ?? Url.Action("Index", "Products"))" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
+                            <i class="fas fa-shopping-cart me-2"></i>@homeContent.HeroButtonText
+                        </a>
+                    }
+                    @if (!string.IsNullOrEmpty(homeContent?.HeroSecondButtonText))
+                    {
+                        <a href="@Url.Action("Index", "About")" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-info-circle me-2"></i>@homeContent.HeroSecondButtonText
+                        </a>
+                    }
                 </div>
             </div>
             <div class="col-lg-6" data-aos="fade-left">
@@ -42,109 +62,331 @@
 </section>
 
 <!-- Features Section -->
-<section class="section-padding bg-white">
-    <div class="container">
-        <div class="section-title" data-aos="fade-up">
-                            <h2>Neden Manyaslı Süt Ürünleri?</h2>
-            <p>Kalitemizin arkasındaki sebepler</p>
+@if (!string.IsNullOrEmpty(homeContent?.FeaturesTitle))
+{
+    <section class="section-padding bg-white">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>@homeContent.FeaturesTitle</h2>
+                <p>@(homeContent?.FeaturesSubtitle ?? "Kalitemizin arkasındaki sebepler")</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-leaf fa-3x text-success"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Kaliteli Üretim</h5>
+                            <p class="card-text text-muted">Yüksek kalite standartlarında, güvenilir yöntemlerle hazırlanır.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-truck fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Hızlı Teslimat</h5>
+                            <p class="card-text text-muted">Türkiye'nin her yerine soğuk zincirle hızlı ve güvenli teslimat.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-award fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Kalite Garantisi</h5>
+                            <p class="card-text text-muted">Koşulsuz iade ve %100 müşteri memnuniyeti garantisi.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-heart fa-3x text-danger"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Sağlıklı Beslenme</h5>
+                            <p class="card-text text-muted">Besin değeri yüksek, sağlıklı ve lezzetli ürünler.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="card text-center h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-leaf fa-3x text-success"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Kaliteli Üretim</h5>
-                        <p class="card-text text-muted">Yüksek kalite standartlarında, güvenilir yöntemlerle hazırlanır.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="card text-center h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-truck fa-3x text-primary"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Hızlı Teslimat</h5>
-                        <p class="card-text text-muted">Türkiye'nin her yerine soğuk zincirle hızlı ve güvenli teslimat.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="card text-center h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-award fa-3x text-warning"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Kalite Garantisi</h5>
-                        <p class="card-text text-muted">Koşulsuz iade ve %100 müşteri memnuniyeti garantisi.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="card text-center h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-heart fa-3x text-danger"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Sağlıklı Beslenme</h5>
-                        <p class="card-text text-muted">Besin değeri yüksek, sağlıklı ve lezzetli ürünler.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+}
 
 <!-- Popular Products Section -->
-<section class="section-padding bg-light">
-    <div class="container">
-        <div class="section-title" data-aos="fade-up">
-            <h2>Popüler Ürünlerimiz</h2>
-            <p>En çok tercih edilen lezzetlerimiz</p>
-        </div>
-        
-        <div class="row g-4">
-            @if (ViewBag.Products != null && ((IEnumerable<dynamic>)ViewBag.Products).Any())
-            {
-                foreach (var product in ViewBag.Products)
+@if (homeContent?.ShowPopularProducts == true)
+{
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>@(homeContent?.ProductsTitle ?? "Popüler Ürünlerimiz")</h2>
+                <p>@(homeContent?.ProductsSubtitle ?? "En çok tercih edilen lezzetlerimiz")</p>
+            </div>
+            
+            <div class="row g-4">
+                @if (ViewBag.Products != null && ((IEnumerable<dynamic>)ViewBag.Products).Any())
                 {
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="position-relative overflow-hidden">
-                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                                <div class="card-overlay">
-                                    <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-warning">
-                                        <i class="fas fa-eye"></i> İncele
-                                    </a>
+                    var maxProducts = homeContent?.MaxProductsToShow ?? 8;
+                    var products = ((IEnumerable<dynamic>)ViewBag.Products).Take(maxProducts);
+                    
+                    foreach (var product in products)
+                    {
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="position-relative overflow-hidden">
+                                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                                    <div class="card-overlay">
+                                        <a href="@Url.Action("Detail", "Products", new { id = product.Id })" class="btn btn-warning">
+                                            <i class="fas fa-eye"></i> İncele
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="text-primary fw-bold fs-5">@product.Price TL</p>
                                 </div>
                             </div>
-                            <div class="card-body text-center">
-                                <h5 class="card-title">@product.Name</h5>
-                                <p class="text-primary fw-bold fs-5">@product.Price TL</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz ürün eklenmemiş.
+                    </div>
+                }
+            </div>
+            
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a href="@Url.Action("Index", "Products")" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-arrow-right me-2"></i>Tüm Ürünleri Gör
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- About Section -->
+@if (!string.IsNullOrEmpty(homeContent?.AboutTitle))
+{
+    <section class="section-padding bg-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="section-title text-start">
+                        <h2>@homeContent.AboutTitle</h2>
+                        <p>@(homeContent?.AboutSubtitle ?? "Hakkımızda")</p>
+                    </div>
+                    <p class="lead mb-4">@homeContent.AboutContent</p>
+                    @if (!string.IsNullOrEmpty(homeContent?.AboutButtonText))
+                    {
+                        <a href="@Url.Action("Index", "About")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-arrow-right me-2"></i>@homeContent.AboutButtonText
+                        </a>
+                    }
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    @if (!string.IsNullOrEmpty(homeContent?.AboutImageUrl))
+                    {
+                        <img src="@homeContent.AboutImageUrl" alt="Hakkımızda" class="img-fluid rounded shadow">
+                    }
+                    else
+                    {
+                        <img src="~/img/carousel-1.jpg" alt="Hakkımızda" class="img-fluid rounded shadow">
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Services Section -->
+@if (!string.IsNullOrEmpty(homeContent?.ServicesTitle))
+{
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>@homeContent.ServicesTitle</h2>
+                <p>@(homeContent?.ServicesSubtitle ?? "Hizmetlerimiz")</p>
+            </div>
+            @if (!string.IsNullOrEmpty(homeContent?.ServicesDescription))
+            {
+                <div class="row">
+                    <div class="col-lg-8 mx-auto text-center">
+                        <p class="lead">@homeContent.ServicesDescription</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+<!-- Stats Section -->
+@if (!string.IsNullOrEmpty(homeContent?.StatsTitle))
+{
+    <section class="section-padding bg-primary text-white">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>@homeContent.StatsTitle</h2>
+                <p>@(homeContent?.StatsSubtitle ?? "Başarılarımız")</p>
+            </div>
+            <div class="row text-center">
+                <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-item">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h3 class="fw-bold">1000+</h3>
+                        <p>Mutlu Müşteri</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-item">
+                        <i class="fas fa-shipping-fast fa-3x mb-3"></i>
+                        <h3 class="fw-bold">5000+</h3>
+                        <p>Başarılı Teslimat</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-item">
+                        <i class="fas fa-award fa-3x mb-3"></i>
+                        <h3 class="fw-bold">15+</h3>
+                        <p>Yıllık Deneyim</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-item">
+                        <i class="fas fa-star fa-3x mb-3"></i>
+                        <h3 class="fw-bold">4.9</h3>
+                        <p>Müşteri Puanı</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Blog Section -->
+@if (homeContent?.ShowLatestBlogs == true && ViewBag.Blogs != null && ((IEnumerable<dynamic>)ViewBag.Blogs).Any())
+{
+    <section class="section-padding bg-white">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>@(homeContent?.BlogTitle ?? "Son Haberler & Blog")</h2>
+                <p>@(homeContent?.BlogSubtitle ?? "Sektörden son gelişmeler")</p>
+            </div>
+            
+            <div class="row g-4">
+                @{
+                    var maxBlogs = homeContent?.MaxBlogsToShow ?? 3;
+                    var blogs = ((IEnumerable<dynamic>)ViewBag.Blogs).Take(maxBlogs);
+                }
+                
+                @foreach (var blog in blogs)
+                {
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                        <div class="card h-100 border-0 shadow-sm">
+                            @if (!string.IsNullOrEmpty(blog.ImageUrl))
+                            {
+                                <img src="@blog.ImageUrl" class="card-img-top" alt="@blog.Title">
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@blog.Title</h5>
+                                <p class="card-text text-muted">@(blog.Content?.Length > 100 ? blog.Content.Substring(0, 100) + "..." : blog.Content)</p>
+                                <small class="text-muted">@blog.CreatedAt.ToString("dd.MM.yyyy")</small>
                             </div>
                         </div>
                     </div>
                 }
-            }
-            else
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Newsletter Section -->
+@if (!string.IsNullOrEmpty(homeContent?.NewsletterTitle))
+{
+    <section class="section-padding bg-warning">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="text-white mb-3">@homeContent.NewsletterTitle</h2>
+                    <p class="text-white mb-4">@(homeContent?.NewsletterDescription ?? "Kampanyalardan haberdar ol.")</p>
+                    <form class="newsletter-form">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="E-posta adresiniz">
+                            <button class="btn btn-primary" type="submit">
+                                @(homeContent?.NewsletterButtonText ?? "Abone Ol")
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Contact Section -->
+@if (!string.IsNullOrEmpty(homeContent?.ContactTitle))
+{
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>@homeContent.ContactTitle</h2>
+                <p>@(homeContent?.ContactSubtitle ?? "Bizimle İletişime Geçin")</p>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(homeContent?.ContactDescription))
             {
-                <div class="alert alert-warning" role="alert">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Henüz ürün eklenmemiş.
+                <div class="row">
+                    <div class="col-lg-8 mx-auto text-center">
+                        <p class="lead mb-5">@homeContent.ContactDescription</p>
+                    </div>
                 </div>
             }
+            
+            <div class="row text-center">
+                @if (!string.IsNullOrEmpty(homeContent?.ContactPhone))
+                {
+                    <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="contact-item">
+                            <i class="fas fa-phone fa-3x text-primary mb-3"></i>
+                            <h5>Telefon</h5>
+                            <p>@homeContent.ContactPhone</p>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(homeContent?.ContactEmail))
+                {
+                    <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                            <h5>E-posta</h5>
+                            <p>@homeContent.ContactEmail</p>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(homeContent?.ContactAddress))
+                {
+                    <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                            <h5>Adres</h5>
+                            <p>@homeContent.ContactAddress</p>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
-        
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="@Url.Action("Index", "Products")" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-arrow-right me-2"></i>Tüm Ürünleri Gör
-            </a>
-        </div>
-    </div>
-</section>
+    </section>
+}
 
 <style>
 .hero-section {
@@ -223,6 +465,21 @@
 
 .hero-logo {
     animation: float 6s ease-in-out infinite;
+}
+
+.stat-item h3 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-item h5 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.newsletter-form .input-group {
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 @@keyframes float {

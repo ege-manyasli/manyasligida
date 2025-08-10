@@ -16,45 +16,375 @@
 </section>
 
 <!-- Story Section -->
-<section class="section-padding">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6" data-aos="fade-right">
-                @{
-                    var storyImageUrl = aboutContent?.StoryImageUrl ?? "~/img/slider1-1920x750.jpeg";
-                }
-                <img src="@storyImageUrl" alt="@(aboutContent?.StoryTitle ?? "Hakkımızda")" class="img-fluid rounded-4">
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="ps-lg-4">
-                    <h2 class="fw-bold mb-4">@(aboutContent?.StoryTitle ?? "Hikayemiz")</h2>
-                    <div class="story-content">
-                        @if (!string.IsNullOrEmpty(aboutContent?.StoryContent))
+@if (!string.IsNullOrEmpty(aboutContent?.StoryTitle))
+{
+    <section class="section-padding">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    @if (!string.IsNullOrEmpty(aboutContent?.StoryImageUrl))
+                    {
+                        <img src="@aboutContent.StoryImageUrl" alt="@aboutContent.StoryTitle" class="img-fluid rounded-4">
+                    }
+                    else
+                    {
+                        <img src="~/img/slider1-1920x750.jpeg" alt="@aboutContent.StoryTitle" class="img-fluid rounded-4">
+                    }
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="ps-lg-4">
+                        <h2 class="fw-bold mb-4">@aboutContent.StoryTitle</h2>
+                        @if (!string.IsNullOrEmpty(aboutContent?.StorySubtitle))
                         {
-                            @Html.Raw(aboutContent.StoryContent.Replace("\n", "<br>"))
+                            <p class="lead text-muted mb-3">@aboutContent.StorySubtitle</p>
                         }
-                        else
-                        {
-                            <p class="lead text-muted mb-4">
-                                1985 yılında Balıkesir Bandırma'da başlayan yolculuğumuz, 
-                                bugün Türkiye'nin dört bir yanına ulaşan kaliteli lezzetlerle devam ediyor.
-                            </p>
-                            <p class="mb-4">
-                                Dedemizden öğrendiğimiz geleneksel üretim yöntemlerini modern teknoloji ile 
-                                birleştirerek, sofralarınıza en taze ve kaliteli süt ürünlerini sunuyoruz. 
-                                Her bir ürünümüz, Balıkesir'in temiz havası ve bereketli topraklarında yetişen 
-                                kaliteli otlarla beslenen ineklerin sütünden üretiliyor.
-                            </p>
-                        }
-                    </div>
-                    <div class="row g-3">
-                        @if (aboutContent?.StoryFeatures?.Any() == true)
-                        {
-                            @foreach (var feature in aboutContent.StoryFeatures)
+                        <div class="story-content">
+                            @if (!string.IsNullOrEmpty(aboutContent?.StoryContent))
+                            {
+                                @Html.Raw(aboutContent.StoryContent.Replace("\n", "<br>"))
+                            }
+                            else
+                            {
+                                <p class="lead text-muted mb-4">
+                                    1985 yılında Balıkesir Bandırma'da başlayan yolculuğumuz, 
+                                    bugün Türkiye'nin dört bir yanına ulaşan kaliteli lezzetlerle devam ediyor.
+                                </p>
+                                <p class="mb-4">
+                                    Dedemizden öğrendiğimiz geleneksel üretim yöntemlerini modern teknoloji ile 
+                                    birleştirerek, sofralarınıza en taze ve kaliteli süt ürünlerini sunuyoruz. 
+                                    Her bir ürünümüz, Balıkesir'in temiz havası ve bereketli topraklarında yetişen 
+                                    kaliteli otlarla beslenen ineklerin sütünden üretiliyor.
+                                </p>
+                            }
+                        </div>
+                        <div class="row g-3">
+                            @if (aboutContent?.StoryFeatures?.Any() == true)
+                            {
+                                @foreach (var feature in aboutContent.StoryFeatures)
+                                {
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span>@feature.Title</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
                             {
                                 <div class="col-6">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-check-circle text-success me-2"></i>
+                                        <span>38 Yıllık Deneyim</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <span>Kaliteli Üretim</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <span>Geleneksel Yöntem</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <span>Kalite Garantisi</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Mission & Vision -->
+@if (!string.IsNullOrEmpty(aboutContent?.MissionTitle) || !string.IsNullOrEmpty(aboutContent?.VisionTitle))
+{
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="row g-4">
+                @if (!string.IsNullOrEmpty(aboutContent?.MissionTitle))
+                {
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <div class="text-center mb-4">
+                                    <i class="fas fa-bullseye fa-3x text-primary"></i>
+                                </div>
+                                <h3 class="fw-bold text-center mb-3">@aboutContent.MissionTitle</h3>
+                                <p class="text-muted text-center">
+                                    @(aboutContent?.MissionContent ?? "Geleneksel lezzetleri koruyarak, modern üretim standartları ile birleştirip, müşterilerimize en kaliteli süt ürünlerini sunmak. Her bir ürünümüzde Balıkesir'in bereketli topraklarının lezzetini yaşatmak.")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(aboutContent?.VisionTitle))
+                {
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <div class="text-center mb-4">
+                                    <i class="fas fa-eye fa-3x text-primary"></i>
+                                </div>
+                                <h3 class="fw-bold text-center mb-3">@aboutContent.VisionTitle</h3>
+                                <p class="text-muted text-center">
+                                    @(aboutContent?.VisionContent ?? "Türkiye'nin en güvenilir ve tercih edilen kaliteli süt ürünleri markası olmak. Geleneksel lezzetleri koruyarak, yeni nesillere aktarmak ve uluslararası pazarlarda da tanınan bir marka haline gelmek.")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Values Section -->
+@if (!string.IsNullOrEmpty(aboutContent?.ValuesTitle))
+{
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-title text-center mb-5" data-aos="fade-up">
+                <h2>@aboutContent.ValuesTitle</h2>
+                <p>@(aboutContent?.ValuesSubtitle ?? "Bizi biz yapan temel değerler")</p>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(aboutContent?.ValuesContent))
+            {
+                <div class="row">
+                    <div class="col-lg-8 mx-auto text-center mb-5">
+                        <p class="lead">@aboutContent.ValuesContent</p>
+                    </div>
+                </div>
+            }
+            
+            <div class="row g-4">
+                @if (aboutContent?.ValueItems?.Any() == true)
+                {
+                    @foreach (var value in aboutContent.ValueItems)
+                    {
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(100 + (aboutContent.ValueItems.IndexOf(value) * 100))">
+                            <div class="text-center">
+                                <div class="value-icon mb-3">
+                                    <i class="@(value.Icon ?? "fas fa-star") fa-3x text-success"></i>
+                                </div>
+                                <h5 class="fw-bold mb-3">@value.Title</h5>
+                                <p class="text-muted">@value.Content</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="text-center">
+                            <div class="value-icon mb-3">
+                                <i class="fas fa-leaf fa-3x text-success"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Doğallık</h5>
+                            <p class="text-muted">Hiçbir katkı maddesi kullanmadan, tamamen doğal yöntemlerle üretim yapıyoruz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="text-center">
+                            <div class="value-icon mb-3">
+                                <i class="fas fa-award fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Kalite</h5>
+                            <p class="text-muted">En yüksek kalite standartlarında üretim yaparak müşteri memnuniyetini sağlıyoruz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="text-center">
+                            <div class="value-icon mb-3">
+                                <i class="fas fa-history fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Gelenek</h5>
+                            <p class="text-muted">Nesillerden gelen geleneksel üretim yöntemlerini koruyor ve yaşatıyoruz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="text-center">
+                            <div class="value-icon mb-3">
+                                <i class="fas fa-heart fa-3x text-danger"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Güven</h5>
+                            <p class="text-muted">Müşterilerimizin güvenini kazanmak ve sürdürmek en önemli önceliğimizdir.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Production Process -->
+@if (!string.IsNullOrEmpty(aboutContent?.ProductionTitle))
+{
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5" data-aos="fade-up">
+                <h2>@aboutContent.ProductionTitle</h2>
+                <p>@(aboutContent?.ProductionSubtitle ?? "Kaliteli lezzetlerin yolculuğu")</p>
+            </div>
+            
+            <div class="row g-4">
+                @if (aboutContent?.ProductionSteps?.Any() == true)
+                {
+                    @foreach (var step in aboutContent.ProductionSteps)
+                    {
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(100 + (aboutContent.ProductionSteps.IndexOf(step) * 100))">
+                            <div class="process-step text-center">
+                                <div class="step-number mb-3">@(aboutContent.ProductionSteps.IndexOf(step) + 1)</div>
+                                <h5 class="fw-bold mb-3">@step.Title</h5>
+                                <p class="text-muted">@step.Content</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="process-step text-center">
+                            <div class="step-number mb-3">1</div>
+                            <h5 class="fw-bold mb-3">Süt Toplama</h5>
+                            <p class="text-muted">Balıkesir'in temiz havasında yetişen ineklerden günlük olarak taze süt toplanır.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="process-step text-center">
+                            <div class="step-number mb-3">2</div>
+                            <h5 class="fw-bold mb-3">Kalite Kontrol</h5>
+                            <p class="text-muted">Toplanan sütler laboratuvar ortamında detaylı kalite kontrolünden geçirilir.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="process-step text-center">
+                            <div class="step-number mb-3">3</div>
+                            <h5 class="fw-bold mb-3">Üretim</h5>
+                            <p class="text-muted">Geleneksel yöntemlerle modern teknoloji birleştirilerek üretim yapılır.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="process-step text-center">
+                            <div class="step-number mb-3">4</div>
+                            <h5 class="fw-bold mb-3">Paketleme</h5>
+                            <p class="text-muted">Hijyenik koşullarda paketlenen ürünler soğuk zincirle teslim edilir.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Certificates Section -->
+@if (!string.IsNullOrEmpty(aboutContent?.CertificatesTitle))
+{
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5" data-aos="fade-up">
+                <h2>@aboutContent.CertificatesTitle</h2>
+                <p>@(aboutContent?.CertificatesSubtitle ?? "Kalitemizin kanıtı")</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                @if (aboutContent?.CertificateItems?.Any() == true)
+                {
+                    @foreach (var certificate in aboutContent.CertificateItems)
+                    {
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="@(100 + (aboutContent.CertificateItems.IndexOf(certificate) * 100))">
+                            <div class="certificate-card text-center">
+                                <div class="certificate-icon mb-3">
+                                    <i class="@(certificate.Icon ?? "fas fa-certificate") fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="fw-bold mb-2">@certificate.Title</h5>
+                                <p class="text-muted">@certificate.Description</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="certificate-card text-center">
+                            <div class="certificate-icon mb-3">
+                                <i class="fas fa-certificate fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">ISO 22000</h5>
+                            <p class="text-muted">Gıda Güvenliği Yönetim Sistemi</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="certificate-card text-center">
+                            <div class="certificate-icon mb-3">
+                                <i class="fas fa-award fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">HACCP</h5>
+                            <p class="text-muted">Tehlike Analizi ve Kritik Kontrol Noktaları</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="certificate-card text-center">
+                            <div class="certificate-icon mb-3">
+                                <i class="fas fa-shield-alt fa-3x text-success"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Helal Sertifikası</h5>
+                            <p class="text-muted">Helal Gıda Üretim Sertifikası</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Manyas Region Info -->
+@if (!string.IsNullOrEmpty(aboutContent?.RegionTitle))
+{
+    <section class="section-padding">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <h2 class="fw-bold mb-4">@aboutContent.RegionTitle</h2>
+                    @if (!string.IsNullOrEmpty(aboutContent?.RegionSubtitle))
+                    {
+                        <p class="lead text-muted mb-3">@aboutContent.RegionSubtitle</p>
+                    }
+                    <p class="lead text-muted mb-4">
+                        @(aboutContent?.RegionContent ?? "Bandırma, Balıkesir'in bereketli topraklarında yer alan, doğal güzellikleri ve temiz havası ile ünlü bir bölgedir.")
+                    </p>
+                    <p class="mb-4">
+                        Bölgenin zengin otlakları ve temiz su kaynakları, 
+                        ineklerimizin en kaliteli sütü üretmesini sağlar. 
+                        Bandırma'nın deniz etkisi ile oluşan mikro klima, 
+                        süt ürünlerimizin eşsiz lezzetini destekler.
+                    </p>
+                    <div class="row g-3">
+                        @if (aboutContent?.RegionFeatures?.Any() == true)
+                        {
+                            @foreach (var feature in aboutContent.RegionFeatures)
+                            {
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="@(feature.Icon ?? "fas fa-map-marker-alt") text-primary me-2"></i>
                                         <span>@feature.Title</span>
                                     </div>
                                 </div>
@@ -64,289 +394,76 @@
                         {
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    <span>38 Yıllık Deneyim</span>
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <span>Balıkesir, Bandırma</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    <span>Kaliteli Üretim</span>
+                                    <i class="fas fa-temperature-high text-primary me-2"></i>
+                                    <span>Mikro Klima</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    <span>Geleneksel Yöntem</span>
+                                    <i class="fas fa-leaf text-primary me-2"></i>
+                                    <span>Kaliteli Otlaklar</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    <span>Kalite Garantisi</span>
+                                    <i class="fas fa-water text-primary me-2"></i>
+                                    <span>Temiz Su Kaynakları</span>
                                 </div>
                             </div>
                         }
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Mission & Vision -->
-<section class="section-padding bg-light">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-bullseye fa-3x text-primary"></i>
-                        </div>
-                        <h3 class="fw-bold text-center mb-3">Misyonumuz</h3>
-                        <p class="text-muted text-center">
-                            Geleneksel lezzetleri koruyarak, modern üretim standartları ile 
-                            birleştirip, müşterilerimize en kaliteli süt ürünlerini 
-                            sunmak. Her bir ürünümüzde Balıkesir'in bereketli topraklarının 
-                            lezzetini yaşatmak.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-eye fa-3x text-primary"></i>
-                        </div>
-                        <h3 class="fw-bold text-center mb-3">Vizyonumuz</h3>
-                        <p class="text-muted text-center">
-                            Türkiye'nin en güvenilir ve tercih edilen kaliteli süt ürünleri 
-                            markası olmak. Geleneksel lezzetleri koruyarak, yeni nesillere 
-                            aktarmak ve uluslararası pazarlarda da tanınan bir marka haline gelmek.
-                        </p>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="text-center">
+                        @if (!string.IsNullOrEmpty(aboutContent?.RegionImageUrl))
+                        {
+                            <img src="@aboutContent.RegionImageUrl" alt="@aboutContent.RegionTitle" class="img-fluid rounded-4">
+                        }
+                        else
+                        {
+                            <img src="~/img/slider2-1920x750.jpeg" alt="@aboutContent.RegionTitle" class="img-fluid rounded-4">
+                        }
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Values Section -->
-<section class="section-padding">
-    <div class="container">
-        <div class="section-title text-center mb-5" data-aos="fade-up">
-            <h2>Değerlerimiz</h2>
-            <p>Bizi biz yapan temel değerler</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="text-center">
-                    <div class="value-icon mb-3">
-                        <i class="fas fa-leaf fa-3x text-success"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Doğallık</h5>
-                    <p class="text-muted">Hiçbir katkı maddesi kullanmadan, tamamen doğal yöntemlerle üretim yapıyoruz.</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="text-center">
-                    <div class="value-icon mb-3">
-                        <i class="fas fa-award fa-3x text-warning"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Kalite</h5>
-                    <p class="text-muted">En yüksek kalite standartlarında üretim yaparak müşteri memnuniyetini sağlıyoruz.</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="text-center">
-                    <div class="value-icon mb-3">
-                        <i class="fas fa-history fa-3x text-primary"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Gelenek</h5>
-                    <p class="text-muted">Nesillerden gelen geleneksel üretim yöntemlerini koruyor ve yaşatıyoruz.</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="text-center">
-                    <div class="value-icon mb-3">
-                        <i class="fas fa-heart fa-3x text-danger"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Güven</h5>
-                    <p class="text-muted">Müşterilerimizin güvenini kazanmak ve sürdürmek en önemli önceliğimizdir.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Production Process -->
-<section class="section-padding bg-light">
-    <div class="container">
-        <div class="section-title text-center mb-5" data-aos="fade-up">
-            <h2>Üretim Sürecimiz</h2>
-            <p>Kaliteli lezzetlerin yolculuğu</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="process-step text-center">
-                    <div class="step-number mb-3">1</div>
-                    <h5 class="fw-bold mb-3">Süt Toplama</h5>
-                    <p class="text-muted">Balıkesir'in temiz havasında yetişen ineklerden günlük olarak taze süt toplanır.</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="process-step text-center">
-                    <div class="step-number mb-3">2</div>
-                    <h5 class="fw-bold mb-3">Kalite Kontrol</h5>
-                    <p class="text-muted">Toplanan sütler laboratuvar ortamında detaylı kalite kontrolünden geçirilir.</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="process-step text-center">
-                    <div class="step-number mb-3">3</div>
-                    <h5 class="fw-bold mb-3">Üretim</h5>
-                    <p class="text-muted">Geleneksel yöntemlerle modern teknoloji birleştirilerek üretim yapılır.</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="process-step text-center">
-                    <div class="step-number mb-3">4</div>
-                    <h5 class="fw-bold mb-3">Paketleme</h5>
-                    <p class="text-muted">Hijyenik koşullarda paketlenen ürünler soğuk zincirle teslim edilir.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-
-<!-- Certificates Section -->
-<section class="section-padding bg-light">
-    <div class="container">
-        <div class="section-title text-center mb-5" data-aos="fade-up">
-            <h2>Sertifikalarımız</h2>
-            <p>Kalitemizin kanıtı</p>
-        </div>
-        
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="certificate-card text-center">
-                    <div class="certificate-icon mb-3">
-                        <i class="fas fa-certificate fa-3x text-primary"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">ISO 22000</h5>
-                    <p class="text-muted">Gıda Güvenliği Yönetim Sistemi</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="certificate-card text-center">
-                    <div class="certificate-icon mb-3">
-                        <i class="fas fa-award fa-3x text-warning"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">HACCP</h5>
-                    <p class="text-muted">Tehlike Analizi ve Kritik Kontrol Noktaları</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="certificate-card text-center">
-                    <div class="certificate-icon mb-3">
-                        <i class="fas fa-shield-alt fa-3x text-success"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">Helal Sertifikası</h5>
-                    <p class="text-muted">Helal Gıda Üretim Sertifikası</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Manyas Region Info -->
-<section class="section-padding">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6" data-aos="fade-right">
-                <h2 class="fw-bold mb-4">Balıkesir Bandırma Bölgesi</h2>
-                <p class="lead text-muted mb-4">
-                    Bandırma, Balıkesir'in bereketli topraklarında yer alan, 
-                    doğal güzellikleri ve temiz havası ile ünlü bir bölgedir.
-                </p>
-                <p class="mb-4">
-                    Bölgenin zengin otlakları ve temiz su kaynakları, 
-                    ineklerimizin en kaliteli sütü üretmesini sağlar. 
-                    Bandırma'nın deniz etkisi ile oluşan mikro klima, 
-                    süt ürünlerimizin eşsiz lezzetini destekler.
-                </p>
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                            <span>Balıkesir, Bandırma</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-temperature-high text-primary me-2"></i>
-                            <span>Mikro Klima</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-leaf text-primary me-2"></i>
-                            <span>Kaliteli Otlaklar</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-water text-primary me-2"></i>
-                            <span>Temiz Su Kaynakları</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="text-center">
-                    @{
-                        var regionImageUrl = aboutContent?.RegionImageUrl ?? "~/img/slider2-1920x750.jpeg";
-                    }
-                    <img src="@regionImageUrl" alt="@(aboutContent?.RegionTitle ?? "Manyas Bölgesi")" class="img-fluid rounded-4">
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+}
 
 <!-- CTA Section -->
-<section class="section-padding" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
-    <div class="container">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8" data-aos="fade-up">
-                <h2 class="text-white fw-bold mb-4">Kaliteli Lezzetleri Keşfedin!</h2>
-                <p class="text-white mb-4">Balıkesir Bandırma'nın bereketli topraklarından sofralarınıza uzanan eşsiz lezzetleri deneyin.</p>
-                <div class="d-flex gap-3 justify-content-center">
-                    <a href="@Url.Action("Index", "Products")" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
-                        <i class="fas fa-shopping-cart me-2"></i>Ürünlerimizi İnceleyin
-                    </a>
-                    <a href="@Url.Action("Index", "Contact")" class="btn btn-outline-light btn-lg px-4 py-3">
-                        <i class="fas fa-phone me-2"></i>Bize Ulaşın
-                    </a>
+@if (!string.IsNullOrEmpty(aboutContent?.CtaTitle))
+{
+    <section class="section-padding" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <h2 class="text-white fw-bold mb-4">@aboutContent.CtaTitle</h2>
+                    <p class="text-white mb-4">@(aboutContent?.CtaContent ?? "Balıkesir Bandırma'nın bereketli topraklarından sofralarınıza uzanan eşsiz lezzetleri deneyin.")</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        @if (!string.IsNullOrEmpty(aboutContent?.CtaButtonText))
+                        {
+                            <a href="@Url.Action("Index", "Products")" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
+                                <i class="fas fa-shopping-cart me-2"></i>@aboutContent.CtaButtonText
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(aboutContent?.CtaSecondButtonText))
+                        {
+                            <a href="@Url.Action("Index", "Contact")" class="btn btn-outline-light btn-lg px-4 py-3">
+                                <i class="fas fa-phone me-2"></i>@aboutContent.CtaSecondButtonText
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+}
 
 <style>
     .page-header {

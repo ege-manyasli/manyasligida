@@ -40,6 +40,7 @@ namespace manyasligida.Models.DTOs
         public string? AboutTitle { get; init; }
         public string? AboutSubtitle { get; init; }
         public string? AboutContent { get; init; }
+        public string? AboutDescription { get; init; }
         public string? AboutImageUrl { get; init; }
         public string? AboutButtonText { get; init; }
         public List<AboutFeatureRequest> AboutFeatures { get; init; } = new();
@@ -133,6 +134,7 @@ namespace manyasligida.Models.DTOs
         public string? AboutTitle { get; init; }
         public string? AboutSubtitle { get; init; }
         public string? AboutContent { get; init; }
+        public string? AboutDescription { get; init; }
         public string? AboutImageUrl { get; init; }
         public string? AboutButtonText { get; init; }
         public List<AboutFeatureRequest> AboutFeatures { get; init; } = new();

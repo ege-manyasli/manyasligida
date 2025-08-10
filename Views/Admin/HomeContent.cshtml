@@ -1,21 +1,21 @@
 @model manyasligida.Models.DTOs.HomeContentResponse
 @{
-    ViewData["Title"] = "Ana Sayfa İçerik Yönetimi";
+    ViewData["Title"] = "Anasayfa İçerik Yönetimi";
     Layout = "_AdminLayout";
 }
 
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="page-title">Ana Sayfa İçerik Yönetimi</h1>
-            <p class="page-subtitle">Ana sayfa içeriğini tamamen dinamik olarak düzenleyin</p>
+            <h1 class="page-title">Anasayfa İçerik Yönetimi</h1>
+            <p class="page-subtitle">Web sitesi anasayfasının tüm içeriklerini düzenleyin</p>
         </div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-home me-2"></i>Ana Sayfa İçeriği</h5>
+        <h5 class="mb-0"><i class="fas fa-home me-2"></i>Anasayfa İçeriği</h5>
     </div>
     <div class="card-body">
         <form asp-action="EditHomeContent" method="post" enctype="multipart/form-data">
@@ -25,34 +25,39 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <h4 class="border-bottom pb-2 mb-3">
-                        <i class="fas fa-star me-2 text-warning"></i>Hero Bölümü
+                        <i class="fas fa-star me-2 text-warning"></i>Hero Bölümü (Ana Banner)
                     </h4>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Hero Başlık</label>
+                        <label class="form-label fw-bold">Ana Başlık</label>
                         <input asp-for="HeroTitle" class="form-control" placeholder="Ana başlık">
                         <span asp-validation-for="HeroTitle" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Hero Alt Başlık</label>
+                        <label class="form-label fw-bold">Alt Başlık</label>
                         <input asp-for="HeroSubtitle" class="form-control" placeholder="Alt başlık">
                         <span asp-validation-for="HeroSubtitle" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Hero Açıklama</label>
+                        <label class="form-label fw-bold">Açıklama</label>
                         <textarea asp-for="HeroDescription" class="form-control" rows="3" placeholder="Açıklama"></textarea>
                         <span asp-validation-for="HeroDescription" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Buton Metni</label>
+                        <label class="form-label fw-bold">Ana Buton Metni</label>
                         <input asp-for="HeroButtonText" class="form-control" placeholder="Buton metni">
                         <span asp-validation-for="HeroButtonText" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Buton URL</label>
+                        <label class="form-label fw-bold">Ana Buton URL</label>
                         <input asp-for="HeroButtonUrl" class="form-control" placeholder="/Products">
                         <span asp-validation-for="HeroButtonUrl" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">İkinci Buton Metni</label>
+                        <input asp-for="HeroSecondButtonText" class="form-control" placeholder="İkinci buton metni">
+                        <span asp-validation-for="HeroSecondButtonText" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -79,7 +84,7 @@
                         }
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Hero Arkaplan Rengi</label>
+                        <label class="form-label fw-bold">Arkaplan Rengi</label>
                         <input asp-for="HeroBackgroundColor" class="form-control" placeholder="linear-gradient(135deg, #8b4513 0%, #d2691e 100%)">
                         <span asp-validation-for="HeroBackgroundColor" class="text-danger"></span>
                     </div>
@@ -137,77 +142,14 @@
                         <span asp-validation-for="MaxProductsToShow" class="text-danger"></span>
                     </div>
                 </div>
-            </div>
-
-            <!-- About Section -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="border-bottom pb-2 mb-3">
-                        <i class="fas fa-info-circle me-2 text-info"></i>Hakkımızda Bölümü
-                    </h4>
-                </div>
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Hakkımızda Başlık</label>
-                        <input asp-for="AboutTitle" class="form-control" placeholder="Başlık">
-                        <span asp-validation-for="AboutTitle" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hakkımızda Alt Başlık</label>
-                        <input asp-for="AboutSubtitle" class="form-control" placeholder="Alt başlık">
-                        <span asp-validation-for="AboutSubtitle" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hakkımızda Açıklama</label>
-                        <textarea asp-for="AboutContent" class="form-control" rows="4" placeholder="Açıklama"></textarea>
-                        <span asp-validation-for="AboutContent" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hakkımızda Buton Metni</label>
-                        <input asp-for="AboutButtonText" class="form-control" placeholder="Buton metni">
-                        <span asp-validation-for="AboutButtonText" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hakkımızda Resim</label>
-                        <input type="file" name="aboutImageFile" class="form-control" accept="image/*">
-                        @if (!string.IsNullOrEmpty(Model.AboutImageUrl))
-                        {
-                            <div class="mt-2">
-                                <img src="@Model.AboutImageUrl" alt="About" class="img-thumbnail" style="max-width: 200px;">
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-
-            <!-- Services Section -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="border-bottom pb-2 mb-3">
-                        <i class="fas fa-cogs me-2 text-success"></i>Hizmetler Bölümü
-                    </h4>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hizmetler Başlık</label>
-                        <input asp-for="ServicesTitle" class="form-control" placeholder="Başlık">
-                        <span asp-validation-for="ServicesTitle" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hizmetler Alt Başlık</label>
-                        <input asp-for="ServicesSubtitle" class="form-control" placeholder="Alt başlık">
-                        <span asp-validation-for="ServicesSubtitle" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hizmetler Açıklama</label>
-                        <textarea asp-for="ServicesDescription" class="form-control" rows="3" placeholder="Açıklama"></textarea>
-                        <span asp-validation-for="ServicesDescription" class="text-danger"></span>
+                        <div class="form-check">
+                            <input asp-for="ShowPopularProducts" class="form-check-input" type="checkbox">
+                            <label asp-for="ShowPopularProducts" class="form-check-label fw-bold">
+                                Popüler Ürünler Bölümünü Göster
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -261,6 +203,16 @@
                         <label class="form-label fw-bold">Maksimum Blog Sayısı</label>
                         <input asp-for="MaxBlogsToShow" class="form-control" type="number" min="1" max="10">
                         <span asp-validation-for="MaxBlogsToShow" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="ShowLatestBlogs" class="form-check-input" type="checkbox">
+                            <label asp-for="ShowLatestBlogs" class="form-check-label fw-bold">
+                                Son Blog Yazıları Bölümünü Göster
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -373,6 +325,12 @@
                 <a href="@Url.Action("Index", "Admin")" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Geri Dön
                 </a>
+                <form asp-action="ResetHomeContent" method="post" style="display: inline;" onsubmit="return confirm('Anasayfa içeriğini varsayılan değerlere sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz.');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-undo me-2"></i>Sıfırla
+                    </button>
+                </form>
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save me-2"></i>Kaydet
                 </button>

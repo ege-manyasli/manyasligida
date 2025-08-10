@@ -1,0 +1,334 @@
+? Turkey timezone detected and configured
+Application starting - database health check deferred to runtime
+info: Program[0]
+      === APPLICATION STARTUP BEGIN ===
+info: Program[0]
+      Environment: Development
+info: Program[0]
+      Content Root: C:\Users\pc\manyasligida
+info: Program[0]
+      Web Root: C:\Users\pc\manyasligida\wwwroot
+info: Program[0]
+      ASPNETCORE_ENVIRONMENT: Development
+info: Program[0]
+      Connection string configured: True
+info: Program[0]
+      Development mode configured
+info: Program[0]
+      Session configured
+info: Program[0]
+      === APPLICATION STARTUP COMPLETE ===
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://127.0.0.1:42280
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+Connection string configured: True
+Connection string configured: True
+info: manyasligida.Services.AuthService[0]
+      Login attempt for email: admin@manyasligida.com
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'Amount' on entity type 'Expense'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'DiscountAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'ShippingCost' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'SubTotal' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TaxAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'OldPrice' on entity type 'Product'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (184ms) [Parameters=[@__ToLower_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE LOWER([u].[Email]) = @__ToLower_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Services.AuthService[0]
+      User found: True, Email: admin@manyasligida.com, IsActive: True
+info: manyasligida.Services.AuthService[0]
+      VerifyPassword called - Input length: 8, Stored length: 44
+warn: manyasligida.Services.AuthService[0]
+      Password verification FAILED - Current hash: 8H2iBRAtfekKpeh, Stored: A6L6t7xFNoQc28+
+info: manyasligida.Services.AuthService[0]
+      Password validation result: False for user 1
+info: manyasligida.Services.AuthService[0]
+      Input password length: 8, Stored password length: 44
+info: manyasligida.Services.AuthService[0]
+      Stored password starts with: A6L6t7xFNoQc28+XpW8q
+info: manyasligida.Services.AuthService[0]
+      Manual hash test - Generated: 8H2iBRAtfekKpehSmfIF, Match: False
+warn: manyasligida.Services.AuthService[0]
+      Password validation failed for user 1
+Connection string configured: True
+info: manyasligida.Services.AuthService[0]
+      Login attempt for email: admin@manyasligida.com
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[@__ToLower_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE LOWER([u].[Email]) = @__ToLower_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Services.AuthService[0]
+      User found: True, Email: admin@manyasligida.com, IsActive: True
+info: manyasligida.Services.AuthService[0]
+      VerifyPassword called - Input length: 8, Stored length: 44
+warn: manyasligida.Services.AuthService[0]
+      Password verification FAILED - Current hash: 8H2iBRAtfekKpeh, Stored: A6L6t7xFNoQc28+
+info: manyasligida.Services.AuthService[0]
+      Password validation result: False for user 1
+info: manyasligida.Services.AuthService[0]
+      Input password length: 8, Stored password length: 44
+info: manyasligida.Services.AuthService[0]
+      Stored password starts with: A6L6t7xFNoQc28+XpW8q
+info: manyasligida.Services.AuthService[0]
+      Manual hash test - Generated: 8H2iBRAtfekKpehSmfIF, Match: False
+warn: manyasligida.Services.AuthService[0]
+      Password validation failed for user 1
+Connection string configured: True
+info: manyasligida.Services.AuthService[0]
+      Login attempt for email: admin@manyasligida.com
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[@__ToLower_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE LOWER([u].[Email]) = @__ToLower_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Services.AuthService[0]
+      User found: True, Email: admin@manyasligida.com, IsActive: True
+info: manyasligida.Services.AuthService[0]
+      VerifyPassword called - Input length: 8, Stored length: 44
+warn: manyasligida.Services.AuthService[0]
+      Password verification FAILED - Current hash: 8H2iBRAtfekKpeh, Stored: A6L6t7xFNoQc28+
+info: manyasligida.Services.AuthService[0]
+      Password validation result: False for user 1
+info: manyasligida.Services.AuthService[0]
+      Input password length: 8, Stored password length: 44
+info: manyasligida.Services.AuthService[0]
+      Stored password starts with: A6L6t7xFNoQc28+XpW8q
+info: manyasligida.Services.AuthService[0]
+      Manual hash test - Generated: 8H2iBRAtfekKpehSmfIF, Match: False
+warn: manyasligida.Services.AuthService[0]
+      Password validation failed for user 1
+Connection string configured: True
+info: manyasligida.Services.AuthService[0]
+      Login attempt for email: ege@manyasligida.com
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[@__ToLower_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE LOWER([u].[Email]) = @__ToLower_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Services.AuthService[0]
+      User found: True, Email: ege@manyasligida.com, IsActive: True
+info: manyasligida.Services.AuthService[0]
+      VerifyPassword called - Input length: 6, Stored length: 6
+warn: manyasligida.Services.AuthService[0]
+      Password verification FAILED - Current hash: a07uISLsrKbRV8D, Stored: ege123
+info: manyasligida.Services.AuthService[0]
+      Password validation result: False for user 3
+info: manyasligida.Services.AuthService[0]
+      Input password length: 6, Stored password length: 6
+info: manyasligida.Services.AuthService[0]
+      Stored password starts with: ege123
+info: manyasligida.Services.AuthService[0]
+      Manual hash test - Generated: a07uISLsrKbRV8DGiQPb, Match: False
+warn: manyasligida.Services.AuthService[0]
+      Password validation failed for user 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

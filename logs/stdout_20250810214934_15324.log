@@ -1,0 +1,305 @@
+? Turkey timezone detected and configured
+Application starting - database health check deferred to runtime
+info: Program[0]
+      === APPLICATION STARTUP BEGIN ===
+info: Program[0]
+      Environment: Development
+info: Program[0]
+      Content Root: C:\Users\pc\manyasligida
+info: Program[0]
+      Web Root: C:\Users\pc\manyasligida\wwwroot
+info: Program[0]
+      ASPNETCORE_ENVIRONMENT: Development
+info: Program[0]
+      Connection string configured: True
+info: Program[0]
+      Development mode configured
+info: Program[0]
+      Session configured
+info: Program[0]
+      === APPLICATION STARTUP COMPLETE ===
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://127.0.0.1:40810
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+Connection string configured: True
+info: manyasligida.Controllers.HomeController[0]
+      Home page requested
+Connection string configured: True
+info: manyasligida.Services.HomeService[0]
+      Getting home content from database
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'CartItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'Amount' on entity type 'Expense'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'DiscountAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'ShippingCost' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'SubTotal' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TaxAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalAmount' on entity type 'Order'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'TotalPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'UnitPrice' on entity type 'OrderItem'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'OldPrice' on entity type 'Product'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Query[10103]
+      The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (173ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [t].[Value]
+      FROM (
+          SELECT COUNT(*) as [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'HomeContents'
+      ) AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (167ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [h].[Id], [h].[AboutButtonText], [h].[AboutContent], [h].[AboutDescription], [h].[AboutFeatures], [h].[AboutImageUrl], [h].[AboutSubtitle], [h].[AboutTitle], [h].[BlogSubtitle], [h].[BlogTitle], [h].[ContactAddress], [h].[ContactDescription], [h].[ContactEmail], [h].[ContactPhone], [h].[ContactSubtitle], [h].[ContactTitle], [h].[CreatedAt], [h].[FeatureItems], [h].[FeaturesSubtitle], [h].[FeaturesTitle], [h].[HeroBackgroundColor], [h].[HeroButtonText], [h].[HeroButtonUrl], [h].[HeroDescription], [h].[HeroImageUrl], [h].[HeroSecondButtonText], [h].[HeroSubtitle], [h].[HeroTitle], [h].[HeroVideoUrl], [h].[IsActive], [h].[MaxBlogsToShow], [h].[MaxProductsToShow], [h].[NewsletterButtonText], [h].[NewsletterDescription], [h].[NewsletterTitle], [h].[PrimaryColor], [h].[ProductsSubtitle], [h].[ProductsTitle], [h].[SecondaryColor], [h].[ServicesDescription], [h].[ServicesSubtitle], [h].[ServicesTitle], [h].[ShowLatestBlogs], [h].[ShowPopularProducts], [h].[StatsItems], [h].[StatsSubtitle], [h].[StatsTitle], [h].[UpdatedAt]
+      FROM [HomeContents] AS [h]
+      WHERE [h].[IsActive] = CAST(1 AS bit)
+      ORDER BY [h].[UpdatedAt] DESC
+info: manyasligida.Services.HomeService[0]
+      Found home content: True
+info: manyasligida.Services.HomeService[0]
+      Successfully retrieved home content with VideoUrl: (null)
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (172ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [p].[Id], [p].[Name], [p].[ImageUrl], [p].[Price]
+      FROM [Products] AS [p]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+      ORDER BY [p].[IsPopular] DESC, [p].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Name], (
+          SELECT COUNT(*)
+          FROM [Products] AS [p]
+          WHERE [p].[CategoryId] = [c].[Id] AND [p].[IsActive] = CAST(1 AS bit)) AS [ProductCount]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[DisplayOrder]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [b].[Id], [b].[Title], [b].[Content], [b].[ImageUrl], [b].[CreatedAt]
+      FROM [Blogs] AS [b]
+      WHERE [b].[IsActive] = CAST(1 AS bit)
+      ORDER BY [b].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__userId_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[@__user_Id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[UserId] = @__user_Id_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Services.SessionManager[0]
+      Invalidated existing session ObnvnnbNpU-ppe55NivKKw for user 10
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[@p2='?' (DbType = Int32), @p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime2), @p3='?' (DbType = DateTime2), @p4='?' (Size = 100), @p5='?' (DbType = DateTime2), @p6='?' (Size = 45), @p7='?' (DbType = Boolean), @p8='?' (DbType = DateTime2), @p9='?' (Size = 50), @p10='?' (Size = 50), @p11='?' (Size = 500), @p12='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [IsActive] = @p0, [LastActivity] = @p1
+      OUTPUT 1
+      WHERE [Id] = @p2;
+      INSERT INTO [UserSessions] ([CreatedAt], [DeviceInfo], [ExpiresAt], [IpAddress], [IsActive], [LastActivity], [Location], [SessionId], [UserAgent], [UserId])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12);
+info: manyasligida.Services.SessionManager[0]
+      Session created for user 10 with session o5MyHBj5m06XHBqV9mrzVQ
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieConsentId], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieConsentId], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId]
+      ORDER BY [t].[Id], [t0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[SortOrder]
+Connection string configured: True
+info: manyasligida.Services.AuthService[0]
+      Login attempt for email: admin@manyasligida.com
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[@__ToLower_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE LOWER([u].[Email]) = @__ToLower_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Services.AuthService[0]
+      User found: True, Email: admin@manyasligida.com, IsActive: True
+info: manyasligida.Services.AuthService[0]
+      VerifyPassword called - Input length: 8, Stored length: 44
+info: manyasligida.Services.AuthService[0]
+      Current hash format match - SUCCESS
+info: manyasligida.Services.AuthService[0]
+      Password validation result: True for user 1
+info: manyasligida.Services.AuthService[0]
+      Input password length: 8, Stored password length: 44
+info: manyasligida.Services.AuthService[0]
+      Stored password starts with: A6L6t7xFNoQc28+XpW8q
+info: manyasligida.Services.AuthService[0]
+      Manual hash test - Generated: A6L6t7xFNoQc28+XpW8q, Match: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Users] SET [LastLoginAt] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[@__8__locals1_userId_0='?' (DbType = Int32), @__currentSessionId_1='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[UserId] = @__8__locals1_userId_0 AND [u].[IsActive] = CAST(1 AS bit) AND [u].[SessionId] <> @__currentSessionId_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = Boolean)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [IsActive] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[@__user_Id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId]
+      FROM [UserSessions] AS [u]
+      WHERE [u].[UserId] = @__user_Id_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 100), @p2='?' (DbType = DateTime2), @p3='?' (Size = 45), @p4='?' (DbType = Boolean), @p5='?' (DbType = DateTime2), @p6='?' (Size = 50), @p7='?' (Size = 50), @p8='?' (Size = 500), @p9='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [UserSessions] ([CreatedAt], [DeviceInfo], [ExpiresAt], [IpAddress], [IsActive], [LastActivity], [Location], [SessionId], [UserAgent], [UserId])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9);
+info: manyasligida.Services.SessionManager[0]
+      Session created for user 1 with session LH78p3MvVkyHq10QWudL7Q
+info: manyasligida.Services.AuthService[0]
+      User 1 logged in successfully
+Connection string configured: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[@__sessionId_0='?' (Size = 50), @__NowTurkey_1='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeviceInfo], [u].[ExpiresAt], [u].[IpAddress], [u].[IsActive], [u].[LastActivity], [u].[Location], [u].[SessionId], [u].[UserAgent], [u].[UserId], [u0].[Id], [u0].[Address], [u0].[City], [u0].[CreatedAt], [u0].[Email], [u0].[EmailConfirmed], [u0].[FirstName], [u0].[GoogleId], [u0].[IsActive], [u0].[IsAdmin], [u0].[LastLoginAt], [u0].[LastName], [u0].[Password], [u0].[PasswordResetCode], [u0].[PasswordResetCodeExpiry], [u0].[PasswordResetToken], [u0].[PasswordResetTokenExpiry], [u0].[Phone], [u0].[PostalCode], [u0].[UpdatedAt]
+      FROM [UserSessions] AS [u]
+      INNER JOIN [Users] AS [u0] ON [u].[UserId] = [u0].[Id]
+      WHERE [u].[SessionId] = @__sessionId_0 AND [u].[IsActive] = CAST(1 AS bit) AND [u].[ExpiresAt] > @__NowTurkey_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [UserSessions] SET [LastActivity] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Products] AS [p]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Categories] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Blogs] AS [b]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Galleries] AS [g]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (183ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Videos] AS [v]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (159ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [ContactMessages] AS [c]
+      WHERE [c].[IsRead] = CAST(0 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COALESCE(SUM([o].[TotalAmount]), 0.0)
+      FROM [Orders] AS [o]
+      WHERE [o].[OrderStatus] = N'Delivered'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (169ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [u].[FirstName], [u].[LastName], [u].[Email], [t].[TotalAmount], [t].[OrderStatus], [t].[OrderDate]
+      FROM (
+          SELECT TOP(@__p_0) [o].[Id], [o].[OrderDate], [o].[OrderStatus], [o].[TotalAmount], [o].[UserId]
+          FROM [Orders] AS [o]
+          ORDER BY [o].[OrderDate] DESC
+      ) AS [t]
+      INNER JOIN [Users] AS [u] ON [t].[UserId] = [u].[Id]
+      ORDER BY [t].[OrderDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [c].[Id], [c].[CreatedAt], [c].[Email], [c].[IsRead], [c].[IsReplied], [c].[Message], [c].[Name], [c].[Phone], [c].[RepliedAt], [c].[ReplyMessage], [c].[Subject]
+      FROM [ContactMessages] AS [c]
+      ORDER BY [c].[CreatedAt] DESC
+Connection string configured: True
+Connection string configured: True
+info: manyasligida.Services.HomeService[0]
+      Getting home content from database
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (158ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [t].[Value]
+      FROM (
+          SELECT COUNT(*) as [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'HomeContents'
+      ) AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [h].[Id], [h].[AboutButtonText], [h].[AboutContent], [h].[AboutDescription], [h].[AboutFeatures], [h].[AboutImageUrl], [h].[AboutSubtitle], [h].[AboutTitle], [h].[BlogSubtitle], [h].[BlogTitle], [h].[ContactAddress], [h].[ContactDescription], [h].[ContactEmail], [h].[ContactPhone], [h].[ContactSubtitle], [h].[ContactTitle], [h].[CreatedAt], [h].[FeatureItems], [h].[FeaturesSubtitle], [h].[FeaturesTitle], [h].[HeroBackgroundColor], [h].[HeroButtonText], [h].[HeroButtonUrl], [h].[HeroDescription], [h].[HeroImageUrl], [h].[HeroSecondButtonText], [h].[HeroSubtitle], [h].[HeroTitle], [h].[HeroVideoUrl], [h].[IsActive], [h].[MaxBlogsToShow], [h].[MaxProductsToShow], [h].[NewsletterButtonText], [h].[NewsletterDescription], [h].[NewsletterTitle], [h].[PrimaryColor], [h].[ProductsSubtitle], [h].[ProductsTitle], [h].[SecondaryColor], [h].[ServicesDescription], [h].[ServicesSubtitle], [h].[ServicesTitle], [h].[ShowLatestBlogs], [h].[ShowPopularProducts], [h].[StatsItems], [h].[StatsSubtitle], [h].[StatsTitle], [h].[UpdatedAt]
+      FROM [HomeContents] AS [h]
+      WHERE [h].[IsActive] = CAST(1 AS bit)
+      ORDER BY [h].[UpdatedAt] DESC
+info: manyasligida.Services.HomeService[0]
+      Found home content: True
+info: manyasligida.Services.HomeService[0]
+      Successfully retrieved home content with VideoUrl: (null)
+Connection string configured: True
+Connection string configured: True
+info: manyasligida.Services.HomeService[0]
+      Getting home content from database
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [t].[Value]
+      FROM (
+          SELECT COUNT(*) as [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'HomeContents'
+      ) AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [h].[Id], [h].[AboutButtonText], [h].[AboutContent], [h].[AboutDescription], [h].[AboutFeatures], [h].[AboutImageUrl], [h].[AboutSubtitle], [h].[AboutTitle], [h].[BlogSubtitle], [h].[BlogTitle], [h].[ContactAddress], [h].[ContactDescription], [h].[ContactEmail], [h].[ContactPhone], [h].[ContactSubtitle], [h].[ContactTitle], [h].[CreatedAt], [h].[FeatureItems], [h].[FeaturesSubtitle], [h].[FeaturesTitle], [h].[HeroBackgroundColor], [h].[HeroButtonText], [h].[HeroButtonUrl], [h].[HeroDescription], [h].[HeroImageUrl], [h].[HeroSecondButtonText], [h].[HeroSubtitle], [h].[HeroTitle], [h].[HeroVideoUrl], [h].[IsActive], [h].[MaxBlogsToShow], [h].[MaxProductsToShow], [h].[NewsletterButtonText], [h].[NewsletterDescription], [h].[NewsletterTitle], [h].[PrimaryColor], [h].[ProductsSubtitle], [h].[ProductsTitle], [h].[SecondaryColor], [h].[ServicesDescription], [h].[ServicesSubtitle], [h].[ServicesTitle], [h].[ShowLatestBlogs], [h].[ShowPopularProducts], [h].[StatsItems], [h].[StatsSubtitle], [h].[StatsTitle], [h].[UpdatedAt]
+      FROM [HomeContents] AS [h]
+      WHERE [h].[IsActive] = CAST(1 AS bit)
+      ORDER BY [h].[UpdatedAt] DESC
+info: manyasligida.Services.HomeService[0]
+      Found home content: True
+info: manyasligida.Services.HomeService[0]
+      Successfully retrieved home content with VideoUrl: (null)
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

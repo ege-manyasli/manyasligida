@@ -157,12 +157,6 @@ namespace manyasligida.Services
                     ShowPopularProducts = true,
                     MaxProductsToShow = 8,
                     
-                    AboutTitle = "Manyaslı Süt Ürünleri Ailesi",
-                    AboutContent = "1985'ten beri Balıkesir'in bereketli topraklarında üretim yaparak, kaliteli süt ürünlerini sofralarınıza taşıyoruz. Geleneksel lezzetleri modern teknoloji ile birleştirerek, her ürünümüzde kalite ve güven sunuyoruz.",
-                    AboutImageUrl = "~/img/carousel-1.jpg",
-                    AboutButtonText = "Hikayemizi Keşfet",
-                    AboutFeatures = JsonSerializer.Serialize(GetDefaultAboutFeatures()),
-                    
                     StatsTitle = "Güvenin Rakamları",
                     StatsSubtitle = "38 yıldır devam eden kalite yolculuğumuz",
                     StatsItems = JsonSerializer.Serialize(GetDefaultStats()),
@@ -175,6 +169,13 @@ namespace manyasligida.Services
                     NewsletterTitle = "Haberdar Ol!",
                     NewsletterDescription = "Yeni ürünler, kampanyalar ve özel fırsatlardan ilk sen haberdar ol.",
                     NewsletterButtonText = "Abone Ol",
+                    
+                    ContactTitle = "İletişim",
+                    ContactSubtitle = "Bizimle İletişime Geçin",
+                    ContactDescription = "Sorularınız için bize ulaşabilir, özel siparişlerinizi verebilirsiniz.",
+                    ContactPhone = "+90 266 123 45 67",
+                    ContactEmail = "info@manyasligida.com",
+                    ContactAddress = "Manyas, Balıkesir, Türkiye",
                     
                     HeroBackgroundColor = "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)",
                     PrimaryColor = "#8B4513",
@@ -289,6 +290,7 @@ namespace manyasligida.Services
                 HeroVideoUrl = content.HeroVideoUrl,
                 HeroImageUrl = content.HeroImageUrl,
                 HeroButtonText = content.HeroButtonText,
+                HeroButtonUrl = content.HeroButtonUrl,
                 HeroSecondButtonText = content.HeroSecondButtonText,
                 FeaturesTitle = content.FeaturesTitle,
                 FeaturesSubtitle = content.FeaturesSubtitle,
@@ -298,10 +300,21 @@ namespace manyasligida.Services
                 ShowPopularProducts = content.ShowPopularProducts,
                 MaxProductsToShow = content.MaxProductsToShow,
                 AboutTitle = content.AboutTitle,
+                AboutSubtitle = content.AboutSubtitle,
                 AboutContent = content.AboutContent,
+                AboutDescription = content.AboutDescription,
                 AboutImageUrl = content.AboutImageUrl,
                 AboutButtonText = content.AboutButtonText,
                 AboutFeatures = DeserializeAboutFeatures(content.AboutFeatures),
+                ServicesTitle = content.ServicesTitle,
+                ServicesSubtitle = content.ServicesSubtitle,
+                ServicesDescription = content.ServicesDescription,
+                ContactTitle = content.ContactTitle,
+                ContactSubtitle = content.ContactSubtitle,
+                ContactDescription = content.ContactDescription,
+                ContactPhone = content.ContactPhone,
+                ContactEmail = content.ContactEmail,
+                ContactAddress = content.ContactAddress,
                 StatsTitle = content.StatsTitle,
                 StatsSubtitle = content.StatsSubtitle,
                 StatsItems = DeserializeStats(content.StatsItems),
@@ -331,6 +344,7 @@ namespace manyasligida.Services
                 HeroVideoUrl = request.HeroVideoUrl,
                 HeroImageUrl = request.HeroImageUrl,
                 HeroButtonText = request.HeroButtonText,
+                HeroButtonUrl = request.HeroButtonUrl,
                 HeroSecondButtonText = request.HeroSecondButtonText,
                 FeaturesTitle = request.FeaturesTitle,
                 FeaturesSubtitle = request.FeaturesSubtitle,
@@ -340,10 +354,21 @@ namespace manyasligida.Services
                 ShowPopularProducts = request.ShowPopularProducts,
                 MaxProductsToShow = request.MaxProductsToShow,
                 AboutTitle = request.AboutTitle,
+                AboutSubtitle = request.AboutSubtitle,
                 AboutContent = request.AboutContent,
+                AboutDescription = request.AboutDescription,
                 AboutImageUrl = request.AboutImageUrl,
                 AboutButtonText = request.AboutButtonText,
                 AboutFeatures = JsonSerializer.Serialize(request.AboutFeatures),
+                ServicesTitle = request.ServicesTitle,
+                ServicesSubtitle = request.ServicesSubtitle,
+                ServicesDescription = request.ServicesDescription,
+                ContactTitle = request.ContactTitle,
+                ContactSubtitle = request.ContactSubtitle,
+                ContactDescription = request.ContactDescription,
+                ContactPhone = request.ContactPhone,
+                ContactEmail = request.ContactEmail,
+                ContactAddress = request.ContactAddress,
                 StatsTitle = request.StatsTitle,
                 StatsSubtitle = request.StatsSubtitle,
                 StatsItems = JsonSerializer.Serialize(request.StatsItems),
@@ -371,6 +396,7 @@ namespace manyasligida.Services
             existing.HeroVideoUrl = request.HeroVideoUrl;
             existing.HeroImageUrl = request.HeroImageUrl;
             existing.HeroButtonText = request.HeroButtonText;
+            existing.HeroButtonUrl = request.HeroButtonUrl;
             existing.HeroSecondButtonText = request.HeroSecondButtonText;
             existing.FeaturesTitle = request.FeaturesTitle;
             existing.FeaturesSubtitle = request.FeaturesSubtitle;
@@ -380,10 +406,21 @@ namespace manyasligida.Services
             existing.ShowPopularProducts = request.ShowPopularProducts;
             existing.MaxProductsToShow = request.MaxProductsToShow;
             existing.AboutTitle = request.AboutTitle;
+            existing.AboutSubtitle = request.AboutSubtitle;
             existing.AboutContent = request.AboutContent;
+            existing.AboutDescription = request.AboutDescription;
             existing.AboutImageUrl = request.AboutImageUrl;
             existing.AboutButtonText = request.AboutButtonText;
             existing.AboutFeatures = JsonSerializer.Serialize(request.AboutFeatures);
+            existing.ServicesTitle = request.ServicesTitle;
+            existing.ServicesSubtitle = request.ServicesSubtitle;
+            existing.ServicesDescription = request.ServicesDescription;
+            existing.ContactTitle = request.ContactTitle;
+            existing.ContactSubtitle = request.ContactSubtitle;
+            existing.ContactDescription = request.ContactDescription;
+            existing.ContactPhone = request.ContactPhone;
+            existing.ContactEmail = request.ContactEmail;
+            existing.ContactAddress = request.ContactAddress;
             existing.StatsTitle = request.StatsTitle;
             existing.StatsSubtitle = request.StatsSubtitle;
             existing.StatsItems = JsonSerializer.Serialize(request.StatsItems);
