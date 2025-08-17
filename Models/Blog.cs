@@ -12,10 +12,9 @@ namespace manyasligida.Models
         [Display(Name = "Başlık")]
         public string Title { get; set; } = string.Empty;
         
-        [Required(ErrorMessage = "Özet gereklidir")]
         [StringLength(500, ErrorMessage = "Özet en fazla 500 karakter olmalıdır")]
         [Display(Name = "Özet")]
-        public string Summary { get; set; } = string.Empty;
+        public string? Summary { get; set; }
         
         [Required(ErrorMessage = "İçerik gereklidir")]
         [Display(Name = "İçerik")]

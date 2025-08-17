@@ -675,7 +675,7 @@ public class AccountService : IAccountService
     private async Task SendEmailVerificationCodeAsync(string email)
     {
         var code = GenerateVerificationCode();
-        var expiry = DateTime.UtcNow.AddMinutes(15);
+        var expiry = DateTimeHelper.NowTurkey.AddMinutes(15); // Türkiye zamanı kullan
 
         // Save verification code
         var verification = new EmailVerification
@@ -684,7 +684,7 @@ public class AccountService : IAccountService
             VerificationCode = code,
             ExpiresAt = expiry,
             IsUsed = false,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeHelper.NowTurkey // Türkiye zamanı kullan
         };
 
         _context.EmailVerifications.Add(verification);

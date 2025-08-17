@@ -9,7 +9,12 @@
     <title>@ViewData["Title"] - Manyaslı Süt Ürünleri</title>
     <meta name="description" content="Balıkesir Bandırma'dan sofralarınıza uzanan kaliteli süt ürünleri. Taze ve güvenilir üretimle sağlığınız için en iyisi.">
     <meta name="keywords" content="peynir, süt ürünleri, kaliteli, taze, bandırma, gıda, balıkesir">
-    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    
+    <!-- Favicon - Logo -->
+    <link rel="icon" type="image/png" sizes="32x32" href="~/img/manyaslilogooriginal.jpg">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/img/manyaslilogooriginal.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/img/manyaslilogooriginal.jpg">
+    <link rel="shortcut icon" href="~/img/manyaslilogooriginal.jpg">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -46,7 +51,7 @@
             --warning-color: #D97706;
             --danger-color: #DC2626;
             --dark-color: #111827;
-            --light-color: #FFF8E7; /* Cream */
+            --light-color: #FFFFFF; /* White */
             --text-color: #1F2937;
             --text-muted: #6B7280;
             --text-light: #9CA3AF;
@@ -75,7 +80,7 @@
             --font-secondary: 'JetBrains Mono', 'Courier New', monospace;
             --text-main: #1F2937;
             --bg-card: #FFFFFF;
-            --bg-light: #FFF8E7;
+            --bg-light: #FFFFFF;
             --bg-dark: #111827;
         }
 
@@ -90,7 +95,7 @@
             color: var(--text-color);
             line-height: 1.6;
             overflow-x: hidden;
-            background-color: var(--bg-light);
+            background-color: white;
             font-weight: 400;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -1604,18 +1609,10 @@
 
                     <div class="nav-right">
                         @{
-                            // Check both claims-based auth AND session
+                            // Sadece claims-based authentication kullan
                             var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
-                            var currentUser = isAuthenticated ? await AuthService.GetCurrentUserAsync() : null;
-                            var isLoggedIn = isAuthenticated && currentUser != null;
-                            var displayName = isLoggedIn ? currentUser.FullName : "Kullanıcı";
-                            
-                            // If claims auth exists but no user found, force logout
-                            if (isAuthenticated && currentUser == null)
-                            {
-                                // This will be handled by middleware, but we still show login
-                                isLoggedIn = false;
-                            }
+                            var displayName = isAuthenticated ? User.FindFirst("FullName")?.Value ?? "Kullanıcı" : "Kullanıcı";
+                            var isLoggedIn = isAuthenticated;
                         }
                         
                         @if (isLoggedIn)
@@ -1967,9 +1964,22 @@
 
         // WhatsApp Integration Functions
         function openWhatsApp() {
+            // Kullanıcı giriş kontrolü
+            const userId = '@Context.Session.GetString("UserId")';
+            const userName = '@Context.Session.GetString("UserName")';
+            
+            if (!userId || !userName) {
+                // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
+                showToast('WhatsApp siparişi için önce giriş yapmalısınız.', 'warning');
+                setTimeout(() => {
+                    window.location.href = '@Url.Action("Login", "Account")';
+                }, 2000);
+                return;
+            }
+            
             const cart = getCartItems();
             const phoneNumber = determineWhatsAppNumber(cart);
-            const message = formatWhatsAppMessage(cart, phoneNumber);
+            const message = formatWhatsAppMessage(cart, phoneNumber, userName);
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
             window.open(whatsappUrl, '_blank');
@@ -2039,16 +2049,53 @@
             }
         }
 
-        function formatWhatsAppMessage(cartItems, phoneNumber) {
+        function getUserInfo() {
+            // Kullanıcı bilgilerini session'dan al
+            const userInfo = {
+                firstName: '@Context.Session.GetString("UserFirstName")',
+                lastName: '@Context.Session.GetString("UserLastName")',
+                email: '@Context.Session.GetString("UserEmail")',
+                phone: '@Context.Session.GetString("UserPhone")',
+                city: '@Context.Session.GetString("UserCity")',
+                address: '@Context.Session.GetString("UserAddress")'
+            };
+            
+            // Boş değerleri kontrol et
+            if (!userInfo.firstName) userInfo.firstName = 'Belirtilmemiş';
+            if (!userInfo.lastName) userInfo.lastName = 'Belirtilmemiş';
+            if (!userInfo.email) userInfo.email = 'Belirtilmemiş';
+            if (!userInfo.phone) userInfo.phone = 'Belirtilmemiş';
+            if (!userInfo.city) userInfo.city = 'Belirtilmemiş';
+            if (!userInfo.address) userInfo.address = 'Belirtilmemiş';
+            
+            return userInfo;
+        }
+
+        function formatWhatsAppMessage(cartItems, phoneNumber, userName) {
             const isCemal = phoneNumber === "905449202625";
             const contactName = isCemal ? "Cemal Manyaslı" : "Mustafa Manyaslı";
+            
+            // Kullanıcı bilgilerini al
+            const userInfo = getUserInfo();
             
             let message = `🛒 *Manyaslı Süt Ürünleri - Sipariş*\n`;
             message += `📞 *${contactName}*\n\n`;
             
+            // Müşteri bilgileri
+            message += `👤 *Müşteri Bilgileri:*\n`;
+            message += `• İsim: ${userInfo.firstName} ${userInfo.lastName}\n`;
+            message += `• E-posta: ${userInfo.email}\n`;
+            message += `• Telefon: ${userInfo.phone}\n`;
+            message += `• Şehir: ${userInfo.city}\n`;
+            message += `• Adres: ${userInfo.address}\n\n`;
+            
             if (cartItems.length === 0) {
                 message += "Merhaba! Manyaslı Süt Ürünleri'nden sipariş vermek istiyorum.\n\n";
                 message += "Sepetimde henüz ürün bulunmuyor. Hangi ürünleri sipariş etmek istediğinizi söyleyebilir misiniz?\n\n";
+                message += "📋 *Sipariş Detayları:*\n";
+                message += "• Teslimat: Yukarıdaki adres bilgilerime\n";
+                message += "• Ödeme: Kredi kartı veya nakit\n";
+                message += "• Teslimat süresi: 1-3 iş günü\n\n";
                 message += "💳 Ödeme bilgilerini de paylaşabilir misiniz?";
             } else {
                 message += "Merhaba! Manyaslı Süt Ürünleri'nden sipariş vermek istiyorum.\n\n";
@@ -2056,12 +2103,18 @@
                 
                 let total = 0;
                 cartItems.forEach(item => {
-                    message += `• ${item.productName}: ${item.quantity} adet - ${item.totalPrice} TL\n`;
+                    const weight = item.weight ? ` (${item.weight})` : '';
+                    message += `• ${item.productName}${weight}: ${item.quantity} adet - ${item.totalPrice} TL\n`;
                     total += item.totalPrice;
                 });
                 
                 message += `\n*Toplam: ${total} TL*\n\n`;
-                message += "Bu siparişimi tamamlamak istiyorum. Teslimat bilgilerimi verebilir miyim?\n\n";
+                message += "📋 *Sipariş Detayları:*\n";
+                message += "• Teslimat: Yukarıdaki adres bilgilerime\n";
+                message += "• Ödeme: Kredi kartı veya nakit\n";
+                message += "• Teslimat süresi: 1-3 iş günü\n";
+                message += "• Özel notlar: Taze ürünler tercih ediyorum\n\n";
+                message += "Bu siparişimi tamamlamak istiyorum. Yukarıdaki adres bilgilerime teslimat yapabilir misiniz?\n\n";
                 message += "💳 Ödeme bilgilerini de paylaşabilir misiniz?";
             }
             

@@ -1,0 +1,39 @@
+-- ========================================
+-- VERİTABANI YAPISINI KONTROL ET
+-- ========================================
+
+-- Users tablosu yapısını kontrol et
+SELECT 
+    COLUMN_NAME,
+    DATA_TYPE,
+    IS_NULLABLE,
+    COLUMN_DEFAULT
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'Users'
+ORDER BY ORDINAL_POSITION;
+
+-- Categories tablosu yapısını kontrol et
+SELECT 
+    COLUMN_NAME,
+    DATA_TYPE,
+    IS_NULLABLE,
+    COLUMN_DEFAULT
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'Categories'
+ORDER BY ORDINAL_POSITION;
+
+-- Products tablosu yapısını kontrol et
+SELECT 
+    COLUMN_NAME,
+    DATA_TYPE,
+    IS_NULLABLE,
+    COLUMN_DEFAULT
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'Products'
+ORDER BY ORDINAL_POSITION;
+
+-- Mevcut tabloları listele
+SELECT TABLE_NAME 
+FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_TYPE = 'BASE TABLE'
+ORDER BY TABLE_NAME;

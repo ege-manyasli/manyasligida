@@ -3,163 +3,127 @@
     ViewData["Title"] = "Giriş Yap - Manyaslı Süt Ürünleri";
 }
 
-<!-- Page Header -->
-<section class="page-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 120px 0 80px;">
-    <div class="container">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8" data-aos="fade-up">
-                <h1 class="text-white fw-bold mb-3" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 2.5rem;">Giriş Yap</h1>
-                <p class="text-white-50 mb-0" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.1rem;">Hesabınıza giriş yaparak alışverişe başlayın</p>
-            </div>
-        </div>
+<div class="auth-container">
+    <div class="auth-background">
+        <div class="auth-pattern"></div>
     </div>
-</section>
-
-<!-- Login Section -->
-<section class="section-padding">
+    
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
-                <div class="card shadow-lg border-0" data-aos="fade-up">
-                    <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                            <div class="login-icon mb-3">
-                                <i class="fas fa-user-circle"></i>
-                            </div>
-                            <h2 class="fw-bold text-dark mb-2" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.8rem;">Hoş Geldiniz</h2>
-                            <p class="text-muted" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;">Hesabınıza giriş yapın</p>
+            <div class="col-lg-8 col-xl-6">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div class="logo-wrapper">
+                            <img src="/img/manyaslilogooriginal.jpg" alt="Manyaslı Logo" class="auth-logo">
+                        </div>
+                        <h1 class="auth-title">Hoş Geldiniz</h1>
+                        <p class="auth-subtitle">Hesabınıza giriş yapın ve alışverişe başlayın</p>
+                    </div>
+
+                    @if (TempData["LoginSuccess"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @TempData["LoginSuccess"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["EmailVerificationSuccess"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @TempData["EmailVerificationSuccess"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post" class="auth-form">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="form-floating">
+                            <input asp-for="Email" type="email" class="form-control" id="emailInput" placeholder="ornek@email.com">
+                            <label for="emailInput">
+                                <i class="fas fa-envelope me-2"></i>E-posta Adresi
+                            </label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
-                        @if (TempData["EmailVerificationSuccess"] != null)
-                        {
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fas fa-check-circle me-2"></i>
-                                @TempData["EmailVerificationSuccess"]
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        }
+                        <div class="form-floating">
+                            <input asp-for="Password" type="password" class="form-control" id="passwordInput" placeholder="Şifrenizi girin">
+                            <label for="passwordInput">
+                                <i class="fas fa-lock me-2"></i>Şifre
+                            </label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
 
-                        <form asp-action="Login" method="post">
-                            @Html.AntiForgeryToken()
-                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        <div class="form-check remember-check">
+                            <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Beni hatırla
+                            </label>
+                        </div>
 
-                            <div class="mb-4">
-                                <label asp-for="Email" class="form-label fw-bold" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;">
-                                    <i class="fas fa-envelope me-2"></i>E-posta Adresi
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">
-                                        <i class="fas fa-envelope text-muted"></i>
-                                    </span>
-                                    <input asp-for="Email" id="emailInput" class="form-control border-start-0" placeholder="ornek@email.com" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;" />
-                                </div>
-                                <span asp-validation-for="Email" class="text-danger small"></span>
-                            </div>
+                        <button type="submit" class="btn btn-primary btn-lg auth-submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                        </button>
 
-                            <div class="mb-4">
-                                <label asp-for="Password" class="form-label fw-bold" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;">
-                                    <i class="fas fa-lock me-2"></i>Şifre
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">
-                                        <i class="fas fa-lock text-muted"></i>
-                                    </span>
-                                    <input asp-for="Password" type="password" id="passwordInput" class="form-control" placeholder="Şifrenizi girin" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;" />
-                                </div>
-                                <span asp-validation-for="Password" class="text-danger small"></span>
-                            </div>
+                        <div class="auth-divider">
+                            <span>veya</span>
+                        </div>
 
-                            <div class="mb-4">
-                                <div class="form-check">
-                                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="rememberMe">
-                                    <label class="form-check-label" for="rememberMe" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.95rem;">
-                                        Beni hatırla
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="social-buttons">
+                            <button type="button" class="btn btn-outline-secondary social-btn">
+                                <i class="fab fa-google me-2"></i>Google ile Giriş
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary social-btn">
+                                <i class="fab fa-facebook-f me-2"></i>Facebook ile Giriş
+                            </button>
+                        </div>
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-sign-in-alt me-2"></i>
-                                    Giriş Yap
-                                </button>
-                            </div>
-
-                            <div class="text-center mt-3">
-                                <a href="@Url.Action("ForgotPassword", "Account")" class="text-decoration-none">
-                                    <i class="fas fa-key me-1"></i>
-                                    Şifremi Unuttum
+                        <div class="auth-footer">
+                            <p class="mb-2">
+                                <a href="@Url.Action("ForgotPassword", "Account")" class="auth-link">
+                                    <i class="fas fa-key me-1"></i>Şifremi unuttum
                                 </a>
-                            </div>
+                            </p>
+                            <p class="mb-0">Hesabınız yok mu? <a href="@Url.Action("Register", "Account")" class="auth-link">Üye Ol</a></p>
+                        </div>
+                    </form>
 
-                            <div class="text-center">
-                                <p class="text-muted mb-3" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;">Hesabınız yok mu?</p>
-                                <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem; font-weight: 600;">
-                                    <i class="fas fa-user-plus me-2"></i>Üye Ol
-                                </a>
-                            </div>
-                        </form>
-
-                        @if (TempData["UnverifiedEmail"] != null)
-                        {
-                            <div class="text-center mt-3">
-                                <p class="text-muted">E-posta adresinizi doğrulamadınız mı?</p>
-                                <a href="@Url.Action("VerifyEmail", "Account", new { email = TempData["UnverifiedEmail"] })" class="btn btn-outline-warning">
+                    @if (TempData["UnverifiedEmail"] != null)
+                    {
+                        <div class="verification-section">
+                            <div class="verification-card">
+                                <i class="fas fa-envelope-open verification-icon"></i>
+                                <h5>E-posta Doğrulama Gerekli</h5>
+                                <p>E-posta adresinizi doğrulamadınız mı?</p>
+                                <a href="@Url.Action("VerifyEmail", "Account", new { email = TempData["UnverifiedEmail"] })" class="btn btn-outline-warning verification-btn">
                                     <i class="fas fa-envelope-check me-2"></i>E-posta Doğrula
                                 </a>
                             </div>
-                        }
-
-                        <hr class="my-4">
-
-                        <div class="text-center">
-                            <p class="text-muted mb-3" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem;">Veya şununla giriş yapın:</p>
-                            <div class="d-flex gap-2 justify-content-center">
-                                <button class="btn btn-outline-secondary flex-fill" type="button" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.95rem; font-weight: 600;">
-                                    <i class="fab fa-google me-2"></i>Google
-                                </button>
-                                <button class="btn btn-outline-secondary flex-fill" type="button" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.95rem; font-weight: 600;">
-                                    <i class="fab fa-facebook-f me-2"></i>Facebook
-                                </button>
-                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Additional Info Cards -->
-                <div class="row mt-4 g-3">
-                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
-                        <div class="card border-0 bg-light h-100">
-                            <div class="card-body text-center p-4">
-                                <i class="fas fa-shipping-fast text-primary mb-3" style="font-size: 2rem;"></i>
-                                <h5 class="fw-bold" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.1rem;">Hızlı Teslimat</h5>
-                                <p class="text-muted mb-0" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.9rem;">1-3 iş günü içinde kapınızda</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-                        <div class="card border-0 bg-light h-100">
-                            <div class="card-body text-center p-4">
-                                <i class="fas fa-shield-alt text-primary mb-3" style="font-size: 2rem;"></i>
-                                <h5 class="fw-bold" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.1rem;">Güvenli Alışveriş</h5>
-                                <p class="text-muted mb-0" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.9rem;">SSL sertifikalı güvenli ödeme</p>
-                            </div>
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 <style>
-    .page-header {
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         position: relative;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 100px 0 40px 0;
+        margin-top: 0;
     }
 
-    .page-header::before {
-        content: '';
+    .auth-background {
         position: absolute;
         top: 0;
         left: 0;
@@ -167,145 +131,347 @@
         bottom: 0;
         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
         opacity: 0.3;
+        animation: backgroundShift 20s ease-in-out infinite;
     }
 
-    .login-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
+    @@keyframes backgroundShift {
+        0%, 100% {
+            transform: translateX(0) translateY(0);
+        }
+        25% {
+            transform: translateX(-10px) translateY(-5px);
+        }
+        50% {
+            transform: translateX(5px) translateY(-10px);
+        }
+        75% {
+            transform: translateX(-5px) translateY(5px);
+        }
     }
 
-    .login-icon i {
-        font-size: 2.5rem;
-        color: white;
+    .auth-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 3rem;
+        position: relative;
+        z-index: 1;
+        margin: 20px 0;
+        animation: slideInUp 0.8s ease-out;
     }
 
-    .card {
-        border-radius: var(--border-radius-lg);
-        overflow: hidden;
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    .input-group-text {
-        border: 1px solid #dee2e6;
-        border-right: none;
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
     }
 
-    .form-control {
-        border: 1px solid #dee2e6;
-        padding: 12px 16px;
-        border-radius: 0;
+    .logo-wrapper {
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-logo {
+        max-height: 70px;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        transition: transform 0.3s ease;
+    }
+
+    .auth-logo:hover {
+        transform: scale(1.05);
+    }
+
+    .auth-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .auth-subtitle {
+        color: #718096;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .auth-form {
+        margin-top: 2rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .form-floating > .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 0.75rem;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.8);
         transition: all 0.3s ease;
     }
 
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    .form-floating > .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+        transform: translateY(-2px);
     }
 
-    .input-group .form-control:focus {
-        border-left-color: #dee2e6;
+    .form-floating > label {
+        color: #718096;
+        font-weight: 500;
     }
 
-    .btn {
-        border-radius: var(--border-radius);
+    .form-floating > .form-control:focus + label,
+    .form-floating > .form-control:not(:placeholder-shown) + label {
+        color: #667eea;
         font-weight: 600;
-        padding: 12px 24px;
-        transition: all 0.3s ease;
     }
 
-    .btn-primary {
-        background: linear-gradient(135deg, var(--primary-color) 0%, #c0392b 100%);
-        border: none;
-        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #c0392b 0%, var(--primary-color) 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
-    }
-
-    .btn-outline-primary {
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
-        background: transparent;
-    }
-
-    .btn-outline-primary:hover {
-        background: var(--primary-color);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+    .remember-check {
+        margin: 1.5rem 0;
+        padding: 0.75rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(102, 126, 234, 0.1);
     }
 
     .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
+        background-color: #667eea;
+        border-color: #667eea;
     }
 
     .form-check-input:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
     }
 
-    .alert {
-        border-radius: var(--border-radius);
+    .auth-submit {
+        width: 100%;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
     }
 
-    .text-danger {
-        color: var(--danger-color) !important;
+    .auth-submit:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
     }
 
-    /* Google OAuth Button Styles */
-    .btn-google {
-        background: #fff;
-        border: 1px solid #dadce0;
-        color: #3c4043;
+    .auth-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .auth-divider {
+        text-align: center;
+        margin: 2rem 0;
+        position: relative;
+    }
+
+    .auth-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e2e8f0;
+    }
+
+    .auth-divider span {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0 1rem;
+        color: #718096;
+        font-weight: 500;
+    }
+
+    .social-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .social-btn {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
         font-weight: 500;
         transition: all 0.3s ease;
     }
 
-    .btn-google:hover {
-        background: #f8f9fa;
-        border-color: #dadce0;
-        color: #3c4043;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    .social-btn:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+        transform: translateY(-2px);
     }
 
-    .btn-google i {
-        color: #4285f4;
+    .auth-footer {
+        text-align: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
     }
 
-    /* Responsive */
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .auth-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .verification-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .verification-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255, 193, 7, 0.1);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+
+    .verification-icon {
+        font-size: 3rem;
+        color: #ffc107;
+        margin-bottom: 1rem;
+    }
+
+    .verification-card h5 {
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .verification-card p {
+        color: #718096;
+        margin-bottom: 1rem;
+    }
+
+    .verification-btn {
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .verification-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+    }
+
+    .alert {
+        border-radius: 12px;
+        border: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
     @@media (max-width: 768px) {
-        .card-body {
-            padding: 2rem !important;
+        .auth-card {
+            padding: 2rem;
+            margin: 1rem;
+            border-radius: 20px;
         }
-        
-        .login-icon {
-            width: 60px;
-            height: 60px;
+
+        .auth-title {
+            font-size: 1.8rem;
         }
-        
-        .login-icon i {
-            font-size: 2rem;
+
+        .social-buttons {
+            flex-direction: column;
+        }
+
+        .auth-container {
+            padding: 80px 0 20px 0;
+            margin-top: 0;
+        }
+
+        .auth-header {
+            margin-bottom: 2rem;
+        }
+
+        .logo-wrapper {
+            margin-bottom: 1rem;
+        }
+
+        .auth-logo {
+            max-height: 60px;
         }
     }
 
     @@media (max-width: 576px) {
-        .card-body {
-            padding: 1.5rem !important;
+        .auth-card {
+            padding: 1.5rem;
         }
-        
-        .btn {
-            padding: 10px 20px;
+
+        .auth-title {
+            font-size: 1.5rem;
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add floating label animation
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            control.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+
+        // Add smooth animations
+        const authCard = document.querySelector('.auth-card');
+        authCard.style.opacity = '0';
+        authCard.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            authCard.style.transition = 'all 0.6s ease';
+            authCard.style.opacity = '1';
+            authCard.style.transform = 'translateY(0)';
+        }, 100);
+    });
+</script>
 

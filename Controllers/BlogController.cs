@@ -36,6 +36,19 @@ namespace manyasligida.Controllers
                     .OrderByDescending(b => b.PublishedAt ?? b.CreatedAt)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
+                    .Select(b => new Blog
+                    {
+                        Id = b.Id,
+                        Title = b.Title ?? "",
+                        Content = b.Content ?? "",
+                        ImageUrl = b.ImageUrl ?? "",
+                        IsActive = b.IsActive,
+                        CreatedAt = b.CreatedAt,
+                        UpdatedAt = b.UpdatedAt,
+                        PublishedAt = b.PublishedAt,
+                        Summary = b.Summary ?? "",
+                        Author = b.Author ?? ""
+                    })
                     .ToListAsync();
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
@@ -88,7 +101,21 @@ namespace manyasligida.Controllers
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 var blog = await context.Blogs
-                    .FirstOrDefaultAsync(b => b.Id == id && b.IsActive);
+                    .Where(b => b.Id == id && b.IsActive)
+                    .Select(b => new Blog
+                    {
+                        Id = b.Id,
+                        Title = b.Title ?? "",
+                        Content = b.Content ?? "",
+                        ImageUrl = b.ImageUrl ?? "",
+                        IsActive = b.IsActive,
+                        CreatedAt = b.CreatedAt,
+                        UpdatedAt = b.UpdatedAt,
+                        PublishedAt = b.PublishedAt,
+                        Summary = b.Summary ?? "",
+                        Author = b.Author ?? ""
+                    })
+                    .FirstOrDefaultAsync();
 
                 if (blog == null)
                 {
@@ -100,6 +127,19 @@ namespace manyasligida.Controllers
                     .Where(b => b.IsActive && b.Id != id)
                     .OrderByDescending(b => b.PublishedAt ?? b.CreatedAt)
                     .Take(3)
+                    .Select(b => new Blog
+                    {
+                        Id = b.Id,
+                        Title = b.Title ?? "",
+                        Content = b.Content ?? "",
+                        ImageUrl = b.ImageUrl ?? "",
+                        IsActive = b.IsActive,
+                        CreatedAt = b.CreatedAt,
+                        UpdatedAt = b.UpdatedAt,
+                        PublishedAt = b.PublishedAt,
+                        Summary = b.Summary ?? "",
+                        Author = b.Author ?? ""
+                    })
                     .ToListAsync();
 
                 var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();

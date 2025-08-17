@@ -6,7 +6,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Admin Panel</title>
-    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    
+    <!-- Favicon - Logo -->
+    <link rel="icon" type="image/png" sizes="32x32" href="~/img/manyaslilogooriginal.jpg">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/img/manyaslilogooriginal.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/img/manyaslilogooriginal.jpg">
+    <link rel="shortcut icon" href="~/img/manyaslilogooriginal.jpg">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -862,10 +867,10 @@
                     </div>
                     <div>
                         @{
-                            var adminUserName = Context.Session.GetString("UserName");
+                            var adminUserName = Context.Session.GetString("UserName") ?? "Admin";
                             var adminUserId = Context.Session.GetString("UserId");
                         }
-                        <div class="fw-bold">@Html.Raw(adminUserName ?? "Admin")</div>
+                        <div class="fw-bold">@Html.Raw(adminUserName)</div>
                         <small class="text-muted">Admin</small>
                     </div>
                 </div>
@@ -942,8 +947,8 @@
 
         // Session check on page load
         $(document).ready(function() {
-            const adminUserName = '@Context.Session.GetString("UserName")';
-            const adminUserId = '@Context.Session.GetString("UserId")';
+            const adminUserName = '@Html.Raw(Context.Session.GetString("UserName") ?? "")';
+            const adminUserId = '@Html.Raw(Context.Session.GetString("UserId") ?? "")';
             
             if (adminUserId && adminUserName) {
                 console.log('Admin logged in:', adminUserName);

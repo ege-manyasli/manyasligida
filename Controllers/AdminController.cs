@@ -39,32 +39,48 @@ namespace manyasligida.Controllers
         // Admin kontrolü
         private async Task<bool> IsAdminAsync()
         {
-            // Önce session'dan kontrol et
-            var session = HttpContext.Session;
-            var isAdmin = session.GetString("IsAdmin");
-            var userId = session.GetString("UserId");
-
-            if (!string.IsNullOrEmpty(userId) && isAdmin == "True")
+            try
             {
-                return true;
-            }
+                // Önce session'dan kontrol et
+                var session = HttpContext.Session;
+                var isAdmin = session.GetString(ApplicationConstants.SessionKeys.IsAdmin);
+                var userId = session.GetString(ApplicationConstants.SessionKeys.UserId);
 
-            // Session'da yoksa AuthService'den kontrol et
-            return await _authService.IsCurrentUserAdminAsync();
+                if (!string.IsNullOrEmpty(userId) && isAdmin == "True")
+                {
+                    return true;
+                }
+
+                // Session'da yoksa AuthService'den kontrol et
+                return await _authService.IsCurrentUserAdminAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking admin status");
+                return false;
+            }
         }
 
         // Sync admin check for backward compatibility
         private bool IsAdmin()
         {
-            var session = HttpContext.Session;
-            var isAdmin = session.GetString("IsAdmin");
-            var userId = session.GetString("UserId");
+            try
+            {
+                var session = HttpContext.Session;
+                var isAdmin = session.GetString(ApplicationConstants.SessionKeys.IsAdmin);
+                var userId = session.GetString(ApplicationConstants.SessionKeys.UserId);
 
-            // User ID kontrolü ekle
-            if (string.IsNullOrEmpty(userId))
+                // User ID kontrolü ekle
+                if (string.IsNullOrEmpty(userId))
+                    return false;
+
+                return isAdmin == "True";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking admin status");
                 return false;
-
-            return isAdmin == "True";
+            }
         }
 
         // GET: Admin/Login
@@ -90,15 +106,39 @@ namespace manyasligida.Controllers
 
             try
             {
-                var user = await _authService.LoginAsync(model.Email, model.Password);
-                if (user != null && user.IsAdmin)
+                _logger.LogInformation("Admin login attempt for email: {Email}", model.Email);
+                
+                // Doğrudan veritabanından kullanıcıyı al (null kontrolü ile)
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email != null && 
+                                             u.Email.ToLower() == model.Email.ToLower() && 
+                                             u.IsActive);
+                
+                if (user == null)
                 {
-                    // Session'a admin bilgilerini set et
-                    var session = HttpContext.Session;
-                    session.SetString("IsAdmin", "True");
-                    session.SetString("UserId", user.Id.ToString());
-                    session.SetString("UserName", user.FullName);
-                    session.SetString("UserEmail", user.Email);
+                    _logger.LogWarning("User not found for email: {Email}", model.Email);
+                    ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+                    return View(model);
+                }
+                
+                // Basit şifre kontrolü
+                if (user.Password != model.Password)
+                {
+                    _logger.LogWarning("Password mismatch for user: {UserId}", user.Id);
+                    ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+                    return View(model);
+                }
+                
+                _logger.LogInformation("Login successful for user: {UserId}, IsAdmin: {IsAdmin}", user.Id, user.IsAdmin);
+                
+                if (user.IsAdmin)
+                {
+                                    // Session'a admin bilgilerini set et
+                var session = HttpContext.Session;
+                session.SetString(ApplicationConstants.SessionKeys.IsAdmin, "True");
+                session.SetString(ApplicationConstants.SessionKeys.UserId, user.Id.ToString());
+                session.SetString(ApplicationConstants.SessionKeys.UserName, user.FullName ?? $"{user.FirstName ?? ""} {user.LastName ?? ""}".Trim());
+                session.SetString(ApplicationConstants.SessionKeys.UserEmail, user.Email ?? "");
 
                     TempData["LoginSuccess"] = "Admin paneline başarıyla giriş yaptınız!";
                     return RedirectToAction("Index");
@@ -108,8 +148,9 @@ namespace manyasligida.Controllers
                     ModelState.AddModelError("", "Admin yetkisi bulunmayan kullanıcı.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error during admin login");
                 ModelState.AddModelError("", "Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
             }
 
@@ -119,22 +160,26 @@ namespace manyasligida.Controllers
         // GET: Admin/Index (Ana admin sayfası)
         public async Task<IActionResult> Index()
         {
-            // Geçici olarak admin kontrolünü kaldır
-            // if (!await IsAdminAsync())
-            // {
-            //     return RedirectToAction("Login", "Account");
-            // }
+            try
+            {
+                // Geçici olarak admin kontrolünü kaldır
+                // if (!await IsAdminAsync())
+                // {
+                //     return RedirectToAction("Login", "Account");
+                // }
 
-            // Dashboard istatistikleri
-            var totalProducts = await _context.Products.CountAsync();
-            var totalCategories = await _context.Categories.CountAsync();
-            var totalUsers = await _context.Users.CountAsync();
-            var totalOrders = await _context.Orders.CountAsync();
-            var totalBlogs = await _context.Blogs.CountAsync();
-            var totalGalleries = await _context.Galleries.CountAsync();
-            var totalVideos = await _context.Videos.CountAsync();
-            var unreadMessages = await _context.ContactMessages.Where(m => !m.IsRead).CountAsync();
-            var totalRevenue = await _context.Orders.Where(o => o.OrderStatus == ApplicationConstants.OrderStatus.Delivered).SumAsync(o => o.TotalAmount);
+                // Dashboard istatistikleri
+                var totalProducts = await _context.Products.CountAsync();
+                var totalCategories = await _context.Categories.CountAsync();
+                var totalUsers = await _context.Users.CountAsync();
+                var totalOrders = await _context.Orders.CountAsync();
+                var totalBlogs = await _context.Blogs.CountAsync();
+                var totalGalleries = await _context.Galleries.CountAsync();
+                var totalVideos = await _context.Videos.CountAsync();
+                var unreadMessages = await _context.ContactMessages.Where(m => !m.IsRead).CountAsync();
+                var totalRevenue = await _context.Orders
+                    .Where(o => o.OrderStatus == ApplicationConstants.OrderStatus.Delivered)
+                    .SumAsync(o => o.TotalAmount);
 
             ViewBag.TotalProducts = totalProducts;
             ViewBag.TotalCategories = totalCategories;
@@ -147,21 +192,21 @@ namespace manyasligida.Controllers
             ViewBag.TotalRevenue = totalRevenue;
 
             // Son siparişler
-            var recentOrders = await _context.Orders
-                .Include(o => o.User)
-                .OrderByDescending(o => o.OrderDate)
-                .Take(5)
-                .Select(o => new
-                {
-                    o.Id,
-                    OrderNumber = o.Id,
-                    CustomerName = $"{o.User.FirstName} {o.User.LastName}",
-                    CustomerEmail = o.User.Email,
-                    o.TotalAmount,
-                    o.OrderStatus,
-                    o.OrderDate
-                })
-                .ToListAsync();
+                            var recentOrders = await _context.Orders
+                    .Include(o => o.User)
+                    .OrderByDescending(o => o.OrderDate)
+                    .Take(5)
+                    .Select(o => new
+                    {
+                        o.Id,
+                        OrderNumber = o.Id,
+                        CustomerName = $"{o.User.FirstName ?? ""} {o.User.LastName ?? ""}".Trim(),
+                        CustomerEmail = o.User.Email ?? "",
+                        TotalAmount = o.TotalAmount,
+                        o.OrderStatus,
+                        o.OrderDate
+                    })
+                    .ToListAsync();
 
             // Son mesajlar
             var recentMessages = await _context.ContactMessages
@@ -169,10 +214,31 @@ namespace manyasligida.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            ViewBag.RecentOrders = recentOrders;
-            ViewBag.RecentMessages = recentMessages;
+            // Son blog yazıları (sadece mevcut kolonları seç)
+            var recentBlogs = await _context.Blogs
+                .Where(b => b.IsActive)
+                .OrderByDescending(b => b.CreatedAt)
+                .Take(3)
+                .Select(b => new
+                {
+                    b.Id,
+                    Title = b.Title ?? "",
+                    CreatedAt = b.CreatedAt
+                })
+                .ToListAsync();
 
-            return View();
+                ViewBag.RecentOrders = recentOrders;
+                ViewBag.RecentMessages = recentMessages;
+                ViewBag.RecentBlogs = recentBlogs;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading admin dashboard");
+                TempData["Error"] = "Dashboard yüklenirken bir hata oluştu: " + ex.Message;
+                return View();
+            }
         }
 
 
@@ -192,10 +258,21 @@ namespace manyasligida.Controllers
                     .OrderByDescending(p => p.CreatedAt)
                     .ToListAsync();
 
+                // Null değerleri güvenli hale getir
+                foreach (var product in products)
+                {
+                    if (product.Category != null)
+                    {
+                        product.Category.Name = product.Category.Name ?? "";
+                        product.Category.Description = product.Category.Description ?? "";
+                    }
+                }
+
                 return View(products);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error loading products");
                 TempData["Error"] = "Ürünler yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Product>());
             }
@@ -467,17 +544,32 @@ namespace manyasligida.Controllers
                 var product = await _context.Products.FindAsync(id);
                 if (product != null)
                 {
+                    // Ürünün siparişlerde kullanılıp kullanılmadığını kontrol et
+                    var hasOrders = await _context.OrderItems.AnyAsync(oi => oi.ProductId == id);
+                    if (hasOrders)
+                    {
+                        TempData["Error"] = "Bu ürün siparişlerde kullanıldığı için silinemez. Bunun yerine pasif yapabilirsiniz.";
+                        return RedirectToAction(nameof(Products));
+                    }
+
                     // Ürün resmini sil
                     if (!string.IsNullOrEmpty(product.ImageUrl))
                     {
-                        await _fileUploadService.DeleteImageAsync(product.ImageUrl);
+                        try
+                        {
+                            await _fileUploadService.DeleteImageAsync(product.ImageUrl);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Product image could not be deleted: {ImageUrl}", product.ImageUrl);
+                        }
                     }
 
                     // Ürünü tamamen sil
                     _context.Products.Remove(product);
                     await _context.SaveChangesAsync();
 
-                    TempData["Success"] = "Ürün başarıyla silindi.";
+                    TempData["Success"] = $"'{product.Name}' ürünü başarıyla silindi.";
                 }
                 else
                 {
@@ -486,7 +578,43 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error deleting product with ID: {ProductId}", id);
                 TempData["Error"] = "Ürün silinirken bir hata oluştu: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Products));
+        }
+
+        // POST: Admin/ToggleProductStatus
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleProductStatus(int productId, bool isActive)
+        {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            try
+            {
+                var product = await _context.Products.FindAsync(productId);
+                if (product != null)
+                {
+                    product.IsActive = isActive;
+                    product.UpdatedAt = DateTimeHelper.NowTurkey;
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = $"'{product.Name}' ürünü başarıyla {(isActive ? "aktif" : "pasif")} yapıldı.";
+                }
+                else
+                {
+                    TempData["Error"] = "Ürün bulunamadı.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error toggling product status for ID: {ProductId}", productId);
+                TempData["Error"] = "Ürün durumu güncellenirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Products));
@@ -502,14 +630,42 @@ namespace manyasligida.Controllers
 
             try
             {
+                // Sadece mevcut kolonları seç
                 var blogs = await _context.Blogs
                     .OrderByDescending(b => b.CreatedAt)
+                    .Select(b => new
+                    {
+                        b.Id,
+                        Title = b.Title ?? "",
+                        Content = b.Content ?? "",
+                        ImageUrl = b.ImageUrl ?? "",
+                        b.IsActive,
+                        b.CreatedAt,
+                        b.UpdatedAt,
+                        b.PublishedAt
+                    })
                     .ToListAsync();
 
-                return View(blogs);
+                // Anonim tipi Blog nesnesine dönüştür
+                var blogList = blogs.Select(b => new Blog
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Content = b.Content,
+                    ImageUrl = b.ImageUrl,
+                    IsActive = b.IsActive,
+                    CreatedAt = b.CreatedAt,
+                    UpdatedAt = b.UpdatedAt,
+                    PublishedAt = b.PublishedAt,
+                    Summary = "", // Varsayılan değer
+                    Author = "" // Varsayılan değer
+                }).ToList();
+
+                return View(blogList);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error loading blogs");
                 TempData["Error"] = "Blog yazıları yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Blog>());
             }
@@ -553,6 +709,13 @@ namespace manyasligida.Controllers
                         blog.ImageUrl = imageUrl;
                     }
 
+                    // Null değerleri güvenli hale getir
+                    blog.Title = blog.Title ?? "";
+                    blog.Content = blog.Content ?? "";
+                    blog.Summary = blog.Summary ?? "";
+                    blog.Author = blog.Author ?? "";
+                    blog.ImageUrl = blog.ImageUrl ?? "";
+                    
                     blog.CreatedAt = DateTimeHelper.NowTurkey;
                     blog.IsActive = true;
 
@@ -564,6 +727,7 @@ namespace manyasligida.Controllers
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Error adding blog");
                     ModelState.AddModelError("", "Blog yazısı eklenirken bir hata oluştu: " + ex.Message);
                 }
             }
@@ -625,6 +789,12 @@ namespace manyasligida.Controllers
                         return RedirectToAction(nameof(Blog));
                     }
 
+                    // Null değerleri güvenli hale getir
+                    blog.Title = blog.Title ?? "";
+                    blog.Content = blog.Content ?? "";
+                    blog.Summary = blog.Summary ?? "";
+                    blog.Author = blog.Author ?? "";
+
                     // Yeni resim yüklendiyse
                     if (imageFile != null && imageFile.Length > 0)
                     {
@@ -647,7 +817,7 @@ namespace manyasligida.Controllers
                     else
                     {
                         // Resim değişmediyse mevcut resmi koru
-                        blog.ImageUrl = existingBlog.ImageUrl;
+                        blog.ImageUrl = existingBlog.ImageUrl ?? "";
                     }
 
                     // Blog özelliklerini güncelle
@@ -668,6 +838,7 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating blog with ID: {BlogId}", id);
                 ModelState.AddModelError("", "Blog yazısı güncellenirken bir hata oluştu: " + ex.Message);
                 return View(blog);
             }
@@ -717,11 +888,28 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var galleries = await _context.Galleries
-                .OrderByDescending(g => g.CreatedAt)
-                .ToListAsync();
+            try
+            {
+                var galleries = await _context.Galleries
+                    .OrderByDescending(g => g.CreatedAt)
+                    .ToListAsync();
 
-            return View(galleries);
+                // Null değerleri güvenli hale getir
+                foreach (var gallery in galleries)
+                {
+                    gallery.Title = gallery.Title ?? "";
+                    gallery.Description = gallery.Description ?? "";
+                    gallery.ImageUrl = gallery.ImageUrl ?? "";
+                }
+
+                return View(galleries);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading galleries");
+                TempData["Error"] = "Galeri öğeleri yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<Gallery>());
+            }
         }
 
         // GET: Admin/AddGallery
@@ -926,11 +1114,27 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var faqs = await _context.FAQs
-                .OrderBy(f => f.DisplayOrder)
-                .ToListAsync();
+            try
+            {
+                var faqs = await _context.FAQs
+                    .OrderBy(f => f.DisplayOrder)
+                    .ToListAsync();
 
-            return View(faqs);
+                // Null değerleri güvenli hale getir
+                foreach (var faq in faqs)
+                {
+                    faq.Question = faq.Question ?? "";
+                    faq.Answer = faq.Answer ?? "";
+                }
+
+                return View(faqs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading FAQs");
+                TempData["Error"] = "SSS öğeleri yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<FAQ>());
+            }
         }
 
         // GET: Admin/AddFAQ
@@ -1093,10 +1297,20 @@ namespace manyasligida.Controllers
                     .ThenByDescending(v => v.CreatedAt)
                     .ToListAsync();
 
+                // Null değerleri güvenli hale getir
+                foreach (var video in videos)
+                {
+                    video.Title = video.Title ?? "";
+                    video.Description = video.Description ?? "";
+                    video.VideoUrl = video.VideoUrl ?? "";
+                    video.ThumbnailUrl = video.ThumbnailUrl ?? "";
+                }
+
                 return View(videos);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error loading videos");
                 TempData["Error"] = "Videolar yüklenirken bir hata oluştu: " + ex.Message;
                 return View(new List<Video>());
             }
@@ -1264,20 +1478,36 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var categories = await _context.Categories
-                .OrderBy(c => c.DisplayOrder)
-                .ToListAsync();
+            try
+            {
+                var categories = await _context.Categories
+                    .OrderBy(c => c.DisplayOrder)
+                    .ToListAsync();
 
-            // Ürün sayılarını hesapla
-            var productCounts = await _context.Products
-                .Where(p => p.CategoryId.HasValue)
-                .GroupBy(p => p.CategoryId!.Value)
-                .Select(g => new { CategoryId = g.Key, Count = g.Count() })
-                .ToDictionaryAsync(x => x.CategoryId, x => x.Count);
+                // Null değerleri güvenli hale getir
+                foreach (var category in categories)
+                {
+                    category.Name = category.Name ?? "";
+                    category.Description = category.Description ?? "";
+                }
 
-            ViewBag.ProductCounts = productCounts;
+                // Ürün sayılarını hesapla
+                var productCounts = await _context.Products
+                    .Where(p => p.CategoryId.HasValue)
+                    .GroupBy(p => p.CategoryId!.Value)
+                    .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+                    .ToDictionaryAsync(x => x.CategoryId, x => x.Count);
 
-            return View(categories);
+                ViewBag.ProductCounts = productCounts;
+
+                return View(categories);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading categories");
+                TempData["Error"] = "Kategoriler yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<Category>());
+            }
         }
 
         // POST: Admin/AddCategory
@@ -1399,12 +1629,33 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var orders = await _context.Orders
-                .Include(o => o.User)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
+            try
+            {
+                var orders = await _context.Orders
+                    .Include(o => o.User)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
 
-            return View(orders);
+                // Null değerleri güvenli hale getir
+                foreach (var order in orders)
+                {
+                    if (order.User != null)
+                    {
+                        order.User.FirstName = order.User.FirstName ?? "";
+                        order.User.LastName = order.User.LastName ?? "";
+                        order.User.Email = order.User.Email ?? "";
+                        order.User.Phone = order.User.Phone ?? "";
+                    }
+                }
+
+                return View(orders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading orders");
+                TempData["Error"] = "Siparişler yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<Order>());
+            }
         }
 
         // GET: Admin/OrderDetail/5
@@ -1415,18 +1666,35 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (order == null)
+            try
             {
+                var order = await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+
+                if (order == null)
+                {
+                    return NotFound();
+                }
+
+                // Null değerleri güvenli hale getir
+                if (order.User != null)
+                {
+                    order.User.FirstName = order.User.FirstName ?? "";
+                    order.User.LastName = order.User.LastName ?? "";
+                    order.User.Email = order.User.Email ?? "";
+                    order.User.Phone = order.User.Phone ?? "";
+                }
+
+                return View(order);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading order detail for ID: {OrderId}", id);
                 return NotFound();
             }
-
-            return View(order);
         }
 
         // POST: Admin/UpdateOrderStatus
@@ -1481,11 +1749,30 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var messages = await _context.ContactMessages
-                .OrderByDescending(m => m.CreatedAt)
-                .ToListAsync();
+            try
+            {
+                var messages = await _context.ContactMessages
+                    .OrderByDescending(m => m.CreatedAt)
+                    .ToListAsync();
 
-            return View(messages);
+                // Null değerleri güvenli hale getir
+                foreach (var message in messages)
+                {
+                    message.Name = message.Name ?? "";
+                    message.Email = message.Email ?? "";
+                    message.Subject = message.Subject ?? "";
+                    message.Message = message.Message ?? "";
+                    message.ReplyMessage = message.ReplyMessage ?? "";
+                }
+
+                return View(messages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading messages");
+                TempData["Error"] = "Mesajlar yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<ContactMessage>());
+            }
         }
 
         // GET: Admin/MessageDetail/5
@@ -1557,11 +1844,63 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var users = await _context.Users
-                .OrderByDescending(u => u.CreatedAt)
-                .ToListAsync();
+            try
+            {
+                // Null değerleri güvenli şekilde handle etmek için Select kullan
+                var users = await _context.Users
+                    .OrderByDescending(u => u.CreatedAt)
+                    .Select(u => new
+                    {
+                        u.Id,
+                        FirstName = u.FirstName ?? "",
+                        LastName = u.LastName ?? "",
+                        Email = u.Email ?? "",
+                        Phone = u.Phone ?? "",
+                        Address = u.Address ?? "",
+                        City = u.City ?? "",
+                        PostalCode = u.PostalCode ?? "",
+                        u.IsActive,
+                        u.IsAdmin,
+                        u.EmailConfirmed,
+                        u.CreatedAt,
+                        u.UpdatedAt,
+                        u.LastLoginAt,
+                        PasswordResetToken = u.PasswordResetToken ?? "",
+                        PasswordResetCode = u.PasswordResetCode ?? "",
+                        GoogleId = u.GoogleId ?? ""
+                    })
+                    .ToListAsync();
 
-            return View(users);
+                // Anonim tipi User nesnesine dönüştür
+                var userList = users.Select(u => new User
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Phone = u.Phone,
+                    Address = u.Address,
+                    City = u.City,
+                    PostalCode = u.PostalCode,
+                    IsActive = u.IsActive,
+                    IsAdmin = u.IsAdmin,
+                    EmailConfirmed = u.EmailConfirmed,
+                    CreatedAt = u.CreatedAt,
+                    UpdatedAt = u.UpdatedAt,
+                    LastLoginAt = u.LastLoginAt,
+                    PasswordResetToken = u.PasswordResetToken,
+                    PasswordResetCode = u.PasswordResetCode,
+                    GoogleId = u.GoogleId
+                }).ToList();
+
+                return View(userList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading users");
+                TempData["Error"] = "Kullanıcılar yüklenirken bir hata oluştu: " + ex.Message;
+                return View(new List<User>());
+            }
         }
 
         // GET: Admin/UserDetails/5
@@ -1572,16 +1911,36 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var user = await _context.Users
-                .Include(u => u.Orders)
-                .FirstOrDefaultAsync(u => u.Id == id);
-
-            if (user == null)
+            try
             {
+                var user = await _context.Users
+                    .Include(u => u.Orders)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                // Null değerleri güvenli hale getir
+                user.FirstName = user.FirstName ?? "";
+                user.LastName = user.LastName ?? "";
+                user.Email = user.Email ?? "";
+                user.Phone = user.Phone ?? "";
+                user.Address = user.Address ?? "";
+                user.City = user.City ?? "";
+                user.PostalCode = user.PostalCode ?? "";
+                user.PasswordResetToken = user.PasswordResetToken ?? "";
+                user.PasswordResetCode = user.PasswordResetCode ?? "";
+                user.GoogleId = user.GoogleId ?? "";
+
+                return PartialView("_UserDetails", user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading user details for ID: {UserId}", id);
                 return NotFound();
             }
-
-            return PartialView("_UserDetails", user);
         }
 
         // POST: Admin/EditUser
@@ -1605,6 +1964,12 @@ namespace manyasligida.Controllers
                         return RedirectToAction(nameof(Users));
                     }
 
+                    // Null değerleri güvenli hale getir
+                    user.FirstName = user.FirstName ?? "";
+                    user.LastName = user.LastName ?? "";
+                    user.Email = user.Email ?? "";
+                    user.Phone = user.Phone ?? "";
+
                     // Kullanıcı özelliklerini güncelle
                     existingUser.FirstName = user.FirstName;
                     existingUser.LastName = user.LastName;
@@ -1625,6 +1990,7 @@ namespace manyasligida.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating user with ID: {UserId}", user.Id);
                 TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu: " + ex.Message;
             }
 

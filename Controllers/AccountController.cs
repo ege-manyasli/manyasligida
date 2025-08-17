@@ -49,59 +49,24 @@ namespace manyasligida.Controllers
 
                 _logger.LogInformation("Login attempt for: {Email}", model.Email);
 
-                var user = await _authService.LoginAsync(model.Email, model.Password);
-                if (user != null)
+                // Doğrudan veritabanından kullanıcıyı al
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.IsActive);
+
+                if (user == null)
                 {
-                    _logger.LogInformation("Login successful for: {Email}", model.Email);
-
-                    // Create claims
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Email),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim("FullName", user.FullName),
-                        new Claim("UserId", user.Id.ToString())
-                    };
-
-                    if (user.IsAdmin)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-                    }
-
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = model.RememberMe,
-                        ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1)
-                    };
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
-                        new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                    // Clear any existing session data first to prevent conflicts
-                    HttpContext.Session.Clear();
-                    
-                    // Create unique session for this user/device combination
-                    var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
-                    await sessionManager.CreateUserSessionAsync(user);
-                    
-                    // Set session data with unique identifiers
-                    HttpContext.Session.SetString("UserId", user.Id.ToString());
-                    HttpContext.Session.SetString("UserName", user.FullName);
-                    HttpContext.Session.SetString("IsAdmin", user.IsAdmin.ToString());
-                    HttpContext.Session.SetString("LoginTime", DateTimeHelper.NowTurkeyString("yyyy-MM-dd HH:mm:ss"));
-                    HttpContext.Session.SetString("DeviceId", Guid.NewGuid().ToString()); // Unique device identifier
-
-                    _logger.LogInformation("User {Email} logged in successfully", model.Email);
-                    
-                    return RedirectToAction("Index", "Home");
+                    _logger.LogWarning("Login failed - User not found: {Email}", model.Email);
+                    ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+                    return View(model);
                 }
-                else
+
+                // Şifreyi kontrol et
+                if (!VerifyPassword(model.Password, user.Password))
                 {
-                    _logger.LogWarning("Login failed for: {Email}", model.Email);
-                    // Check if user exists but email not confirmed
-                    var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.IsActive);
-                    if (existingUser != null && !existingUser.EmailConfirmed)
+                    _logger.LogWarning("Login failed - Invalid password for user: {Email}", model.Email);
+                    
+                    // E-posta doğrulanmamışsa uyarı ver
+                    if (!user.EmailConfirmed)
                     {
                         ModelState.AddModelError("", "E-posta adresinizi doğrulamanız gerekmektedir. Lütfen e-posta kutunuzu kontrol edin ve doğrulama kodunu girin.");
                         TempData["UnverifiedEmail"] = model.Email;
@@ -112,6 +77,71 @@ namespace manyasligida.Controllers
                     }
                     return View(model);
                 }
+
+                // E-posta doğrulanmamışsa uyarı ver
+                if (!user.EmailConfirmed)
+                {
+                    _logger.LogWarning("Login failed - Email not confirmed: {Email}", model.Email);
+                    ModelState.AddModelError("", "E-posta adresinizi doğrulamanız gerekmektedir. Lütfen e-posta kutunuzu kontrol edin ve doğrulama kodunu girin.");
+                    TempData["UnverifiedEmail"] = model.Email;
+                    return View(model);
+                }
+
+                _logger.LogInformation("Login successful for: {Email}", model.Email);
+
+                // Son giriş zamanını güncelle
+                user.LastLoginAt = DateTimeHelper.NowTurkey;
+                await _context.SaveChangesAsync();
+
+                // Create claims
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim("FullName", user.FullName),
+                    new Claim("UserId", user.Id.ToString())
+                };
+
+                if (user.IsAdmin)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                }
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = model.RememberMe,
+                    ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1)
+                };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
+                    new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                // Clear any existing session data first to prevent conflicts
+                HttpContext.Session.Clear();
+                
+                // Create unique session for this user/device combination
+                var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
+                await sessionManager.CreateUserSessionAsync(user);
+                
+                // Set session data with unique identifiers
+                HttpContext.Session.SetString("UserId", user.Id.ToString());
+                HttpContext.Session.SetString("UserName", user.FullName);
+                HttpContext.Session.SetString("IsAdmin", user.IsAdmin.ToString());
+                HttpContext.Session.SetString("LoginTime", DateTimeHelper.NowTurkeyString("yyyy-MM-dd HH:mm:ss"));
+                HttpContext.Session.SetString("DeviceId", Guid.NewGuid().ToString()); // Unique device identifier
+                
+                // WhatsApp siparişi için kullanıcı bilgilerini session'a kaydet
+                HttpContext.Session.SetString("UserFirstName", user.FirstName ?? "");
+                HttpContext.Session.SetString("UserLastName", user.LastName ?? "");
+                HttpContext.Session.SetString("UserEmail", user.Email ?? "");
+                HttpContext.Session.SetString("UserPhone", user.Phone ?? "");
+                HttpContext.Session.SetString("UserCity", user.City ?? "");
+                HttpContext.Session.SetString("UserAddress", user.Address ?? "");
+
+                _logger.LogInformation("User {Email} logged in successfully", model.Email);
+                
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
@@ -139,24 +169,50 @@ namespace manyasligida.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    _logger.LogWarning("Model validation failed for registration: {Email}", model.Email);
                     return View(model);
                 }
 
                 _logger.LogInformation("Registration attempt for: {Email}", model.Email);
 
-                var user = await _authService.RegisterAsync(model);
-                if (user != null)
+                // Check if email already exists
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower());
+                
+                if (existingUser != null)
                 {
-                    _logger.LogInformation("Registration successful for: {Email}", model.Email);
-                    TempData["Success"] = "Kayıt başarılı! E-posta adresinize gönderilen doğrulama kodunu girin.";
-                    return RedirectToAction("VerifyEmail", new { email = model.Email });
-                }
-                else
-                {
-                    _logger.LogWarning("Registration failed for: {Email}", model.Email);
-                    ModelState.AddModelError("", "Bu e-posta adresi zaten kullanımda veya kayıt sırasında bir hata oluştu.");
+                    _logger.LogWarning("Registration failed - Email already exists: {Email}", model.Email);
+                    ModelState.AddModelError("Email", "Bu e-posta adresi zaten kullanımda.");
                     return View(model);
                 }
+
+                // Create new user directly with context
+                var user = new User
+                {
+                    FirstName = model.FirstName.Trim(),
+                    LastName = model.LastName.Trim(),
+                    Email = model.Email.ToLower().Trim(),
+                    Phone = model.Phone.Trim(),
+                    Password = HashPassword(model.Password), // Şifreyi hash'le
+                    Address = model.Address?.Trim(),
+                    City = model.City?.Trim(),
+                    PostalCode = model.PostalCode?.Trim(),
+                    IsActive = true,
+                    IsAdmin = false,
+                    EmailConfirmed = false,
+                    CreatedAt = DateTimeHelper.NowTurkey,
+                    UpdatedAt = DateTimeHelper.NowTurkey // UpdatedAt'i de set et
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                // Send email verification
+                await SendEmailVerificationCodeAsync(user.Email);
+
+                _logger.LogInformation("Registration successful for: {Email}", model.Email);
+                TempData["Success"] = "Kayıt başarılı! E-posta adresinize gönderilen doğrulama kodunu girin.";
+                return RedirectToAction("VerifyEmail", new { email = model.Email });
             }
             catch (Exception ex)
             {
@@ -370,11 +426,28 @@ namespace manyasligida.Controllers
         {
             try
             {
-                var currentUser = await _authService.GetCurrentUserAsync();
+                // Doğrudan context kullanarak kullanıcıyı al
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out var userIdInt))
+                {
+                    return RedirectToAction("Login");
+                }
+
+                var currentUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Id == userIdInt && u.IsActive);
+
                 if (currentUser == null)
                 {
                     return RedirectToAction("Login");
                 }
+
+                // Kullanıcının siparişlerini de al
+                var userOrders = await _context.Orders
+                    .Where(o => o.UserId == userIdInt)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+
+                ViewBag.UserOrders = userOrders;
 
                 return View(currentUser);
             }
@@ -383,6 +456,57 @@ namespace manyasligida.Controllers
                 _logger.LogError(ex, "Error loading profile");
                 TempData["Error"] = "Profil yüklenirken bir hata oluştu.";
                 return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(User model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View("Profile", model);
+                }
+
+                // Doğrudan context kullanarak kullanıcıyı al
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out var userIdInt))
+                {
+                    return RedirectToAction("Login");
+                }
+
+                var currentUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Id == userIdInt && u.IsActive);
+
+                if (currentUser == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                // Sadece güncellenebilir alanları güncelle
+                currentUser.FirstName = model.FirstName?.Trim();
+                currentUser.LastName = model.LastName?.Trim();
+                currentUser.Phone = model.Phone?.Trim();
+                currentUser.Address = model.Address?.Trim();
+                currentUser.City = model.City?.Trim();
+                currentUser.PostalCode = model.PostalCode?.Trim();
+                currentUser.UpdatedAt = DateTimeHelper.NowTurkey;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Profile updated successfully for user: {UserId}", currentUser.Id);
+                TempData["ProfileUpdateSuccess"] = "Profil bilgileriniz başarıyla güncellendi.";
+                
+                return RedirectToAction("Profile");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating profile for user");
+                TempData["Error"] = "Profil güncellenirken bir hata oluştu.";
+                return RedirectToAction("Profile");
             }
         }
 
@@ -751,6 +875,89 @@ namespace manyasligida.Controllers
                 
                 return Json(response);
             }
+        }
+
+        // Helper methods
+        private string HashPassword(string password)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            var hashedBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password + "ManyasliGida2024!"));
+            return Convert.ToBase64String(hashedBytes);
+        }
+
+        private bool VerifyPassword(string password, string hashedPassword)
+        {
+            // Check plain text first (for migration)
+            if (password == hashedPassword) return true;
+            
+            // Check hashed password
+            var hashedInput = HashPassword(password);
+            return hashedInput == hashedPassword;
+        }
+
+        private async Task SendEmailVerificationCodeAsync(string email)
+        {
+            try
+            {
+                var code = GenerateVerificationCode();
+                var expiry = DateTimeHelper.NowTurkey.AddMinutes(15); // Türkiye zamanı kullan
+
+                // Save verification code
+                var verification = new EmailVerification
+                {
+                    Email = email.ToLower(),
+                    VerificationCode = code,
+                    ExpiresAt = expiry,
+                    IsUsed = false,
+                    CreatedAt = DateTimeHelper.NowTurkey // Türkiye zamanı kullan
+                };
+
+                _context.EmailVerifications.Add(verification);
+                await _context.SaveChangesAsync();
+
+                // Send email
+                var emailService = HttpContext.RequestServices.GetRequiredService<IEmailService>();
+                await emailService.SendEmailVerificationAsync(email, code);
+                
+                _logger.LogInformation("Verification email sent to {Email}", email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send verification email to {Email}", email);
+            }
+        }
+
+        private static string GenerateVerificationCode()
+        {
+            var random = new Random();
+            return random.Next(100000, 999999).ToString();
+        }
+
+        [HttpGet]
+        public IActionResult CheckLoginStatus()
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var userName = HttpContext.Session.GetString("UserName");
+            
+            var isLoggedIn = !string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userName);
+            
+            return Json(new { isLoggedIn = isLoggedIn });
+        }
+
+        [HttpGet]
+        public IActionResult GetUserInfo()
+        {
+            var userInfo = new
+            {
+                firstName = HttpContext.Session.GetString("UserFirstName") ?? "",
+                lastName = HttpContext.Session.GetString("UserLastName") ?? "",
+                email = HttpContext.Session.GetString("UserEmail") ?? "",
+                phone = HttpContext.Session.GetString("UserPhone") ?? "",
+                city = HttpContext.Session.GetString("UserCity") ?? "",
+                address = HttpContext.Session.GetString("UserAddress") ?? ""
+            };
+            
+            return Json(userInfo);
         }
     }
 }

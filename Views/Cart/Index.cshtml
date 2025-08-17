@@ -125,7 +125,10 @@
                                         Siparişi Tamamla
                                     </a>
                                     
-                                    <button onclick="openWhatsApp()" class="btn btn-success btn-lg">
+                                    <button onclick="checkLoginAndOpenWhatsApp()" class="btn btn-success btn-lg" 
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top" 
+                                            title="WhatsApp üzerinden hızlı sipariş verin">
                                         <i class="fab fa-whatsapp me-2"></i>
                                         WhatsApp ile Sipariş Ver
                                     </button>
@@ -183,10 +186,56 @@
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
     }
+
+    /* WhatsApp buton tooltip stilleri */
+    .tooltip {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .tooltip-inner {
+        background-color: #25D366;
+        color: white;
+        border-radius: 8px;
+        padding: 8px 12px;
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        max-width: 250px;
+    }
+
+    .tooltip.bs-tooltip-top .tooltip-arrow::before {
+        border-top-color: #25D366;
+    }
+
+    .tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+        border-bottom-color: #25D366;
+    }
+
+    .tooltip.bs-tooltip-start .tooltip-arrow::before {
+        border-left-color: #25D366;
+    }
+
+    .tooltip.bs-tooltip-end .tooltip-arrow::before {
+        border-right-color: #25D366;
+    }
+
+    /* WhatsApp buton hover efekti */
+    .btn-success:hover {
+        background-color: #128C7E;
+        border-color: #128C7E;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        transition: all 0.3s ease;
+    }
 </style>
 
 <script>
     $(document).ready(function() {
+        // Tooltip'leri aktif hale getir
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
         // Quantity controls
         $('.quantity-btn').click(function() {
             const action = $(this).data('action');
@@ -292,9 +341,116 @@
             cartItem.find('.fw-bold:last').text('₺' + total.toFixed(2));
         }
 
+        function checkLoginAndOpenWhatsApp() {
+            // AJAX ile server-side giriş kontrolü
+            $.ajax({
+                url: '@Url.Action("CheckLoginStatus", "Account")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.isLoggedIn) {
+                        console.log('Kullanıcı giriş yapmış, WhatsApp açılıyor...');
+                        openWhatsApp();
+                    } else {
+                        console.log('Kullanıcı giriş yapmamış, login sayfasına yönlendiriliyor...');
+                        showToast('WhatsApp siparişi için önce giriş yapmalısınız.', 'warning');
+                        setTimeout(() => {
+                            window.location.href = '@Url.Action("Login", "Account")';
+                        }, 2000);
+                    }
+                },
+                error: function() {
+                    console.log('Giriş kontrolü başarısız, login sayfasına yönlendiriliyor...');
+                    showToast('WhatsApp siparişi için önce giriş yapmalısınız.', 'warning');
+                    setTimeout(() => {
+                        window.location.href = '@Url.Action("Login", "Account")';
+                    }, 2000);
+                }
+            });
+        }
+
+        function openWhatsApp() {
+            // AJAX ile kullanıcı bilgilerini al
+            $.ajax({
+                url: '@Url.Action("GetUserInfo", "Account")',
+                type: 'GET',
+                success: function(userInfo) {
+                    // Sepet ürünlerini al
+                    const cartItems = [];
+                    $('.cart-item').each(function() {
+                        const productName = $(this).find('h6').text();
+                        const quantity = $(this).find('.quantity-input').val();
+                        const unitPrice = $(this).find('.text-primary').text();
+                        cartItems.push(`• ${productName}: ${quantity} adet - ${unitPrice}`);
+                    });
+
+                    // Toplam tutarı al
+                    const totalPrice = $('.fw-bold.fs-5.text-primary').text();
+
+                    // WhatsApp mesajını oluştur
+                    const message = `🛒 *Manyaslı Süt Ürünleri - Sipariş*
+👤 *${userInfo.firstName} ${userInfo.lastName}*
+
+📋 *Müşteri Bilgileri:*
+• İsim: ${userInfo.firstName} ${userInfo.lastName}
+• E-posta: ${userInfo.email}
+• Telefon: ${userInfo.phone}
+• Şehir: ${userInfo.city}
+• Adres: ${userInfo.address}
+
+Merhaba! Manyaslı Süt Ürünleri'nden sipariş vermek istiyorum.
+
+*Sepetimdeki Ürünler:*
+${cartItems.join('\n')}
+
+*Toplam: ${totalPrice}*
+
+📦 *Sipariş Detayları:*
+• Teslimat: Yukarıdaki adres bilgilerime
+• Ödeme: Kredi kartı veya nakit
+• Teslimat süresi: 1-3 iş günü
+• Özel notlar: Taze ürünler tercih ediyorum
+
+Bu siparişimi tamamlamak istiyorum. Yukarıdaki adres bilgilerime teslimat yapabilir misiniz?
+
+💰 Ödeme bilgilerini de paylaşabilir misiniz?`;
+                    
+                    // WhatsApp linkini oluştur
+                    const phoneNumber = '905437262738'; // Manyaslı Gıda WhatsApp numarası
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                    
+                    // WhatsApp'ı aç
+                    window.open(whatsappUrl, '_blank');
+                },
+                error: function() {
+                    // Kullanıcı bilgileri alınamazsa basit mesaj gönder
+                    const cartItems = [];
+                    $('.cart-item').each(function() {
+                        const productName = $(this).find('h6').text();
+                        const quantity = $(this).find('.quantity-input').val();
+                        const unitPrice = $(this).find('.text-primary').text();
+                        cartItems.push(`• ${productName}: ${quantity} adet - ${unitPrice}`);
+                    });
+
+                    const totalPrice = $('.fw-bold.fs-5.text-primary').text();
+                    const message = `Merhaba! Manyaslı Süt Ürünleri'nden sipariş vermek istiyorum.
+
+*Sepetimdeki Ürünler:*
+${cartItems.join('\n')}
+
+*Toplam: ${totalPrice}*
+
+Bu ürünleri sipariş vermek istiyorum.`;
+                    
+                    const phoneNumber = '905437262738';
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank');
+                }
+            });
+        }
+
         function showToast(message, type) {
             const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'danger'} position-fixed`;
             notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
             notification.innerHTML = message;
             

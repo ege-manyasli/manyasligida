@@ -463,10 +463,19 @@
                                     <i class="fas fa-edit"></i>
                                     Düzenle
                                 </a>
-                                <form asp-action="DeleteProduct" method="post" style="display: inline;" onsubmit="return confirmDelete(event, '@product.Name')">
+                                <form action="@Url.Action("ToggleProductStatus", "Admin")" method="post" style="display: inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <input type="hidden" name="isActive" value="@(!product.IsActive)" />
+                                    <button type="submit" class="btn-action-minimal @(product.IsActive ? "btn-delete-minimal" : "btn-edit-minimal")">
+                                        <i class="fas @(product.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
+                                        @(product.IsActive ? "Pasif Yap" : "Aktif Yap")
+                                    </button>
+                                </form>
+                                <form action="@Url.Action("DeleteProduct", "Admin")" method="post" style="display: inline;" id="deleteForm-@product.Id">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@product.Id" />
-                                    <button type="submit" class="btn-action-minimal btn-delete-minimal">
+                                    <button type="button" class="btn-action-minimal btn-delete-minimal" onclick="confirmDelete(@product.Id, '@product.Name')">
                                         <i class="fas fa-trash"></i>
                                         Sil
                                     </button>
@@ -494,18 +503,22 @@
 </div>
 
 <script>
-    function confirmDelete(event, productName) {
+    function confirmDelete(productId, productName) {
         if (confirm(`"${productName}" ürününü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`)) {
             // Show loading spinner
-            const button = event.target;
-            const originalText = button.innerHTML;
-            button.innerHTML = '<div class="loading-spinner"></div>';
-            button.disabled = true;
+            const button = document.querySelector(`button[onclick="confirmDelete(${productId}, '${productName}')"]`);
+            if (button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<div class="loading-spinner"></div>';
+                button.disabled = true;
+            }
             
             // Submit form
-            return true;
+            const form = document.getElementById(`deleteForm-${productId}`);
+            if (form) {
+                form.submit();
+            }
         }
-        return false;
     }
 
     // Auto-hide alerts after 5 seconds
