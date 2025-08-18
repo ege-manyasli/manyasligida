@@ -21,3 +21,4 @@ SET GalleryImageUrls = '[]'
 WHERE GalleryImageUrls IS NULL;
 
 PRINT 'GalleryImageUrls column setup completed.';
+

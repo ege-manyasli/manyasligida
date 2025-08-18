@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -180,6 +181,9 @@ builder.Services.AddScoped<manyasligida.Services.Interfaces.IHomeService, HomeSe
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<manyasligida.Services.Interfaces.IInventoryService, InventoryService>();
 
+// Add Seed Data Service
+builder.Services.AddScoped<SeedDataService>();
+
 // Core Services
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
@@ -310,6 +314,44 @@ try
         pattern: "{controller=Home}/{action=Index}/{id?}");
 
     startupLogger.LogInformation("=== APPLICATION STARTUP COMPLETE ===");
+    
+    // Database migration and seeding
+    try
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            
+            logger.LogInformation("Starting database migration...");
+            
+            // Apply migrations
+            context.Database.Migrate();
+            logger.LogInformation("Database migrations completed successfully");
+            
+            // Check if database has data
+            var userCount = context.Users.Count();
+            var productCount = context.Products.Count();
+            var categoryCount = context.Categories.Count();
+            
+            logger.LogInformation("Database statistics - Users: {UserCount}, Products: {ProductCount}, Categories: {CategoryCount}", 
+                userCount, productCount, categoryCount);
+            
+            // Seed data if database is empty
+            if (userCount == 0)
+            {
+                logger.LogInformation("Database is empty, starting seed data process...");
+                var seedService = scope.ServiceProvider.GetRequiredService<SeedDataService>();
+                await seedService.SeedDataAsync();
+                logger.LogInformation("Seed data process completed");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        startupLogger.LogError(ex, "Failed to migrate database or check data");
+        // Don't throw here - let the application start even if migration fails
+    }
 }
 catch (Exception ex)
 {

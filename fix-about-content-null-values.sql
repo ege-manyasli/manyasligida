@@ -38,3 +38,4 @@ SET
 WHERE IsActive = 1;
 
 PRINT 'AboutContents tablosundaki NULL değerler temizlendi!';
+

@@ -36,3 +36,4 @@ WHERE TABLE_NAME = 'Products'
 AND COLUMN_NAME = 'GalleryImageUrls';
 
 PRINT 'GalleryImageUrls column setup verification completed.';
+

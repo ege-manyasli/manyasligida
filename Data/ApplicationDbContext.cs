@@ -49,6 +49,9 @@ namespace manyasligida.Data
         
         // SITE SETTINGS
         public DbSet<SiteSettings> SiteSettings { get; set; }
+        
+        // FAQ
+        public DbSet<FAQ> FAQs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -328,6 +331,19 @@ namespace manyasligida.Data
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => e.IsActive);
                 entity.HasIndex(e => e.ExpiresAt);
+            });
+
+            // FAQ configuration
+            modelBuilder.Entity<FAQ>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Question).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Answer).IsRequired();
+                entity.Property(e => e.Category).HasMaxLength(100);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.DisplayOrder).HasDefaultValue(0);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.UpdatedAt);
             });
         }
     }

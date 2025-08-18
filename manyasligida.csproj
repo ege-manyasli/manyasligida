@@ -49,6 +49,7 @@
     <Folder Include="wwwroot\uploads\blog\" />
     <Folder Include="wwwroot\uploads\gallery\" />
     <Folder Include="wwwroot\uploads\products\" />
+    <Folder Include="wwwroot\video\" />
   </ItemGroup>
 
   <!-- Web.config için özel ayarlar -->
