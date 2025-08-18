@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using manyasligida.Data;
 using manyasligida.Models;
+using manyasligida.Models.DTOs;
 using manyasligida.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -52,7 +53,7 @@ namespace manyasligida.Controllers
                 }
 
                 // Session'da yoksa AuthService'den kontrol et
-                return await _authService.IsCurrentUserAdminAsync();
+                return await _authService.IsUserAdminAsync();
             }
             catch (Exception ex)
             {
@@ -542,39 +543,59 @@ namespace manyasligida.Controllers
             try
             {
                 var product = await _context.Products.FindAsync(id);
-                if (product != null)
-                {
-                    // Ürünün siparişlerde kullanılıp kullanılmadığını kontrol et
-                    var hasOrders = await _context.OrderItems.AnyAsync(oi => oi.ProductId == id);
-                    if (hasOrders)
-                    {
-                        TempData["Error"] = "Bu ürün siparişlerde kullanıldığı için silinemez. Bunun yerine pasif yapabilirsiniz.";
-                        return RedirectToAction(nameof(Products));
-                    }
-
-                    // Ürün resmini sil
-                    if (!string.IsNullOrEmpty(product.ImageUrl))
-                    {
-                        try
-                        {
-                            await _fileUploadService.DeleteImageAsync(product.ImageUrl);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning(ex, "Product image could not be deleted: {ImageUrl}", product.ImageUrl);
-                        }
-                    }
-
-                    // Ürünü tamamen sil
-                    _context.Products.Remove(product);
-                    await _context.SaveChangesAsync();
-
-                    TempData["Success"] = $"'{product.Name}' ürünü başarıyla silindi.";
-                }
-                else
+                if (product == null)
                 {
                     TempData["Error"] = "Ürün bulunamadı.";
+                    return RedirectToAction(nameof(Products));
                 }
+
+                // Ürünün siparişlerde kullanılıp kullanılmadığını kontrol et
+                var hasOrders = await _context.OrderItems.AnyAsync(oi => oi.ProductId == id);
+                if (hasOrders)
+                {
+                    // Soft delete yap
+                    product.IsActive = false;
+                    product.UpdatedAt = DateTimeHelper.NowTurkey;
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = $"'{product.Name}' ürünü başarıyla pasif yapıldı.";
+                    return RedirectToAction(nameof(Products));
+                }
+
+                // Ürün resmini sil
+                if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    try
+                    {
+                        await _fileUploadService.DeleteImageAsync(product.ImageUrl);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Product image could not be deleted: {ImageUrl}", product.ImageUrl);
+                    }
+                }
+
+                // Galeri resimlerini sil
+                if (!string.IsNullOrEmpty(product.GalleryImageUrls))
+                {
+                    try
+                    {
+                        var galleryUrls = product.GetImageUrls().Skip(1); // Ana resmi atla
+                        foreach (var url in galleryUrls)
+                        {
+                            await _fileUploadService.DeleteImageAsync(url);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Product gallery images could not be deleted");
+                    }
+                }
+
+                // Ürünü tamamen sil
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"'{product.Name}' ürünü başarıyla silindi.";
             }
             catch (Exception ex)
             {
@@ -854,27 +875,38 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog != null)
+            try
             {
-                try
+                var blog = await _context.Blogs.FindAsync(id);
+                if (blog == null)
                 {
-                    // Blog resmini sil
-                    if (!string.IsNullOrEmpty(blog.ImageUrl))
+                    TempData["Error"] = "Blog yazısı bulunamadı.";
+                    return RedirectToAction(nameof(Blog));
+                }
+
+                // Blog resmini sil
+                if (!string.IsNullOrEmpty(blog.ImageUrl))
+                {
+                    try
                     {
                         await _fileUploadService.DeleteImageAsync(blog.ImageUrl);
                     }
-
-                    // Blog yazısını tamamen sil
-                    _context.Blogs.Remove(blog);
-                    await _context.SaveChangesAsync();
-
-                    TempData["Success"] = "Blog yazısı başarıyla silindi.";
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Blog image could not be deleted: {ImageUrl}", blog.ImageUrl);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "Blog yazısı silinirken bir hata oluştu: " + ex.Message;
-                }
+
+                // Blog yazısını tamamen sil
+                _context.Blogs.Remove(blog);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"'{blog.Title}' blog yazısı başarıyla silindi.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting blog with ID: {BlogId}", id);
+                TempData["Error"] = "Blog yazısı silinirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Blog));
@@ -1106,181 +1138,7 @@ namespace manyasligida.Controllers
             return RedirectToAction(nameof(Gallery));
         }
 
-        // GET: Admin/FAQ
-        public async Task<IActionResult> FAQ()
-        {
-            if (!IsAdmin())
-            {
-                return RedirectToAction("Login", "Account");
-            }
 
-            try
-            {
-                var faqs = await _context.FAQs
-                    .OrderBy(f => f.DisplayOrder)
-                    .ToListAsync();
-
-                // Null değerleri güvenli hale getir
-                foreach (var faq in faqs)
-                {
-                    faq.Question = faq.Question ?? "";
-                    faq.Answer = faq.Answer ?? "";
-                }
-
-                return View(faqs);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading FAQs");
-                TempData["Error"] = "SSS öğeleri yüklenirken bir hata oluştu: " + ex.Message;
-                return View(new List<FAQ>());
-            }
-        }
-
-        // GET: Admin/AddFAQ
-        public IActionResult AddFAQ()
-        {
-            if (!IsAdmin())
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            return View();
-        }
-
-        // POST: Admin/AddFAQ
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddFAQ(FAQ faq)
-        {
-            if (!IsAdmin())
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            if (ModelState.IsValid)
-            {
-                faq.CreatedAt = DateTimeHelper.NowTurkey;
-                faq.IsActive = true;
-
-                _context.FAQs.Add(faq);
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "SSS öğesi başarıyla eklendi.";
-                return RedirectToAction(nameof(FAQ));
-            }
-
-            return View(faq);
-        }
-
-        // GET: Admin/EditFAQ/5
-        public async Task<IActionResult> EditFAQ(int id)
-        {
-            if (!IsAdmin())
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            try
-            {
-                var faq = await _context.FAQs.FindAsync(id);
-                if (faq == null)
-                {
-                    TempData["Error"] = "SSS öğesi bulunamadı.";
-                    return RedirectToAction(nameof(FAQ));
-                }
-
-                return View(faq);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "SSS öğesi yüklenirken bir hata oluştu: " + ex.Message;
-                return RedirectToAction(nameof(FAQ));
-            }
-        }
-
-        // POST: Admin/EditFAQ/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditFAQ(int id, FAQ faq)
-        {
-            if (!IsAdmin())
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            try
-            {
-                if (id != faq.Id)
-                {
-                    TempData["Error"] = "SSS ID'si uyuşmuyor.";
-                    return RedirectToAction(nameof(FAQ));
-                }
-
-                if (ModelState.IsValid)
-                {
-                    var existingFAQ = await _context.FAQs.FindAsync(id);
-                    if (existingFAQ == null)
-                    {
-                        TempData["Error"] = "SSS öğesi bulunamadı.";
-                        return RedirectToAction(nameof(FAQ));
-                    }
-
-                    // FAQ özelliklerini güncelle
-                    faq.UpdatedAt = DateTimeHelper.NowTurkey;
-                    faq.CreatedAt = existingFAQ.CreatedAt; // Mevcut oluşturma tarihini koru
-
-                    // Mevcut FAQ'yu güncelle
-                    _context.Entry(existingFAQ).CurrentValues.SetValues(faq);
-                    await _context.SaveChangesAsync();
-
-                    TempData["Success"] = "SSS öğesi başarıyla güncellendi.";
-                    return RedirectToAction(nameof(FAQ));
-                }
-                else
-                {
-                    return View(faq);
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "SSS öğesi güncellenirken bir hata oluştu: " + ex.Message);
-                return View(faq);
-            }
-        }
-
-        // POST: Admin/DeleteFAQ/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFAQ(int id)
-        {
-            if (!IsAdmin())
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var faq = await _context.FAQs.FindAsync(id);
-            if (faq != null)
-            {
-                try
-                {
-                    _context.FAQs.Remove(faq);
-                    await _context.SaveChangesAsync();
-
-                    TempData["Success"] = "SSS öğesi başarıyla silindi.";
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "SSS öğesi silinirken bir hata oluştu: " + ex.Message;
-                }
-            }
-            else
-            {
-                TempData["Error"] = "SSS öğesi bulunamadı.";
-            }
-
-            return RedirectToAction(nameof(FAQ));
-        }
 
         // GET: Admin/Videos
         public async Task<IActionResult> Videos()
@@ -1593,29 +1451,37 @@ namespace manyasligida.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            try
             {
-                try
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
                 {
-                    // Kategoriye ait ürün var mı kontrol et
-                    var hasProducts = await _context.Products.AnyAsync(p => p.CategoryId == id);
-                    if (hasProducts)
-                    {
-                        TempData["Error"] = "Bu kategoriye ait ürünler bulunduğu için silinemez.";
-                    }
-                    else
-                    {
-                        category.IsActive = false;
-                        await _context.SaveChangesAsync();
+                    TempData["Error"] = "Kategori bulunamadı.";
+                    return RedirectToAction(nameof(Categories));
+                }
 
-                        TempData["Success"] = "Kategori başarıyla silindi.";
-                    }
-                }
-                catch (Exception ex)
+                // Kategoriye ait ürün var mı kontrol et
+                var hasProducts = await _context.Products.AnyAsync(p => p.CategoryId == id && p.IsActive);
+                if (hasProducts)
                 {
-                    TempData["Error"] = "Kategori silinirken bir hata oluştu: " + ex.Message;
+                    // Soft delete yap
+                    category.IsActive = false;
+                    category.UpdatedAt = DateTimeHelper.NowTurkey;
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = $"'{category.Name}' kategorisi başarıyla pasif yapıldı.";
                 }
+                else
+                {
+                    // Tamamen sil
+                    _context.Categories.Remove(category);
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = $"'{category.Name}' kategorisi başarıyla silindi.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting category with ID: {CategoryId}", id);
+                TempData["Error"] = "Kategori silinirken bir hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Categories));
@@ -1946,7 +1812,7 @@ namespace manyasligida.Controllers
         // POST: Admin/EditUser
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUser(User user)
+        public async Task<IActionResult> EditUser([FromForm] UserUpdateDto userDto)
         {
             if (!IsAdmin())
             {
@@ -1955,42 +1821,50 @@ namespace manyasligida.Controllers
 
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    var existingUser = await _context.Users.FindAsync(user.Id);
-                    if (existingUser == null)
-                    {
-                        TempData["Error"] = "Kullanıcı bulunamadı.";
-                        return RedirectToAction(nameof(Users));
-                    }
-
-                    // Null değerleri güvenli hale getir
-                    user.FirstName = user.FirstName ?? "";
-                    user.LastName = user.LastName ?? "";
-                    user.Email = user.Email ?? "";
-                    user.Phone = user.Phone ?? "";
-
-                    // Kullanıcı özelliklerini güncelle
-                    existingUser.FirstName = user.FirstName;
-                    existingUser.LastName = user.LastName;
-                    existingUser.Email = user.Email;
-                    existingUser.Phone = user.Phone;
-                    existingUser.IsAdmin = user.IsAdmin;
-                    existingUser.IsActive = user.IsActive;
-                    existingUser.UpdatedAt = DateTimeHelper.NowTurkey;
-
-                    await _context.SaveChangesAsync();
-
-                    TempData["Success"] = "Kullanıcı başarıyla güncellendi.";
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    
+                    TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu: " + string.Join(", ", errors);
+                    return RedirectToAction(nameof(Users));
                 }
-                else
+
+                var existingUser = await _context.Users.FindAsync(userDto.Id);
+                if (existingUser == null)
                 {
-                    TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu.";
+                    TempData["Error"] = "Kullanıcı bulunamadı.";
+                    return RedirectToAction(nameof(Users));
                 }
+
+                // Email benzersizlik kontrolü
+                var emailExists = await _context.Users
+                    .AnyAsync(u => u.Email == userDto.Email && u.Id != userDto.Id);
+                
+                if (emailExists)
+                {
+                    TempData["Error"] = "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.";
+                    return RedirectToAction(nameof(Users));
+                }
+
+                // Kullanıcı özelliklerini güncelle
+                existingUser.FirstName = userDto.FirstName;
+                existingUser.LastName = userDto.LastName;
+                existingUser.Email = userDto.Email;
+                existingUser.Phone = userDto.Phone ?? "";
+                existingUser.IsAdmin = userDto.IsAdmin;
+                existingUser.IsActive = userDto.IsActive;
+                existingUser.UpdatedAt = DateTimeHelper.NowTurkey;
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Kullanıcı başarıyla güncellendi.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating user with ID: {UserId}", user.Id);
+                _logger.LogError(ex, "Error updating user with ID: {UserId}", userDto.Id);
                 TempData["Error"] = "Kullanıcı güncellenirken bir hata oluştu: " + ex.Message;
             }
 
@@ -2067,10 +1941,7 @@ namespace manyasligida.Controllers
             return _context.Galleries.Any(e => e.Id == id);
         }
 
-        private bool FAQExists(int id)
-        {
-            return _context.FAQs.Any(e => e.Id == id);
-        }
+
 
         private bool VideoExists(int id)
         {
@@ -2181,23 +2052,36 @@ namespace manyasligida.Controllers
 
                         var result = await aboutService.UpdateAboutContentAsync(new manyasligida.Models.DTOs.AboutEditRequest
                         {
-                            Title = model.Title,
-                            Subtitle = model.Subtitle,
-                            StoryTitle = model.StoryTitle,
-                            StorySubtitle = model.StorySubtitle,
-                            StoryContent = model.StoryContent,
-                            StoryImageUrl = model.StoryImageUrl,
-                            MissionTitle = model.MissionTitle,
-                            MissionContent = model.MissionContent,
-                            VisionTitle = model.VisionTitle,
-                            VisionContent = model.VisionContent,
-                            ValuesTitle = model.ValuesTitle,
-                            ValuesSubtitle = model.ValuesSubtitle,
-                            ValuesContent = model.ValuesContent,
-                            RegionTitle = model.RegionTitle,
-                            RegionSubtitle = model.RegionSubtitle,
-                            RegionContent = model.RegionContent,
-                            RegionImageUrl = model.RegionImageUrl
+                            Title = model.Title ?? "",
+                            Subtitle = model.Subtitle ?? "",
+                            StoryTitle = model.StoryTitle ?? "",
+                            StorySubtitle = model.StorySubtitle ?? "",
+                            StoryContent = model.StoryContent ?? "",
+                            StoryImageUrl = model.StoryImageUrl ?? "",
+                            MissionTitle = model.MissionTitle ?? "",
+                            MissionContent = model.MissionContent ?? "",
+                            VisionTitle = model.VisionTitle ?? "",
+                            VisionContent = model.VisionContent ?? "",
+                            ValuesTitle = model.ValuesTitle ?? "",
+                            ValuesSubtitle = model.ValuesSubtitle ?? "",
+                            ValuesContent = model.ValuesContent ?? "",
+                            ValueItems = model.ValueItems ?? new List<manyasligida.Models.DTOs.ValueItemRequest>(),
+                            ProductionTitle = model.ProductionTitle ?? "",
+                            ProductionSubtitle = model.ProductionSubtitle ?? "",
+                            ProductionSteps = model.ProductionSteps ?? new List<manyasligida.Models.DTOs.ProductionStepRequest>(),
+                            CertificatesTitle = model.CertificatesTitle ?? "",
+                            CertificatesSubtitle = model.CertificatesSubtitle ?? "",
+                            CertificateItems = model.CertificateItems ?? new List<manyasligida.Models.DTOs.CertificateItemRequest>(),
+                            RegionTitle = model.RegionTitle ?? "",
+                            RegionSubtitle = model.RegionSubtitle ?? "",
+                            RegionContent = model.RegionContent ?? "",
+                            RegionImageUrl = model.RegionImageUrl ?? "",
+                            RegionFeatures = model.RegionFeatures ?? new List<manyasligida.Models.DTOs.RegionFeatureRequest>(),
+                            CtaTitle = model.CtaTitle ?? "",
+                            CtaContent = model.CtaContent ?? "",
+                            CtaButtonText = model.CtaButtonText ?? "",
+                            CtaSecondButtonText = model.CtaSecondButtonText ?? "",
+                            StoryFeatures = model.StoryFeatures ?? new List<manyasligida.Models.DTOs.StoryFeatureRequest>()
                         });
 
                         if (result.Success)
@@ -2588,6 +2472,11 @@ namespace manyasligida.Controllers
             }
 
             return View(settings);
+        }
+
+        private async Task<bool> IsCurrentUserAdminAsync()
+        {
+            return await _authService.IsUserAdminAsync();
         }
     }
 }

@@ -213,11 +213,15 @@
                 const response = await fetch('/CookieConsent/GetConsentAnalytics');
                 const data = await response.json();
 
-                if (data.success && data.analytics) {
+                if (data.success && data.analytics && data.analytics.dailyConsents) {
                     createConsentChart(data.analytics.dailyConsents);
+                } else {
+                    console.log('Analitik veriler bulunamadı veya boş');
+                    createEmptyChart();
                 }
             } catch (error) {
                 console.error('Analitik veriler yüklenemedi:', error);
+                createEmptyChart();
             }
         }
 
@@ -248,6 +252,51 @@
                         {
                             label: 'Reddedilen',
                             data: declinedData,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create empty chart when no data
+        function createEmptyChart() {
+            const ctx = document.getElementById('consentChart').getContext('2d');
+
+            if (consentChart) {
+                consentChart.destroy();
+            }
+
+            consentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Veri Yok'],
+                    datasets: [
+                        {
+                            label: 'Kabul Edilen',
+                            data: [0],
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Reddedilen',
+                            data: [0],
                             borderColor: '#ffc107',
                             backgroundColor: 'rgba(255, 193, 7, 0.1)',
                             tension: 0.4

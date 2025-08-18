@@ -4,8 +4,8 @@
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - Manyaslı Gıda Admin Paneli</title>
     
     <!-- Favicon - Logo -->
     <link rel="icon" type="image/png" sizes="32x32" href="~/img/manyaslilogooriginal.jpg">
@@ -79,9 +79,28 @@
             }
 
         .sidebar-header {
-            padding: 20px;
+            padding: 25px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             text-align: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @@keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
         }
 
         .sidebar-brand {
@@ -89,6 +108,12 @@
             font-weight: 700;
             color: var(--accent-color);
             text-decoration: none;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
             .sidebar-brand img {
@@ -116,14 +141,33 @@
             text-decoration: none;
             transition: var(--transition);
             border-left: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
 
-            .nav-link:hover,
-            .nav-link.active {
-                color: white;
-                background: rgba(255,255,255,0.1);
-                border-left-color: var(--accent-color);
-            }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+                    .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            border-left-color: var(--accent-color);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
 
             .nav-link i {
                 width: 20px;
@@ -140,9 +184,25 @@
             padding: 15px;
         }
 
-            .sidebar.collapsed .nav-link i {
-                margin-right: 0;
-            }
+                    .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+        }
+
+        /* Navigation Section Headers */
+        .nav-section-header {
+            padding: 15px 20px 8px 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 10px;
+        }
+
+        .sidebar.collapsed .nav-section-header {
+            display: none;
+        }
 
         /* Main Content */
         .main-content {
@@ -171,15 +231,23 @@
             font-size: 1.2rem;
             color: var(--text-color);
             cursor: pointer;
-            padding: 8px;
+            padding: 8px 12px;
             border-radius: var(--border-radius);
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-            .sidebar-toggle:hover {
-                background: var(--light-color);
-                color: var(--primary-color);
-            }
+        .sidebar-toggle .toggle-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--light-color);
+            color: var(--primary-color);
+        }
 
         .top-nav-right {
             display: flex;
@@ -613,7 +681,44 @@
         }
 
         /* Enhanced Mobile Responsiveness */
+        @@media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-content {
+                margin-left: 250px;
+            }
+            
+            .sidebar.collapsed {
+                width: 60px;
+            }
+            
+            .sidebar.collapsed + .main-content {
+                margin-left: 60px;
+            }
+        }
+
         @@media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 1050;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+
             .modern-widget {
                 margin-bottom: 1rem;
             }
@@ -635,69 +740,307 @@
                 width: 60px;
                 height: 60px;
             }
+
+            .sidebar-brand span {
+                font-size: 0.9rem;
+            }
+
+            .nav-link {
+                padding: 12px 15px;
+            }
+
+            .nav-link i {
+                font-size: 1.1rem;
+            }
+
+            .nav-link span {
+                font-size: 0.9rem;
+            }
         }
 
         @@media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
                 width: 100%;
-                z-index: 1050;
+                max-width: 320px;
             }
 
-                .sidebar.show {
-                    transform: translateX(0);
-                }
-
-            .main-content {
-                margin-left: 0;
+            .sidebar-header {
+                padding: 20px 15px;
             }
 
-            .content-area {
-                padding: 15px;
+            .sidebar-brand img {
+                width: 35px;
+                height: 35px;
             }
 
-            .dashboard-header h1 {
-                font-size: 1.5rem;
+            .sidebar-brand span {
+                font-size: 0.85rem;
+                line-height: 1.2;
             }
 
-            .top-nav {
+            .nav-section-header {
+                padding: 8px 15px;
+                font-size: 0.75rem;
+            }
+
+            .nav-link {
                 padding: 10px 15px;
             }
 
+            .nav-link i {
+                font-size: 1rem;
+                width: 20px;
+            }
+
+            .nav-link span {
+                font-size: 0.85rem;
+            }
+
+            .content-area {
+                padding: 10px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .top-nav {
+                padding: 8px 10px;
+            }
+
             .modern-card {
-                margin-bottom: 1rem;
+                margin-bottom: 0.8rem;
             }
 
             .stat-number {
-                font-size: 1.8rem !important;
+                font-size: 1.6rem !important;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .card-header {
+                padding: 12px 15px;
+            }
+
+            .card-body {
+                padding: 15px;
+            }
+
+            .card-footer {
+                padding: 12px 15px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .btn-sm {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 8px 6px;
+            }
+
+            .sidebar-toggle {
+                padding: 6px 10px;
+            }
+
+            .sidebar-toggle .toggle-text {
+                font-size: 0.8rem;
+            }
+
+            /* Hide toggle text on mobile */
+            .sidebar-toggle .toggle-text {
+                display: none;
             }
         }
 
         @@media (max-width: 576px) {
-            .quick-action-btn {
-                padding: 12px 10px;
+            .sidebar {
+                width: 100%;
+                max-width: 100%;
             }
 
-                .quick-action-btn i {
-                    font-size: 1.2rem;
-                }
+            .sidebar-header {
+                padding: 15px 10px;
+            }
 
-                .quick-action-btn span {
-                    font-size: 0.75rem;
-                }
+            .sidebar-brand span {
+                font-size: 0.8rem;
+            }
+
+            .nav-link {
+                padding: 8px 12px;
+            }
+
+            .nav-link i {
+                font-size: 0.9rem;
+                width: 18px;
+            }
+
+            .nav-link span {
+                font-size: 0.8rem;
+            }
+
+            .content-area {
+                padding: 8px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .quick-action-btn {
+                padding: 10px 8px;
+            }
+
+            .quick-action-btn i {
+                font-size: 1rem;
+            }
+
+            .quick-action-btn span {
+                font-size: 0.7rem;
+            }
 
             .activity-list {
-                max-height: 150px;
+                max-height: 120px;
             }
 
             .stat-icon-modern {
-                width: 50px;
-                height: 50px;
+                width: 45px;
+                height: 45px;
             }
 
-                .stat-icon-modern i {
-                    font-size: 1.5rem;
-                }
+            .stat-icon-modern i {
+                font-size: 1.3rem;
+            }
+
+            .stat-number {
+                font-size: 1.4rem !important;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 0.9rem;
+            }
+
+            .card-body {
+                padding: 12px;
+            }
+
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .btn-sm {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+            }
+
+            .table-responsive {
+                font-size: 0.8rem;
+            }
+
+            .sidebar-toggle {
+                padding: 5px 8px;
+            }
+
+            .sidebar-toggle .toggle-text {
+                font-size: 0.75rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 6px 4px;
+            }
+
+            .form-control,
+            .form-select {
+                font-size: 0.85rem;
+                padding: 8px 10px;
+            }
+
+            .modal-dialog {
+                margin: 10px;
+            }
+
+            .modal-header {
+                padding: 10px 15px;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            .modal-footer {
+                padding: 10px 15px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .sidebar-brand span {
+                font-size: 0.75rem;
+            }
+
+            .nav-link {
+                padding: 6px 10px;
+            }
+
+            .nav-link i {
+                font-size: 0.85rem;
+                width: 16px;
+            }
+
+            .nav-link span {
+                font-size: 0.75rem;
+            }
+
+            .content-area {
+                padding: 6px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 1.1rem;
+            }
+
+            .stat-number {
+                font-size: 1.2rem !important;
+            }
+
+            .card-header h5 {
+                font-size: 0.85rem;
+            }
+
+            .btn {
+                padding: 5px 8px;
+                font-size: 0.75rem;
+            }
+
+            .table-responsive {
+                font-size: 0.75rem;
+            }
+
+            .sidebar-toggle {
+                padding: 4px 6px;
+            }
+
+            .sidebar-toggle .toggle-text {
+                font-size: 0.7rem;
+            }
         }
 
         /* Loading Animation */
@@ -726,20 +1069,26 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="@Url.Action("Index", "Admin")" class="sidebar-brand">
-                <img src="~/logomanyasli.png" alt="Manyaslı Süt Ürünleri" />
-                <span>Admin Panel</span>
+                <img src="~/logomanyasli.png" alt="Manyaslı Gıda" />
+                <span>Manyaslı Gıda Admin Paneli</span>
             </a>
         </div>
 
         <ul class="sidebar-nav">
+            <!-- Dashboard -->
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" href="@Url.Action("Index", "Admin")">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Ana Sayfa</span>
                 </a>
             </li>
 
-            <!-- Ürün Yönetimi -->
+            <!-- E-ticaret Yönetimi -->
+            <li class="nav-item">
+                <div class="nav-section-header">
+                    <span>E-ticaret</span>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Products" ? "active" : "")" href="@Url.Action("Products", "Admin")">
                     <i class="fas fa-box"></i>
@@ -752,17 +1101,12 @@
                     <span>Kategoriler</span>
                 </a>
             </li>
-
-
-            <!-- Sipariş Yönetimi -->
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Orders" ? "active" : "")" href="@Url.Action("Orders", "Admin")">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Siparişler</span>
                 </a>
             </li>
-
-            <!-- Müşteri Yönetimi -->
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Users" ? "active" : "")" href="@Url.Action("Users", "Admin")">
                     <i class="fas fa-users"></i>
@@ -770,7 +1114,43 @@
                 </a>
             </li>
 
+            <!-- Stok Yönetimi -->
+            <li class="nav-item">
+                <div class="nav-section-header">
+                    <span>Stok Yönetimi</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" ? "active" : "")" href="@Url.Action("Index", "Inventory")">
+                    <i class="fas fa-boxes"></i>
+                    <span>Stok Durumu</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" && ViewContext.RouteData.Values["Action"]?.ToString() == "Transactions" ? "active" : "")" href="@Url.Action("Transactions", "Inventory")">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Stok İşlemleri</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" && ViewContext.RouteData.Values["Action"]?.ToString() == "Purchases" ? "active" : "")" href="@Url.Action("Purchases", "Inventory")">
+                    <i class="fas fa-shopping-basket"></i>
+                    <span>Alımlar</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" && ViewContext.RouteData.Values["Action"]?.ToString() == "LowStockReport" ? "active" : "")" href="@Url.Action("LowStockReport", "Inventory")">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Düşük Stok Raporu</span>
+                </a>
+            </li>
+
             <!-- İçerik Yönetimi -->
+            <li class="nav-item">
+                <div class="nav-section-header">
+                    <span>İçerik</span>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Blog" ? "active" : "")" href="@Url.Action("Blog", "Admin")">
                     <i class="fas fa-blog"></i>
@@ -778,9 +1158,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "FAQ" ? "active" : "")" href="@Url.Action("FAQ", "Admin")">
-                    <i class="fas fa-question-circle"></i>
-                    <span>SSS</span>
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && (ViewContext.RouteData.Values["Action"]?.ToString() == "Videos" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddVideo" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditVideo") ? "active" : "")" href="@Url.Action("Videos", "Admin")">
+                    <i class="fas fa-video"></i>
+                    <span>Videolar</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -795,8 +1175,19 @@
                     <span>Anasayfa</span>
                 </a>
             </li>
-            
-            <!-- Muhasebe -->
+
+            <!-- İletişim & Ayarlar -->
+            <li class="nav-item">
+                <div class="nav-section-header">
+                    <span>Sistem</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Messages" ? "active" : "")" href="@Url.Action("Messages", "Admin")">
+                    <i class="fas fa-envelope"></i>
+                    <span>Mesajlar</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Accounting" ? "active" : "")" href="@Url.Action("Index", "Accounting", new { area = "" })">
                     <i class="fas fa-calculator"></i>
@@ -804,29 +1195,11 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && (ViewContext.RouteData.Values["Action"]?.ToString() == "Videos" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddVideo" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditVideo") ? "active" : "")" href="@Url.Action("Videos", "Admin")">
-                    <i class="fas fa-video"></i>
-                    <span>Videolar</span>
-                </a>
-            </li>
-
-            <!-- İletişim Yönetimi -->
-            <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Messages" ? "active" : "")" href="@Url.Action("Messages", "Admin")">
-                    <i class="fas fa-envelope"></i>
-                    <span>Mesajlar</span>
-                </a>
-            </li>
-
-            <!-- Cookie Yönetimi -->
-            <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CookieConsent" ? "active" : "")" href="@Url.Action("Management", "CookieConsent")">
                     <i class="fas fa-cookie-bite"></i>
                     <span>Cookie Yönetimi</span>
                 </a>
             </li>
-
-            <!-- Site Ayarları -->
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "SiteSettings" ? "active" : "")" href="@Url.Action("SiteSettings", "Admin")">
                     <i class="fas fa-cog"></i>
@@ -834,10 +1207,13 @@
                 </a>
             </li>
 
-
-
-            <!-- Site Görüntüleme ve Çıkış -->
+            <!-- Alt Menü -->
             <li class="nav-item mt-4">
+                <div class="nav-section-header">
+                    <span>Hızlı Erişim</span>
+                </div>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="@Url.Action("Index", "Home")" target="_blank" onclick="openSiteInNewTab()">
                     <i class="fas fa-external-link-alt"></i>
                     <span>Siteyi Görüntüle</span>
@@ -856,8 +1232,9 @@
     <div class="main-content" id="mainContent">
         <!-- Top Navigation -->
         <div class="top-nav">
-            <button class="sidebar-toggle" id="sidebarToggle">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
                 <i class="fas fa-bars"></i>
+                <span class="toggle-text">Menü</span>
             </button>
 
             <div class="top-nav-right">
@@ -892,14 +1269,59 @@
     <script src="~/js/site.js"></script>
 
     <script>
-        // Sidebar toggle functionality
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
+        // Enhanced Sidebar toggle functionality
+        function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const isMobile = window.innerWidth <= 992;
 
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-        });
+            if (isMobile) {
+                // Mobile behavior: slide in/out
+                sidebar.classList.toggle('show');
+                // Add overlay for mobile
+                if (sidebar.classList.contains('show')) {
+                    addMobileOverlay();
+                } else {
+                    removeMobileOverlay();
+                }
+            } else {
+                // Desktop behavior: collapse/expand
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        // Mobile overlay functions
+        function addMobileOverlay() {
+            if (!document.getElementById('mobileOverlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'mobileOverlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 1040;
+                    cursor: pointer;
+                `;
+                overlay.addEventListener('click', function() {
+                    toggleSidebar();
+                });
+                document.body.appendChild(overlay);
+            }
+        }
+
+        function removeMobileOverlay() {
+            const overlay = document.getElementById('mobileOverlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
+        // Add event listener to sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
 
         // Toast notification function
         function showToast(message, type = 'info') {
@@ -969,36 +1391,60 @@
             }
         }
 
-        // Enhanced Mobile sidebar toggle
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('show');
-        }
-
-        // Mobile responsiveness
-        if (window.innerWidth <= 768) {
-            // Override desktop toggle for mobile
-            document.getElementById('sidebarToggle').removeEventListener('click', function() {
-                const sidebar = document.getElementById('sidebar');
-                const mainContent = document.getElementById('mainContent');
-
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-            });
-
-            // Add mobile toggle
-            document.getElementById('sidebarToggle').addEventListener('click', toggleMobileSidebar);
-        }
-
-        // Window resize handler
+        // Enhanced window resize handler
         window.addEventListener('resize', function() {
             const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
+            const isMobile = window.innerWidth <= 992;
+            
+            if (!isMobile) {
+                // Desktop: remove mobile classes
                 sidebar.classList.remove('show');
-                sidebar.classList.add('collapsed');
-                document.getElementById('mainContent').classList.add('expanded');
+                removeMobileOverlay();
+                if (!sidebar.classList.contains('collapsed')) {
+                    document.getElementById('mainContent').classList.remove('expanded');
+                }
+            } else {
+                // Mobile: ensure sidebar is hidden by default
+                if (!sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    removeMobileOverlay();
+                }
             }
         });
+
+        // Touch gesture support for mobile sidebar
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const sidebar = document.getElementById('sidebar');
+            const isMobile = window.innerWidth <= 992;
+            
+            if (!isMobile) return;
+
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+
+            // Swipe right to open sidebar
+            if (swipeDistance > swipeThreshold && touchStartX < 50) {
+                if (!sidebar.classList.contains('show')) {
+                    toggleSidebar();
+                }
+            }
+            // Swipe left to close sidebar
+            else if (swipeDistance < -swipeThreshold && sidebar.classList.contains('show')) {
+                toggleSidebar();
+            }
+        }
 
         // Logout functionality
         function performLogout() {

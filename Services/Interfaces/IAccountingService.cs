@@ -19,6 +19,7 @@ public interface IAccountingService
     Task<ApiResponse<bool>> CreateExpenseAsync(ExpenseRequest request);
     Task<ApiResponse<bool>> UpdateExpenseAsync(int expenseId, ExpenseRequest request);
     Task<ApiResponse<bool>> DeleteExpenseAsync(int expenseId);
+    Task<ApiResponse<List<ExpenseResponse>>> GetExpensesAsync();
     Task<ApiResponse<List<object>>> GetExpensesAsync(DateTime? startDate = null, DateTime? endDate = null);
     Task<ApiResponse<decimal>> GetTotalExpensesAsync(DateTime? startDate = null, DateTime? endDate = null);
     Task<ApiResponse<Dictionary<string, decimal>>> GetExpensesByCategoryAsync(DateTime? startDate = null, DateTime? endDate = null);

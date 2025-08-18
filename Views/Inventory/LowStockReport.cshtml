@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "Düşük Stok Raporu";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-exclamation-triangle me-2"></i>Düşük Stok Raporu
+        </h1>
+        <div>
+            <a href="@Url.Action("StockValueReport", "Inventory")" class="btn btn-info me-2">
+                <i class="fas fa-chart-bar me-1"></i>Stok Değeri Raporu
+            </a>
+            <a href="@Url.Action("Index", "Inventory")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Düşük Stok Uyarısı
+                    </h6>
+                    <p class="mb-0 mt-2 text-muted">
+                        Aşağıdaki malların stok seviyesi minimum stok seviyesinin altına düşmüştür.
+                    </p>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.LowStockItems != null && ((List<manyasligida.Models.DTOs.InventoryStockDto>)ViewBag.LowStockItems).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mal İsmi</th>
+                                        <th>Kategori</th>
+                                        <th>Mevcut Stok</th>
+                                        <th>Minimum Stok</th>
+                                        <th>Birim</th>
+                                        <th>Ort. Maliyet</th>
+                                        <th>Stok Değeri</th>
+                                        <th>Son Güncelleme</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var stock in ViewBag.LowStockItems)
+                                    {
+                                        <tr class="table-warning">
+                                            <td class="fw-bold">@stock.ItemName</td>
+                                            <td>@stock.Category</td>
+                                            <td class="fw-bold text-danger">@stock.CurrentStock</td>
+                                            <td>@stock.MinimumStock</td>
+                                            <td>@stock.Unit</td>
+                                            <td>₺@stock.AverageCost.ToString("N2")</td>
+                                            <td class="fw-bold">₺@stock.StockValue.ToString("N2")</td>
+                                            <td>@stock.LastUpdated.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>
+                                                <span class="badge bg-danger">Kritik Seviye</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="alert alert-warning">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-info-circle me-2"></i>Öneriler
+                                </h6>
+                                <ul class="mb-0">
+                                    <li>Düşük stok seviyesindeki mallar için acil sipariş verin</li>
+                                    <li>Minimum stok seviyelerini gözden geçirin</li>
+                                    <li>Tedarikçilerle iletişime geçin</li>
+                                    <li>Stok takip sistemini düzenli kontrol edin</li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h5 class="text-success">Tebrikler!</h5>
+                            <p class="text-muted">Şu anda düşük stok seviyesinde olan mal bulunmamaktadır.</p>
+                            <a href="@Url.Action("Stock", "Inventory")" class="btn btn-primary">
+                                <i class="fas fa-warehouse me-1"></i>Stok Takibine Git
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

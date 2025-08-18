@@ -18,6 +18,7 @@ namespace manyasligida.Services
     public class FileUploadService : IFileUploadService
     {
         private readonly IWebHostEnvironment _environment;
+        private readonly string _uploadsRoot;
         private readonly string[] _allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
         private readonly string[] _allowedVideoExtensions = { ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm" };
         private readonly long _maxImageFileSize = 5 * 1024 * 1024; // 5MB
@@ -26,6 +27,17 @@ namespace manyasligida.Services
         public FileUploadService(IWebHostEnvironment environment)
         {
             _environment = environment;
+            // Prefer writable HOME/data/uploads on Azure; fallback to wwwroot/uploads
+            var homeDir = Environment.GetEnvironmentVariable("HOME");
+            if (!string.IsNullOrEmpty(homeDir))
+            {
+                _uploadsRoot = Path.Combine(homeDir, "data", "uploads");
+            }
+            else
+            {
+                _uploadsRoot = Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, "uploads");
+            }
+            Directory.CreateDirectory(_uploadsRoot);
         }
 
         public async Task<string> UploadImageAsync(IFormFile file, string folderName = "products")
@@ -37,7 +49,7 @@ namespace manyasligida.Services
                 throw new ArgumentException("Geçersiz dosya formatı. Sadece JPG, PNG, GIF ve WEBP dosyaları kabul edilir.");
 
             // Klasör yolu oluştur
-            var uploadPath = Path.Combine(_environment.WebRootPath, "uploads", folderName);
+            var uploadPath = Path.Combine(_uploadsRoot, folderName);
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
 
@@ -64,7 +76,7 @@ namespace manyasligida.Services
                 throw new ArgumentException("Geçersiz video formatı. Sadece MP4, AVI, MOV, WMV, FLV ve WEBM dosyaları kabul edilir.");
 
             // Klasör yolu oluştur
-            var uploadPath = Path.Combine(_environment.WebRootPath, "uploads", folderName);
+            var uploadPath = Path.Combine(_uploadsRoot, folderName);
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
 
@@ -89,7 +101,11 @@ namespace manyasligida.Services
 
             try
             {
-                var fullPath = Path.Combine(_environment.WebRootPath, imagePath.TrimStart('/'));
+                var relativePath = imagePath.TrimStart('/');
+                // If deleting under /uploads, resolve against uploads root
+                var fullPath = relativePath.StartsWith("uploads/")
+                    ? Path.Combine(_uploadsRoot, relativePath.Substring("uploads/".Length))
+                    : Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, relativePath);
                 if (File.Exists(fullPath))
                 {
                     File.Delete(fullPath);

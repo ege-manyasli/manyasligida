@@ -81,6 +81,12 @@ namespace manyasligida.Models
         public string? PrimaryColor { get; set; }
         public string? SecondaryColor { get; set; }
 
+        // Legacy properties for compatibility
+        public string? Title { get; set; }
+        public string? Content { get; set; }
+        public string? ImageUrl { get; set; }
+        public string? VideoUrl { get; set; }
+
         // META
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;

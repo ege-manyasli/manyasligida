@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using manyasligida.Models;
+using System.Threading;
 
 namespace manyasligida.Services
 {
@@ -8,13 +9,14 @@ namespace manyasligida.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private const string CartSessionKey = "Cart";
+        private static readonly SemaphoreSlim _cartLock = new SemaphoreSlim(1, 1);
 
         public CartService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public List<CartItem> GetCart()
+        public async Task<List<CartItem>> GetCartAsync()
         {
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session == null)
@@ -43,7 +45,12 @@ namespace manyasligida.Services
             }
         }
 
-        public void SaveCart(List<CartItem> cart)
+        public List<CartItem> GetCart()
+        {
+            return GetCartAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task SaveCartAsync(List<CartItem> cart)
         {
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session == null)
@@ -59,61 +66,105 @@ namespace manyasligida.Services
             session.SetString(CartSessionKey, cartJson);
         }
 
+        public void SaveCart(List<CartItem> cart)
+        {
+            SaveCartAsync(cart).GetAwaiter().GetResult();
+        }
+
+        public async Task AddToCartAsync(Product product, int quantity = 1)
+        {
+            await _cartLock.WaitAsync();
+            try
+            {
+                var cart = await GetCartAsync();
+                var existingItem = cart.FirstOrDefault(item => item.ProductId == product.Id);
+
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += quantity;
+                    existingItem.TotalPrice = existingItem.Quantity * existingItem.UnitPrice;
+                }
+                else
+                {
+                    cart.Add(new CartItem
+                    {
+                        ProductId = product.Id,
+                        Quantity = quantity,
+                        UnitPrice = product.Price,
+                        TotalPrice = product.Price * quantity,
+                        AddedAt = DateTime.Now
+                    });
+                }
+
+                await SaveCartAsync(cart);
+            }
+            finally
+            {
+                _cartLock.Release();
+            }
+        }
+
         public void AddToCart(Product product, int quantity = 1)
         {
-            var cart = GetCart();
-            var existingItem = cart.FirstOrDefault(item => item.ProductId == product.Id);
+            AddToCartAsync(product, quantity).GetAwaiter().GetResult();
+        }
 
-            if (existingItem != null)
+        public async Task UpdateQuantityAsync(int productId, int quantity)
+        {
+            await _cartLock.WaitAsync();
+            try
             {
-                existingItem.Quantity += quantity;
-                existingItem.TotalPrice = existingItem.Quantity * existingItem.UnitPrice;
-            }
-            else
-            {
-                cart.Add(new CartItem
+                var cart = await GetCartAsync();
+                var item = cart.FirstOrDefault(i => i.ProductId == productId);
+
+                if (item != null)
                 {
-                    ProductId = product.Id,
-                    Quantity = quantity,
-                    UnitPrice = product.Price,
-                    TotalPrice = product.Price * quantity,
-                    AddedAt = DateTime.Now
-                });
+                    if (quantity <= 0)
+                    {
+                        cart.Remove(item);
+                    }
+                    else
+                    {
+                        item.Quantity = quantity;
+                        item.TotalPrice = item.Quantity * item.UnitPrice;
+                    }
+                    await SaveCartAsync(cart);
+                }
             }
-
-            SaveCart(cart);
+            finally
+            {
+                _cartLock.Release();
+            }
         }
 
         public void UpdateQuantity(int productId, int quantity)
         {
-            var cart = GetCart();
-            var item = cart.FirstOrDefault(i => i.ProductId == productId);
+            UpdateQuantityAsync(productId, quantity).GetAwaiter().GetResult();
+        }
 
-            if (item != null)
+        public async Task RemoveFromCartAsync(int productId)
+        {
+            await _cartLock.WaitAsync();
+            try
             {
-                if (quantity <= 0)
+                var cart = await GetCartAsync();
+                var item = cart.FirstOrDefault(i => i.ProductId == productId);
+                
+                if (item != null)
                 {
                     cart.Remove(item);
+                    await SaveCartAsync(cart);
                 }
-                else
-                {
-                    item.Quantity = quantity;
-                    item.TotalPrice = item.Quantity * item.UnitPrice;
-                }
-                SaveCart(cart);
+            }
+            finally
+            {
+                _cartLock.Release();
             }
         }
 
         public void RemoveFromCart(int productId)
         {
-            var cart = GetCart();
-            var item = cart.FirstOrDefault(i => i.ProductId == productId);
-            
-            if (item != null)
-            {
-                cart.Remove(item);
-                SaveCart(cart);
-            }
+            RemoveFromCartAsync(productId).GetAwaiter().GetResult();
         }
 
         public void ClearCart()
@@ -125,16 +176,26 @@ namespace manyasligida.Services
             session.Remove(CartSessionKey);
         }
 
+        public async Task<int> GetCartItemCountAsync()
+        {
+            var cart = await GetCartAsync();
+            return cart.Sum(item => item.Quantity);
+        }
+
         public int GetCartItemCount()
         {
-            var cart = GetCart();
-            return cart.Sum(item => item.Quantity);
+            return GetCartItemCountAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task<decimal> GetCartTotalAsync()
+        {
+            var cart = await GetCartAsync();
+            return cart.Sum(item => item.TotalPrice);
         }
 
         public decimal GetCartTotal()
         {
-            var cart = GetCart();
-            return cart.Sum(item => item.TotalPrice);
+            return GetCartTotalAsync().GetAwaiter().GetResult();
         }
     }
 } 

@@ -1,0 +1,172 @@
+@{
+    ViewData["Title"] = "Stok Değeri Raporu";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chart-bar me-2"></i>Stok Değeri Raporu
+        </h1>
+        <div>
+            <a href="@Url.Action("LowStockReport", "Inventory")" class="btn btn-warning me-2">
+                <i class="fas fa-exclamation-triangle me-1"></i>Düşük Stok Raporu
+            </a>
+            <a href="@Url.Action("Index", "Inventory")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Toplam Stok Değeri Kartı -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Toplam Stok Değeri
+                            </div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">
+                                ₺@ViewBag.TotalStockValue.ToString("N2")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-warehouse fa-3x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-list me-2"></i>Stok Değeri Detayları
+                    </h6>
+                    <p class="mb-0 mt-2 text-muted">
+                        Tüm stok kalemlerinin değer analizi
+                    </p>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.StockItems != null && ((List<manyasligida.Models.DTOs.InventoryStockDto>)ViewBag.StockItems).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mal İsmi</th>
+                                        <th>Kategori</th>
+                                        <th>Mevcut Stok</th>
+                                        <th>Birim</th>
+                                        <th>Ort. Maliyet</th>
+                                        <th>Stok Değeri</th>
+                                        <th>Son Güncelleme</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var stock in ViewBag.StockItems)
+                                    {
+                                        <tr class="@(stock.IsLowStock ? "table-warning" : "")">
+                                            <td class="fw-bold">@stock.ItemName</td>
+                                            <td>@stock.Category</td>
+                                            <td class="fw-bold">@stock.CurrentStock</td>
+                                            <td>@stock.Unit</td>
+                                            <td>₺@stock.AverageCost.ToString("N2")</td>
+                                            <td class="fw-bold text-success">₺@stock.StockValue.ToString("N2")</td>
+                                            <td>@stock.LastUpdated.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>
+                                                @if (stock.IsLowStock)
+                                                {
+                                                    <span class="badge bg-danger">Düşük Stok</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">Normal</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Kategori Bazlı Özet -->
+                        <div class="mt-4">
+                            <h6 class="font-weight-bold text-primary">
+                                <i class="fas fa-chart-pie me-2"></i>Kategori Bazlı Özet
+                            </h6>
+                            <div class="row">
+                                @{
+                                    var categories = ((List<manyasligida.Models.DTOs.InventoryStockDto>)ViewBag.StockItems)
+                                        .GroupBy(s => s.Category)
+                                        .Select(g => new { 
+                                            Category = g.Key ?? "Kategorisiz", 
+                                            TotalValue = g.Sum(s => s.StockValue),
+                                            ItemCount = g.Count()
+                                        })
+                                        .OrderByDescending(x => x.TotalValue);
+                                }
+                                
+                                @foreach (var category in categories)
+                                {
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card border-left-primary shadow h-100 py-2">
+                                            <div class="card-body">
+                                                <div class="row no-gutters align-items-center">
+                                                    <div class="col mr-2">
+                                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                            @category.Category
+                                                        </div>
+                                                        <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                                            ₺@category.TotalValue.ToString("N2")
+                                                        </div>
+                                                        <div class="text-xs text-muted">
+                                                            @category.ItemCount mal çeşidi
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <i class="fas fa-box fa-2x text-gray-300"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Henüz stok kaydı bulunmamaktadır</h5>
+                            <p class="text-muted">Stok takibi için önce mal alımı yapın veya stok kalemi ekleyin.</p>
+                            <div>
+                                <a href="@Url.Action("Purchases", "Inventory")" class="btn btn-primary me-2">
+                                    <i class="fas fa-shopping-cart me-1"></i>Mal Alımı
+                                </a>
+                                <a href="@Url.Action("Stock", "Inventory")" class="btn btn-success">
+                                    <i class="fas fa-warehouse me-1"></i>Stok Takibi
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

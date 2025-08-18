@@ -992,13 +992,23 @@
     function changeSort(value) {
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('sort', value);
+        
+        // Kategori ID'sini koru
+        const categoryId = urlParams.get('categoryId');
+        if (categoryId) {
+            urlParams.set('categoryId', categoryId);
+        }
+        
         window.location.href = window.location.pathname + '?' + urlParams.toString();
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         const currentSort = urlParams.get('sort') || 'name';
-        document.getElementById('sortSelect').value = currentSort;
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.value = currentSort;
+        }
         
         // Initialize AOS animations
         if (typeof AOS !== 'undefined') {
@@ -1012,6 +1022,10 @@
         
         // Test addToCart function
         console.log('Products page loaded, addToCart function available:', typeof addToCart);
+        
+        // Debug kategori filtreleme
+        console.log('Current categoryId:', urlParams.get('categoryId'));
+        console.log('Current sort:', currentSort);
     });
     
     // Simple test function for debugging

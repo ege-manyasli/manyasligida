@@ -1,0 +1,320 @@
+@{
+    ViewData["Title"] = "Mal Alımları";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-shopping-cart me-2"></i>Mal Alımları
+        </h1>
+        <a href="@Url.Action("Index", "Inventory")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Geri Dön
+        </a>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Mal Alımı Ekleme Formu -->
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-plus me-2"></i>Yeni Mal Alımı
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="addPurchaseForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">Mal İsmi *</label>
+                            <input type="text" name="ItemName" class="form-control" required placeholder="Örn: Süt, Peynir, Yoğurt..." />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kategori</label>
+                            <input type="text" name="Category" class="form-control" placeholder="Örn: Süt Ürünleri, Et Ürünleri..." list="categories" />
+                            <datalist id="categories">
+                                <option value="Süt Ürünleri" />
+                                <option value="Temizlik" />
+                                <option value="Diğer" />
+                            </datalist>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Geliş Fiyatı (₺) *</label>
+                                    <input type="number" name="UnitPrice" class="form-control" step="0.01" min="0.01" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Miktar *</label>
+                                    <input type="number" name="Quantity" class="form-control" step="0.001" min="0.001" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Birim</label>
+                                    <select name="Unit" class="form-select">
+                                        <option value="kg">Kilogram (kg)</option>
+                                        <option value="lt">Litre (lt)</option>
+                                        <option value="adet">Adet</option>
+                                        <option value="paket">Paket</option>
+                                        <option value="kutu">Kutu</option>
+                                        <option value="gram">Gram (gr)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Alım Tarihi *</label>
+                                    <input type="datetime-local" name="PurchaseDate" class="form-control" required value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tedarikçi</label>
+                            <input type="text" name="Supplier" class="form-control" placeholder="Tedarikçi adı..." list="suppliers" />
+                            <datalist id="suppliers">
+                                <option value="Çiftlik A" />
+                                <option value="Çiftlik B" />
+                                <option value="Toptancı C" />
+                                <option value="Üretici D" />
+                            </datalist>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notlar</label>
+                            <textarea name="Notes" class="form-control" rows="3" placeholder="Ek notlar..."></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Mal Alımını Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mal Alımları Listesi -->
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-list me-2"></i>Mal Alımları Listesi
+                    </h6>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshPurchases()">
+                            <i class="fas fa-sync-alt me-1"></i>Yenile
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Mal İsmi</th>
+                                    <th>Kategori</th>
+                                    <th>Miktar</th>
+                                    <th>Birim Fiyat</th>
+                                    <th>Toplam</th>
+                                    <th>Tedarikçi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTable">
+                                @if (ViewBag.Purchases != null)
+                                {
+                                    @foreach (var purchase in ViewBag.Purchases)
+                                    {
+                                        <tr>
+                                            <td>@purchase.PurchaseDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@purchase.ItemName</td>
+                                            <td>@purchase.Category</td>
+                                            <td>@purchase.Quantity @purchase.Unit</td>
+                                            <td>₺@purchase.UnitPrice.ToString("N2")</td>
+                                            <td class="fw-bold">₺@purchase.TotalAmount.ToString("N2")</td>
+                                            <td>@purchase.Supplier</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePurchase(@purchase.Id)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Form submit
+            $('#addPurchaseForm').on('submit', function(e) {
+                e.preventDefault();
+                addPurchase();
+            });
+
+            // Kategorileri yükle
+            loadCategories();
+            loadSuppliers();
+        });
+
+        function addPurchase() {
+            const formData = new FormData($('#addPurchaseForm')[0]);
+
+            $.ajax({
+                url: '@Url.Action("AddPurchase", "Inventory")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        $('#addPurchaseForm')[0].reset();
+                        $('#addPurchaseForm input[name="PurchaseDate"]').val(new Date().toISOString().slice(0, 16));
+                        refreshPurchases();
+                    } else {
+                        showAlert('error', response.message);
+                        if (response.errors) {
+                            response.errors.forEach(function(error) {
+                                showAlert('error', error);
+                            });
+                        }
+                    }
+                },
+                error: function() {
+                    showAlert('error', 'Mal alımı eklenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function deletePurchase(id) {
+            if (confirm('Bu mal alımını silmek istediğinizden emin misiniz?')) {
+                $.ajax({
+                    url: '@Url.Action("DeletePurchase", "Inventory")/' + id,
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showAlert('success', response.message);
+                            refreshPurchases();
+                        } else {
+                            showAlert('error', response.message);
+                        }
+                    },
+                    error: function() {
+                        showAlert('error', 'Mal alımı silinirken bir hata oluştu');
+                    }
+                });
+            }
+        }
+
+        function refreshPurchases() {
+            $.ajax({
+                url: '@Url.Action("Purchases", "Inventory")',
+                type: 'GET',
+                success: function(data) {
+                    // Sayfayı yenile
+                    location.reload();
+                },
+                error: function() {
+                    showAlert('error', 'Veriler yenilenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function loadCategories() {
+            $.ajax({
+                url: '@Url.Action("GetCategories", "Inventory")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        const datalist = $('#categories');
+                        datalist.empty();
+                        response.data.forEach(function(category) {
+                            datalist.append(`<option value="${category}">`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function loadSuppliers() {
+            $.ajax({
+                url: '@Url.Action("GetSuppliers", "Inventory")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        const datalist = $('#suppliers');
+                        datalist.empty();
+                        response.data.forEach(function(supplier) {
+                            datalist.append(`<option value="${supplier}">`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function showAlert(type, message) {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const icon = type === 'error' ? 'exclamation-triangle' : 'check-circle';
+
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${icon} me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            $('.container-fluid').prepend(alertHtml);
+        }
+
+        // Otomatik toplam hesaplama
+        $('input[name="UnitPrice"], input[name="Quantity"]').on('input', function() {
+            const unitPrice = parseFloat($('input[name="UnitPrice"]').val()) || 0;
+            const quantity = parseFloat($('input[name="Quantity"]').val()) || 0;
+            const total = unitPrice * quantity;
+
+            // Toplam gösterimi için bir alan eklenebilir
+            if (total > 0) {
+                // Toplam bilgisini göstermek için bir div oluştur
+                let totalDiv = $('#totalAmount');
+                if (totalDiv.length === 0) {
+                    $('input[name="Quantity"]').after('<div id="totalAmount" class="form-text text-success fw-bold">Toplam: ₺' + total.toFixed(2) + '</div>');
+                } else {
+                    totalDiv.text('Toplam: ₺' + total.toFixed(2));
+                }
+            } else {
+                $('#totalAmount').remove();
+            }
+        });
+    </script>
+}

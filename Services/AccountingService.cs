@@ -230,6 +230,32 @@ public class AccountingService : IAccountingService
         }
     }
 
+    public async Task<ApiResponse<List<ExpenseResponse>>> GetExpensesAsync()
+    {
+        try
+        {
+            var expenses = await _context.Expenses
+                .OrderByDescending(e => e.ExpenseDate)
+                .Select(e => new ExpenseResponse
+                {
+                    Id = e.Id,
+                    Description = e.Description,
+                    Amount = e.Amount,
+                    Category = e.Category,
+                    ExpenseDate = e.ExpenseDate,
+                    CreatedAt = e.CreatedAt
+                })
+                .ToListAsync();
+
+            return ApiResponse<List<ExpenseResponse>>.SuccessResult(expenses);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting expenses");
+            return ApiResponse<List<ExpenseResponse>>.FailureResult("Giderler alınamadı");
+        }
+    }
+
     public async Task<ApiResponse<bool>> CreateExpenseAsync(ExpenseRequest request)
     {
         try
@@ -239,9 +265,8 @@ public class AccountingService : IAccountingService
                 Description = request.Description,
                 Amount = request.Amount,
                 Category = request.Category,
-                Date = request.Date ?? DateTime.UtcNow,
-                CreatedAt = DateTime.UtcNow,
-                IsActive = true
+                ExpenseDate = request.Date ?? DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Expenses.Add(expense);
@@ -269,8 +294,7 @@ public class AccountingService : IAccountingService
             expense.Description = request.Description;
             expense.Amount = request.Amount;
             expense.Category = request.Category;
-            expense.Date = request.Date ?? expense.Date;
-            expense.UpdatedAt = DateTime.UtcNow;
+            expense.ExpenseDate = request.Date ?? expense.ExpenseDate;
 
             await _context.SaveChangesAsync();
 
@@ -283,6 +307,8 @@ public class AccountingService : IAccountingService
         }
     }
 
+
+
     public async Task<ApiResponse<bool>> DeleteExpenseAsync(int expenseId)
     {
         try
@@ -293,7 +319,7 @@ public class AccountingService : IAccountingService
                 return ApiResponse<bool>.FailureResult("Gider bulunamadı");
             }
 
-            expense.IsActive = false;
+            _context.Expenses.Remove(expense);
             await _context.SaveChangesAsync();
 
             return ApiResponse<bool>.SuccessResult(true, "Gider silindi");
@@ -324,7 +350,7 @@ public class AccountingService : IAccountingService
                     e.Description,
                     e.Amount,
                     e.Category,
-                    e.Date,
+                    e.ExpenseDate,
                     e.CreatedAt
                 })
                 .ToListAsync();
@@ -342,13 +368,13 @@ public class AccountingService : IAccountingService
     {
         try
         {
-            var query = _context.Expenses.Where(e => e.IsActive);
+            var query = _context.Expenses.AsQueryable();
             
             if (startDate.HasValue)
-                query = query.Where(e => e.Date >= startDate.Value);
+                query = query.Where(e => e.ExpenseDate >= startDate.Value);
                 
             if (endDate.HasValue)
-                query = query.Where(e => e.Date <= endDate.Value);
+                query = query.Where(e => e.ExpenseDate <= endDate.Value);
                 
             var totalExpenses = await query.SumAsync(e => e.Amount);
             
@@ -365,18 +391,18 @@ public class AccountingService : IAccountingService
     {
         try
         {
-            var query = _context.Expenses.Where(e => e.IsActive);
+            var query = _context.Expenses.AsQueryable();
             
             if (startDate.HasValue)
-                query = query.Where(e => e.Date >= startDate.Value);
+                query = query.Where(e => e.ExpenseDate >= startDate.Value);
                 
             if (endDate.HasValue)
-                query = query.Where(e => e.Date <= endDate.Value);
+                query = query.Where(e => e.ExpenseDate <= endDate.Value);
                 
             var expensesByCategory = await query
                 .GroupBy(e => e.Category)
                 .Select(g => new { Category = g.Key, Total = g.Sum(e => e.Amount) })
-                .ToDictionaryAsync(x => x.Category, x => x.Total);
+                .ToDictionaryAsync(x => x.Category ?? "Diğer", x => x.Total);
                 
             return ApiResponse<Dictionary<string, decimal>>.SuccessResult(expensesByCategory);
         }
@@ -396,7 +422,7 @@ public class AccountingService : IAccountingService
                 .SumAsync(o => o.TotalAmount);
 
             var totalExpenses = await _context.Expenses
-                .Where(e => e.Date >= startDate && e.Date <= endDate && e.IsActive)
+                .Where(e => e.ExpenseDate >= startDate && e.ExpenseDate <= endDate)
                 .SumAsync(e => e.Amount);
 
             var netIncome = totalRevenue - totalExpenses;

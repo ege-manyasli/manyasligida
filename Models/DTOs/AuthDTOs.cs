@@ -91,6 +91,24 @@ public record EmailVerificationRequest
     public string VerificationCode { get; init; } = string.Empty;
 }
 
+public record ResetPasswordRequest
+{
+    [Required(ErrorMessage = "E-posta gereklidir")]
+    [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz")]
+    public string Email { get; init; } = string.Empty;
+
+    [Required(ErrorMessage = "Sıfırlama kodu gereklidir")]
+    public string ResetCode { get; init; } = string.Empty;
+
+    [Required(ErrorMessage = "Yeni şifre gereklidir")]
+    [StringLength(100, MinimumLength = 6, ErrorMessage = "Şifre 6-100 karakter arasında olmalıdır")]
+    public string NewPassword { get; init; } = string.Empty;
+
+    [Required(ErrorMessage = "Şifre tekrarı gereklidir")]
+    [Compare(nameof(NewPassword), ErrorMessage = "Yeni Şifreler eşleşmiyor")]
+    public string ConfirmPassword { get; init; } = string.Empty;
+}
+
 // Response DTOs
 public record AuthResponse
 {
@@ -100,21 +118,32 @@ public record AuthResponse
     public string? Token { get; init; }
 }
 
+public record LoginResponse
+{
+    public UserResponse User { get; init; } = null!;
+    public string Token { get; init; } = string.Empty;
+}
+
+public record RegisterResponse
+{
+    public UserResponse User { get; init; } = null!;
+    public string Message { get; init; } = string.Empty;
+}
+
 public record UserResponse
 {
     public int Id { get; init; }
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
-    public string FullName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string Phone { get; init; } = string.Empty;
     public string? Address { get; init; }
     public string? City { get; init; }
     public string? PostalCode { get; init; }
-    public bool IsActive { get; init; }
     public bool IsAdmin { get; init; }
     public bool EmailConfirmed { get; init; }
     public DateTime CreatedAt { get; init; }
+    public DateTime? UpdatedAt { get; init; }
     public DateTime? LastLoginAt { get; init; }
 }
 

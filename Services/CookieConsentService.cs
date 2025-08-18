@@ -265,7 +265,6 @@ public class CookieConsentService : ICookieConsentService
         try
         {
             var categories = await _context.CookieCategories
-                .Where(c => c.IsActive)
                 .OrderBy(c => c.SortOrder)
                 .ToListAsync();
 
@@ -275,6 +274,7 @@ public class CookieConsentService : ICookieConsentService
                 Name = c.Name,
                 Description = c.Description,
                 IsRequired = c.IsRequired,
+                IsActive = c.IsActive,
                 IsAccepted = c.IsRequired, // Default to required
                 SortOrder = c.SortOrder
             }).ToList();
@@ -346,7 +346,7 @@ public class CookieConsentService : ICookieConsentService
         }
     }
 
-    public async Task<ApiResponse<bool>> UpdateCategoryAsync(int categoryId, string name, string description, bool isRequired)
+    public async Task<ApiResponse<bool>> UpdateCategoryAsync(int categoryId, string name, string description, bool isRequired, bool isActive = true, int sortOrder = 0)
     {
         try
         {
@@ -359,6 +359,8 @@ public class CookieConsentService : ICookieConsentService
             category.Name = name;
             category.Description = description;
             category.IsRequired = isRequired;
+            category.IsActive = isActive;
+            category.SortOrder = sortOrder;
 
             await _context.SaveChangesAsync();
 
@@ -424,6 +426,40 @@ public class CookieConsentService : ICookieConsentService
         }
     }
 
+    // Statistics
+    public async Task<ApiResponse<object>> GetConsentStatisticsAsync()
+    {
+        try
+        {
+            var totalConsents = await _context.CookieConsents.CountAsync();
+            
+            // Count accepted consents based on CookieConsentDetail.IsAccepted
+            var acceptedConsents = await _context.CookieConsentDetails
+                .Where(cd => cd.IsAccepted)
+                .Select(cd => cd.CookieConsentId)
+                .Distinct()
+                .CountAsync();
+                
+            var declinedConsents = totalConsents - acceptedConsents;
+            var acceptanceRate = totalConsents > 0 ? (acceptedConsents * 100.0 / totalConsents) : 0;
+
+            var stats = new
+            {
+                totalConsents,
+                acceptedConsents,
+                declinedConsents,
+                acceptanceRate = Math.Round(acceptanceRate, 1)
+            };
+
+            return ApiResponse<object>.SuccessResult(stats);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting consent statistics");
+            return ApiResponse<object>.FailureResult("İstatistikler alınamadı");
+        }
+    }
+
     // Analytics
     public async Task<ApiResponse<Dictionary<string, int>>> GetConsentAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
     {
@@ -451,6 +487,43 @@ public class CookieConsentService : ICookieConsentService
         {
             _logger.LogError(ex, "Error getting consent analytics");
             return ApiResponse<Dictionary<string, int>>.FailureResult("Analitik veriler alınamadı");
+        }
+    }
+
+    // Get daily consent analytics for chart
+    public async Task<ApiResponse<List<object>>> GetDailyConsentAnalyticsAsync(int days = 30)
+    {
+        try
+        {
+            var startDate = DateTime.UtcNow.AddDays(-days);
+            
+            var dailyConsents = await _context.CookieConsents
+                .Include(c => c.ConsentDetails)
+                .Where(c => c.ConsentDate >= startDate)
+                .GroupBy(c => c.ConsentDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key.ToString("yyyy-MM-dd"),
+                    TotalCount = g.Count(),
+                    AcceptedCount = g.SelectMany(c => c.ConsentDetails.Where(cd => cd.IsAccepted))
+                        .Select(cd => cd.CookieConsentId)
+                        .Distinct()
+                        .Count(),
+                    DeclinedCount = g.SelectMany(c => c.ConsentDetails.Where(cd => !cd.IsAccepted))
+                        .Select(cd => cd.CookieConsentId)
+                        .Distinct()
+                        .Count()
+                })
+                .OrderBy(x => x.Date)
+                .ToListAsync();
+
+            var result = dailyConsents.Cast<object>().ToList();
+            return ApiResponse<List<object>>.SuccessResult(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting daily consent analytics");
+            return ApiResponse<List<object>>.FailureResult("Günlük analitik veriler alınamadı");
         }
     }
 

@@ -48,6 +48,7 @@ public record CookieCategoryResponse
     public string Name { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public bool IsRequired { get; init; }
+    public bool IsActive { get; init; }
     public bool IsAccepted { get; init; }
     public int SortOrder { get; init; }
 }

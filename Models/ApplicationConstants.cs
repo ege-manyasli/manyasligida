@@ -79,5 +79,23 @@ namespace manyasligida.Models
             public const int DefaultPageSize = 12;
             public const int MaxPageSize = 50;
         }
+
+        // Rate Limiting
+        public static class RateLimiting
+        {
+            public const int MaxRequestsPerMinute = 100;
+            public const int MaxLoginAttemptsPerHour = 5;
+            public const int MaxRegistrationAttemptsPerHour = 3;
+        }
+
+        // Security
+        public static class Security
+        {
+            public const int PasswordMinLength = 6;
+            public const int SessionTimeoutMinutes = 30;
+            public const int AuthCookieExpiryDays = 7;
+            public const int EmailVerificationExpiryMinutes = 15;
+            public const int PasswordResetExpiryMinutes = 15;
+        }
     }
 }

@@ -1,42 +1,38 @@
 using manyasligida.Models;
+using System.Security.Claims;
 
 namespace manyasligida.Services
 {
     public interface IAuthService
     {
-        // Authentication methods
-        Task<User?> LoginAsync(string email, string password);
-        Task<User?> RegisterAsync(RegisterViewModel model);
-        Task<bool> IsEmailExistsAsync(string email);
-        Task Logout();
-
-        // Password methods
+        // Core authentication methods
+        Task<AuthResult> LoginAsync(string email, string password, bool rememberMe = false);
+        Task<AuthResult> RegisterAsync(RegisterViewModel model);
+        Task<bool> LogoutAsync();
+        
+        // User management
+        Task<User?> GetCurrentUserAsync();
+        Task<bool> IsUserLoggedInAsync();
+        Task<bool> IsUserAdminAsync();
+        
+        // Password management
         string HashPassword(string password);
         bool VerifyPassword(string password, string hashedPassword);
-
-        // User management methods
-        void SetCurrentUser(User user);
-        Task<bool> VerifyEmailAsync(string email, string verificationCode);
-        Task<bool> ResendVerificationCodeAsync(string email);
-
-        // Password management
         Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
         Task<bool> SendPasswordResetCodeAsync(string email);
         Task<bool> VerifyPasswordResetCodeAsync(string email, string resetCode);
+        
+        // Email verification
+        Task<bool> VerifyEmailAsync(string email, string verificationCode);
+        Task<bool> ResendVerificationCodeAsync(string email);
+        Task<bool> SendEmailVerificationCodeAsync(string email);
+    }
 
-        // Session management methods
-        Task<User?> GetCurrentUserAsync();
-        Task<bool> IsCurrentUserAdminAsync();
-        Task<bool> IsUserLoggedInAsync();
-        Task<bool> ValidateSessionAsync();
-        Task<bool> ExtendSessionAsync();
-        Task<bool> RefreshSessionAsync();
-        Task<bool> IsSessionExpiredAsync();
-        Task<DateTime?> GetSessionExpiryAsync();
-        Task CleanupExpiredSessionsAsync();
-
-        // Multi-session management
-        Task<bool> ForceLogoutOtherSessionsAsync();
-        Task<int> GetActiveSessionCountAsync();
+    public class AuthResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public User? User { get; set; }
+        public List<Claim> Claims { get; set; } = new List<Claim>();
     }
 }

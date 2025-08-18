@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using manyasligida.Services;
 
 namespace manyasligida.Models
 {
@@ -45,7 +46,7 @@ namespace manyasligida.Models
         
         public string FaviconUrl { get; set; } = "/favicon.ico";
         
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         public DateTime? UpdatedAt { get; set; }
         public bool IsActive { get; set; } = true;
     }

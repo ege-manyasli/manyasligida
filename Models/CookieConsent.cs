@@ -33,6 +33,7 @@ namespace manyasligida.Models
         public DateTime CreatedAt { get; set; } = DateTimeHelper.NowTurkey;
         
         // Navigation property
+        public ICollection<CookieConsentDetail> CookieConsentDetails { get; set; } = new List<CookieConsentDetail>();
         public ICollection<CookieConsentDetail> ConsentDetails { get; set; } = new List<CookieConsentDetail>();
     }
 }

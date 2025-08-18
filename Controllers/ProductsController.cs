@@ -31,9 +31,30 @@ namespace manyasligida.Controllers
                 var productCount = await context.Products.CountAsync();
                 var categoryCount = await context.Categories.CountAsync();
                 
+                // Kategori filtreleme testi
+                var categories = await context.Categories.Where(c => c.IsActive).ToListAsync();
+                var categoryDetails = new List<object>();
+                
+                foreach (var category in categories)
+                {
+                    var productCountInCategory = await context.Products
+                        .Where(p => p.CategoryId == category.Id && p.IsActive)
+                        .CountAsync();
+                    
+                    categoryDetails.Add(new
+                    {
+                        Id = category.Id,
+                        Name = category.Name,
+                        DisplayOrder = category.DisplayOrder,
+                        IsActive = category.IsActive,
+                        ProductCount = productCountInCategory
+                    });
+                }
+                
                 ViewBag.Message = $"Products sayfası çalışıyor! 🎉 Ürün sayısı: {productCount}, Kategori sayısı: {categoryCount}";
                 ViewBag.ProductCount = productCount;
                 ViewBag.CategoryCount = categoryCount;
+                ViewBag.CategoryDetails = categoryDetails;
                 
                 return View("Emergency");
             }
@@ -52,25 +73,59 @@ namespace manyasligida.Controllers
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                // Basit sorgu - sadece aktif ürünleri al
-                var products = await context.Products
+                // Ürün sorgusu - kategori filtreleme ile
+                var query = context.Products
                     .Include(p => p.Category)
-                    .Where(p => p.IsActive)
-                    .OrderBy(p => p.Name)
+                    .Where(p => p.IsActive);
+
+                // Kategori filtreleme
+                if (categoryId.HasValue)
+                {
+                    query = query.Where(p => p.CategoryId == categoryId.Value);
+                }
+
+                // Arama filtreleme
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    query = query.Where(p => p.Name.Contains(searchTerm) || 
+                                           (p.Description != null && p.Description.Contains(searchTerm)));
+                }
+
+                // Sıralama
+                query = sortBy switch
+                {
+                    "price" => query.OrderBy(p => p.Price),
+                    "price_desc" => query.OrderByDescending(p => p.Price),
+                    "new" => query.OrderByDescending(p => p.CreatedAt),
+                    "popular" => query.OrderByDescending(p => p.IsPopular).ThenByDescending(p => p.CreatedAt),
+                    _ => query.OrderBy(p => p.Name)
+                };
+
+                // Toplam ürün sayısı
+                var totalProducts = await query.CountAsync();
+
+                // Sayfalama
+                var products = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
                 var categories = await context.Categories
                     .Where(c => c.IsActive)
+                    .OrderBy(c => c.DisplayOrder)
+                    .ThenBy(c => c.Name)
                     .ToListAsync();
 
-                // Basit ViewBag değerleri
+                var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+
+                // ViewBag değerleri
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategoryId = categoryId;
                 ViewBag.SearchTerm = searchTerm;
-                ViewBag.SortBy = sortBy;
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalProducts = products.Count;
+                ViewBag.SortOrder = sortBy;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = totalPages;
+                ViewBag.TotalProducts = totalProducts;
                 ViewBag.PageSize = pageSize;
                 ViewBag.CartItemCount = _cartService.GetCartItemCount();
                 ViewBag.SiteSettings = await _siteSettingsService.GetAsync();

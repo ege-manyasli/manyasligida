@@ -44,6 +44,7 @@ namespace manyasligida.Models
 
         // Çoklu görsel desteği
         public string? ImageUrls { get; set; } // JSON formatında çoklu görsel URL'leri
+        public string? GalleryImageUrls { get; set; } // Galeri görselleri için JSON formatında URL'ler
         public string? ThumbnailUrl { get; set; }
 
         // Ürün özellikleri
@@ -96,6 +97,26 @@ namespace manyasligida.Models
         public void SetImageUrls(List<string> urls)
         {
             ImageUrls = System.Text.Json.JsonSerializer.Serialize(urls);
+        }
+
+        public List<string> GetGalleryImageUrls()
+        {
+            if (string.IsNullOrEmpty(GalleryImageUrls))
+                return new List<string>();
+
+            try
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<List<string>>(GalleryImageUrls) ?? new List<string>();
+            }
+            catch
+            {
+                return new List<string>();
+            }
+        }
+
+        public void SetGalleryImageUrls(List<string> urls)
+        {
+            GalleryImageUrls = System.Text.Json.JsonSerializer.Serialize(urls);
         }
 
         public string GetMainImageUrl()

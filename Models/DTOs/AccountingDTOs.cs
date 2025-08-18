@@ -136,3 +136,14 @@ public record RecentSaleResponse
     public DateTime Date { get; init; }
     public string Status { get; init; } = string.Empty;
 }
+
+// Expenses
+public record ExpenseResponse
+{
+    public int Id { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public decimal Amount { get; init; }
+    public string Category { get; init; } = string.Empty;
+    public DateTime ExpenseDate { get; init; }
+    public DateTime CreatedAt { get; init; }
+}

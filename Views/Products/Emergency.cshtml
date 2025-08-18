@@ -25,6 +25,58 @@
                     <a href="@Url.Action("Index", "Home")" class="btn btn-success">Ana Sayfa</a>
                 </div>
             </div>
+            
+            @if (ViewBag.CategoryDetails != null)
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>Kategori Detayları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Kategori Adı</th>
+                                        <th>Görüntüleme Sırası</th>
+                                        <th>Aktif</th>
+                                        <th>Ürün Sayısı</th>
+                                        <th>Test Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (dynamic category in ViewBag.CategoryDetails)
+                                    {
+                                        <tr>
+                                            <td>@category.Id</td>
+                                            <td>@category.Name</td>
+                                            <td>@category.DisplayOrder</td>
+                                            <td>
+                                                @if (category.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Aktif</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Pasif</span>
+                                                }
+                                            </td>
+                                            <td>@category.ProductCount</td>
+                                            <td>
+                                                <a href="@Url.Action("Index", "Products", new { categoryId = category.Id })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    Kategoriyi Test Et
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

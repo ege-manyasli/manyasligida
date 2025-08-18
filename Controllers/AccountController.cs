@@ -49,99 +49,18 @@ namespace manyasligida.Controllers
 
                 _logger.LogInformation("Login attempt for: {Email}", model.Email);
 
-                // Doğrudan veritabanından kullanıcıyı al
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.IsActive);
+                var authResult = await _authService.LoginAsync(model.Email, model.Password, model.RememberMe);
 
-                if (user == null)
+                if (authResult.Success)
                 {
-                    _logger.LogWarning("Login failed - User not found: {Email}", model.Email);
-                    ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+                    _logger.LogInformation("Login successful for: {Email}", model.Email);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", authResult.Message);
                     return View(model);
                 }
-
-                // Şifreyi kontrol et
-                if (!VerifyPassword(model.Password, user.Password))
-                {
-                    _logger.LogWarning("Login failed - Invalid password for user: {Email}", model.Email);
-                    
-                    // E-posta doğrulanmamışsa uyarı ver
-                    if (!user.EmailConfirmed)
-                    {
-                        ModelState.AddModelError("", "E-posta adresinizi doğrulamanız gerekmektedir. Lütfen e-posta kutunuzu kontrol edin ve doğrulama kodunu girin.");
-                        TempData["UnverifiedEmail"] = model.Email;
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "E-posta veya şifre hatalı.");
-                    }
-                    return View(model);
-                }
-
-                // E-posta doğrulanmamışsa uyarı ver
-                if (!user.EmailConfirmed)
-                {
-                    _logger.LogWarning("Login failed - Email not confirmed: {Email}", model.Email);
-                    ModelState.AddModelError("", "E-posta adresinizi doğrulamanız gerekmektedir. Lütfen e-posta kutunuzu kontrol edin ve doğrulama kodunu girin.");
-                    TempData["UnverifiedEmail"] = model.Email;
-                    return View(model);
-                }
-
-                _logger.LogInformation("Login successful for: {Email}", model.Email);
-
-                // Son giriş zamanını güncelle
-                user.LastLoginAt = DateTimeHelper.NowTurkey;
-                await _context.SaveChangesAsync();
-
-                // Create claims
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim("FullName", user.FullName),
-                    new Claim("UserId", user.Id.ToString())
-                };
-
-                if (user.IsAdmin)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-                }
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = model.RememberMe,
-                    ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1)
-                };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
-                    new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                // Clear any existing session data first to prevent conflicts
-                HttpContext.Session.Clear();
-                
-                // Create unique session for this user/device combination
-                var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
-                await sessionManager.CreateUserSessionAsync(user);
-                
-                // Set session data with unique identifiers
-                HttpContext.Session.SetString("UserId", user.Id.ToString());
-                HttpContext.Session.SetString("UserName", user.FullName);
-                HttpContext.Session.SetString("IsAdmin", user.IsAdmin.ToString());
-                HttpContext.Session.SetString("LoginTime", DateTimeHelper.NowTurkeyString("yyyy-MM-dd HH:mm:ss"));
-                HttpContext.Session.SetString("DeviceId", Guid.NewGuid().ToString()); // Unique device identifier
-                
-                // WhatsApp siparişi için kullanıcı bilgilerini session'a kaydet
-                HttpContext.Session.SetString("UserFirstName", user.FirstName ?? "");
-                HttpContext.Session.SetString("UserLastName", user.LastName ?? "");
-                HttpContext.Session.SetString("UserEmail", user.Email ?? "");
-                HttpContext.Session.SetString("UserPhone", user.Phone ?? "");
-                HttpContext.Session.SetString("UserCity", user.City ?? "");
-                HttpContext.Session.SetString("UserAddress", user.Address ?? "");
-
-                _logger.LogInformation("User {Email} logged in successfully", model.Email);
-                
-                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
@@ -175,44 +94,19 @@ namespace manyasligida.Controllers
 
                 _logger.LogInformation("Registration attempt for: {Email}", model.Email);
 
-                // Check if email already exists
-                var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower());
-                
-                if (existingUser != null)
+                var authResult = await _authService.RegisterAsync(model);
+
+                if (authResult.Success)
                 {
-                    _logger.LogWarning("Registration failed - Email already exists: {Email}", model.Email);
-                    ModelState.AddModelError("Email", "Bu e-posta adresi zaten kullanımda.");
+                    _logger.LogInformation("Registration successful for: {Email}", model.Email);
+                    TempData["Success"] = authResult.Message;
+                    return RedirectToAction("VerifyEmail", new { email = model.Email });
+                }
+                else
+                {
+                    ModelState.AddModelError("", authResult.Message);
                     return View(model);
                 }
-
-                // Create new user directly with context
-                var user = new User
-                {
-                    FirstName = model.FirstName.Trim(),
-                    LastName = model.LastName.Trim(),
-                    Email = model.Email.ToLower().Trim(),
-                    Phone = model.Phone.Trim(),
-                    Password = HashPassword(model.Password), // Şifreyi hash'le
-                    Address = model.Address?.Trim(),
-                    City = model.City?.Trim(),
-                    PostalCode = model.PostalCode?.Trim(),
-                    IsActive = true,
-                    IsAdmin = false,
-                    EmailConfirmed = false,
-                    CreatedAt = DateTimeHelper.NowTurkey,
-                    UpdatedAt = DateTimeHelper.NowTurkey // UpdatedAt'i de set et
-                };
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                // Send email verification
-                await SendEmailVerificationCodeAsync(user.Email);
-
-                _logger.LogInformation("Registration successful for: {Email}", model.Email);
-                TempData["Success"] = "Kayıt başarılı! E-posta adresinize gönderilen doğrulama kodunu girin.";
-                return RedirectToAction("VerifyEmail", new { email = model.Email });
             }
             catch (Exception ex)
             {
@@ -222,22 +116,13 @@ namespace manyasligida.Controllers
             }
         }
 
-        // GET: Account/Logout
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             try
             {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                
-                // Clear session
-                HttpContext.Session.Clear();
-                
-                // Invalidate session in database
-                var sessionManager = HttpContext.RequestServices.GetRequiredService<ISessionManager>();
-                await sessionManager.InvalidateSessionAsync();
-                
+                await _authService.LogoutAsync();
                 _logger.LogInformation("User logged out successfully");
-                
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
@@ -247,13 +132,12 @@ namespace manyasligida.Controllers
             }
         }
 
-        // GET: Account/ForgotPassword
+        [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();
         }
 
-        // POST: Account/ForgotPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -262,24 +146,18 @@ namespace manyasligida.Controllers
             {
                 try
                 {
-                    using var scope = HttpContext.RequestServices.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-
-                    // AuthService'i kullanarak şifre sıfırlama kodu gönder
-                    var emailSent = await authService.SendPasswordResetCodeAsync(model.Email);
+                    var emailSent = await _authService.SendPasswordResetCodeAsync(model.Email);
                     
                     if (emailSent)
                     {
-                        _logger.LogInformation("Şifre sıfırlama e-postası başarıyla gönderildi: {Email}", model.Email);
+                        _logger.LogInformation("Password reset email sent successfully: {Email}", model.Email);
                         TempData["Success"] = "Şifre sıfırlama kodu e-posta adresinize gönderildi.";
-                        TempData["Email"] = model.Email; // For next step
+                        TempData["Email"] = model.Email;
                         return RedirectToAction("VerifyResetCode");
                     }
                     else
                     {
-                        _logger.LogWarning("Şifre sıfırlama e-postası gönderilemedi: {Email}", model.Email);
+                        _logger.LogWarning("Password reset email failed: {Email}", model.Email);
                         // Don't reveal if email exists or not for security
                         TempData["Success"] = "Şifre sıfırlama kodu e-posta adresinize gönderildi.";
                         TempData["Email"] = model.Email;
@@ -296,7 +174,7 @@ namespace manyasligida.Controllers
             return View(model);
         }
 
-        // GET: Account/VerifyResetCode
+        [HttpGet]
         public IActionResult VerifyResetCode()
         {
             var email = TempData["Email"]?.ToString();
@@ -307,7 +185,6 @@ namespace manyasligida.Controllers
             return View(model);
         }
 
-        // POST: Account/VerifyResetCode
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyResetCode(VerifyResetCodeViewModel model)
@@ -316,13 +193,7 @@ namespace manyasligida.Controllers
             {
                 try
                 {
-                    using var scope = HttpContext.RequestServices.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-
-                    // AuthService'i kullanarak şifre sıfırlama kodunu doğrula
-                    var isValid = await authService.VerifyPasswordResetCodeAsync(model.Email, model.VerificationCode);
+                    var isValid = await _authService.VerifyPasswordResetCodeAsync(model.Email, model.VerificationCode);
 
                     if (isValid)
                     {
@@ -347,7 +218,7 @@ namespace manyasligida.Controllers
             return View(model);
         }
 
-        // GET: Account/ChangePassword
+        [HttpGet]
         public IActionResult ChangePassword()
         {
             var email = HttpContext.Session.GetString("ResetEmail");
@@ -360,7 +231,6 @@ namespace manyasligida.Controllers
             return View(new ResetPasswordViewModel());
         }
 
-        // POST: Account/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ResetPasswordViewModel model)
@@ -369,9 +239,6 @@ namespace manyasligida.Controllers
             {
                 try
                 {
-                    using var scope = HttpContext.RequestServices.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
                     var email = HttpContext.Session.GetString("ResetEmail");
                     if (string.IsNullOrEmpty(email))
                     {
@@ -379,12 +246,11 @@ namespace manyasligida.Controllers
                         return RedirectToAction("ForgotPassword");
                     }
 
-                    var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
                     if (user != null)
                     {
                         // Hash new password
-                        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-                        user.Password = authService.HashPassword(model.NewPassword);
+                        user.Password = _authService.HashPassword(model.NewPassword);
                         user.UpdatedAt = DateTimeHelper.NowTurkey;
                         
                         // Clear any existing password reset data
@@ -393,7 +259,7 @@ namespace manyasligida.Controllers
                         user.PasswordResetCode = null;
                         user.PasswordResetCodeExpiry = null;
                         
-                        await context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
 
                         // Clear session
                         HttpContext.Session.Remove("ResetEmail");
@@ -418,23 +284,13 @@ namespace manyasligida.Controllers
             return View(model);
         }
 
-
-
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Profile()
         {
             try
             {
-                // Doğrudan context kullanarak kullanıcıyı al
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out var userIdInt))
-                {
-                    return RedirectToAction("Login");
-                }
-
-                var currentUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Id == userIdInt && u.IsActive);
+                var currentUser = await _authService.GetCurrentUserAsync();
 
                 if (currentUser == null)
                 {
@@ -443,7 +299,7 @@ namespace manyasligida.Controllers
 
                 // Kullanıcının siparişlerini de al
                 var userOrders = await _context.Orders
-                    .Where(o => o.UserId == userIdInt)
+                    .Where(o => o.UserId == currentUser.Id)
                     .OrderByDescending(o => o.OrderDate)
                     .ToListAsync();
 
@@ -471,16 +327,7 @@ namespace manyasligida.Controllers
                     return View("Profile", model);
                 }
 
-                // Doğrudan context kullanarak kullanıcıyı al
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out var userIdInt))
-                {
-                    return RedirectToAction("Login");
-                }
-
-                var currentUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Id == userIdInt && u.IsActive);
-
+                var currentUser = await _authService.GetCurrentUserAsync();
                 if (currentUser == null)
                 {
                     return RedirectToAction("Login");
@@ -510,34 +357,6 @@ namespace manyasligida.Controllers
             }
         }
 
-        // Test endpoint for debugging
-        [HttpGet]
-        public async Task<IActionResult> DebugUsers()
-        {
-            try
-            {
-                var users = await _context.Users.ToListAsync();
-                var userInfo = users.Select(u => new {
-                    u.Id,
-                    u.Email,
-                    u.FirstName,
-                    u.LastName,
-                    FullName = u.FirstName + " " + u.LastName,
-                    u.IsActive,
-                    u.EmailConfirmed,
-                    PasswordLength = u.Password?.Length ?? 0
-                }).ToList();
-
-                return Json(userInfo);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in DebugUsers");
-                return Json(new { error = ex.Message });
-            }
-        }
-
-        // Email Verification
         [HttpGet]
         public IActionResult VerifyEmail(string email)
         {
@@ -646,318 +465,6 @@ namespace manyasligida.Controllers
                 TempData["Error"] = "Doğrulama kodu gönderilirken bir hata oluştu.";
                 return RedirectToAction("VerifyEmail", new { email = email });
             }
-        }
-
-        // Debug Email Verification - DETAYLI
-        [HttpGet]
-        public async Task<IActionResult> DebugEmailVerification(string email)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(email))
-                {
-                    return Json(new { error = "Email required" });
-                }
-
-                // Kullanıcı bilgilerini al
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
-                
-                var verifications = await _context.EmailVerifications
-                    .Where(v => v.Email.ToLower() == email.ToLower())
-                    .OrderByDescending(v => v.CreatedAt)
-                    .Take(5)
-                    .Select(v => new {
-                        v.VerificationCode,
-                        v.CreatedAt,
-                        v.ExpiresAt,
-                        v.IsUsed,
-                        IsExpired = v.ExpiresAt <= DateTimeHelper.NowTurkey,
-                        MinutesToExpire = (v.ExpiresAt - DateTimeHelper.NowTurkey).TotalMinutes
-                    })
-                    .ToListAsync();
-
-                return Json(new { 
-                    email = email,
-                    user = user != null ? new {
-                        user.Id,
-                        user.Email,
-                        user.EmailConfirmed,
-                        user.IsActive,
-                        user.CreatedAt
-                    } : null,
-                    verifications = verifications,
-                    currentTime = DateTimeHelper.NowTurkey,
-                    currentTimeUtc = DateTimeHelper.NowTurkey,
-                    debugInfo = new {
-                        userExists = user != null,
-                        emailConfirmed = user?.EmailConfirmed ?? false,
-                        activeVerifications = verifications.Count(v => !v.IsUsed),
-                        usedVerifications = verifications.Count(v => v.IsUsed),
-                        expiredVerifications = verifications.Count(v => v.IsExpired)
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in DebugEmailVerification");
-                return Json(new { error = ex.Message });
-            }
-        }
-
-        // Emergency test action
-        [HttpGet]
-        public IActionResult Test()
-        {
-            ViewBag.Message = "Account Controller çalışıyor! ✅";
-            ViewBag.IsAuthenticated = User.Identity?.IsAuthenticated ?? false;
-            ViewBag.UserName = User.Identity?.Name ?? "Anonim";
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> TestEmail()
-        {
-            try
-            {
-                var emailService = HttpContext.RequestServices.GetRequiredService<IEmailService>();
-                var testEmail = "test@example.com";
-                var testCode = "123456";
-                
-                _logger.LogInformation("Test e-postası gönderiliyor...");
-                var result = await emailService.SendVerificationEmailAsync(testEmail, testCode);
-                
-                var response = new
-                {
-                    Success = result,
-                    Message = result ? "Test e-postası başarıyla gönderildi" : "Test e-postası gönderilemedi",
-                    Timestamp = DateTime.Now,
-                    TestEmail = testEmail,
-                    TestCode = testCode,
-                    Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown"
-                };
-                
-                return Json(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Test e-postası hatası");
-                
-                var response = new
-                {
-                    Success = false,
-                    Message = $"Test e-postası hatası: {ex.Message}",
-                    Error = ex.ToString(),
-                    Timestamp = DateTime.Now,
-                    Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown"
-                };
-                
-                return Json(response);
-            }
-        }
-
-        [HttpGet]
-        public IActionResult EmailConfig()
-        {
-            try
-            {
-                var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-                
-                var smtpServer = configuration["EmailSettings:SmtpServer"];
-                var smtpPort = configuration["EmailSettings:SmtpPort"];
-                var smtpUsername = configuration["EmailSettings:SmtpUsername"];
-                var smtpPassword = configuration["EmailSettings:SmtpPassword"];
-                var fromEmail = configuration["EmailSettings:FromEmail"];
-                var fromName = configuration["EmailSettings:FromName"];
-                var environment = configuration["ASPNETCORE_ENVIRONMENT"];
-                var enableSsl = configuration["EmailSettings:EnableSsl"];
-                var useDefaultCredentials = configuration["EmailSettings:UseDefaultCredentials"];
-                var timeout = configuration["EmailSettings:Timeout"];
-                var deliveryMethod = configuration["EmailSettings:DeliveryMethod"];
-                
-                var configInfo = new
-                {
-                    SmtpServer = smtpServer,
-                    SmtpPort = smtpPort,
-                    SmtpUsername = smtpUsername,
-                    SmtpPassword = string.IsNullOrEmpty(smtpPassword) ? "BOŞ" : "AYARLANMIŞ",
-                    FromEmail = fromEmail,
-                    FromName = fromName,
-                    Environment = environment,
-                    EnableSsl = enableSsl,
-                    UseDefaultCredentials = useDefaultCredentials,
-                    Timeout = timeout,
-                    DeliveryMethod = deliveryMethod,
-                    HasAllSettings = !string.IsNullOrEmpty(smtpServer) && 
-                                   !string.IsNullOrEmpty(smtpPort) && 
-                                   !string.IsNullOrEmpty(smtpUsername) && 
-                                   !string.IsNullOrEmpty(smtpPassword) && 
-                                   !string.IsNullOrEmpty(fromEmail),
-                    CurrentTime = DateTime.Now,
-                    CurrentTimeUtc = DateTime.UtcNow,
-                    ServerTimeZone = TimeZoneInfo.Local.DisplayName
-                };
-                
-                return Json(configInfo);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { error = ex.Message });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> TestGmailConnection()
-        {
-            try
-            {
-                var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-                
-                var smtpServer = configuration["EmailSettings:SmtpServer"];
-                var smtpPort = int.Parse(configuration["EmailSettings:SmtpPort"]);
-                var smtpUsername = configuration["EmailSettings:SmtpUsername"];
-                var smtpPassword = configuration["EmailSettings:SmtpPassword"];
-                var enableSsl = configuration.GetValue<bool>("EmailSettings:EnableSsl", true);
-                var timeout = configuration.GetValue<int>("EmailSettings:Timeout", 60000);
-
-                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                
-                using var smtpClient = new System.Net.Mail.SmtpClient(smtpServer, smtpPort)
-                {
-                    EnableSsl = enableSsl,
-                    UseDefaultCredentials = false,
-                    Credentials = new System.Net.NetworkCredential(smtpUsername, smtpPassword),
-                    Timeout = timeout,
-                    DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network
-                };
-
-                // Test connection
-                await smtpClient.SendMailAsync(new System.Net.Mail.MailMessage());
-                
-                stopwatch.Stop();
-                
-                var response = new
-                {
-                    Success = true,
-                    Message = "Gmail SMTP bağlantısı başarılı",
-                    SmtpServer = smtpServer,
-                    Port = smtpPort,
-                    SslEnabled = enableSsl,
-                    ConnectionTime = stopwatch.ElapsedMilliseconds,
-                    Timestamp = DateTime.Now
-                };
-                
-                return Json(response);
-            }
-            catch (Exception ex)
-            {
-                var suggestions = "";
-                if (ex.Message.Contains("Authentication"))
-                {
-                    suggestions = "1. Gmail'de 2FA'yı etkinleştirin<br>2. App Password oluşturun<br>3. App Password'ü kullanın";
-                }
-                else if (ex.Message.Contains("timeout"))
-                {
-                    suggestions = "1. İnternet bağlantınızı kontrol edin<br>2. Firewall ayarlarını kontrol edin<br>3. Port 587 veya 465'nin açık olduğundan emin olun";
-                }
-                else if (ex.Message.Contains("SSL"))
-                {
-                    suggestions = "1. SSL ayarlarını kontrol edin<br>2. Port 465 (SSL) veya 587 (TLS) kullanın";
-                }
-                
-                var response = new
-                {
-                    Success = false,
-                    Message = $"Gmail SMTP bağlantısı başarısız: {ex.Message}",
-                    Error = ex.ToString(),
-                    Suggestions = suggestions,
-                    Timestamp = DateTime.Now
-                };
-                
-                return Json(response);
-            }
-        }
-
-        // Helper methods
-        private string HashPassword(string password)
-        {
-            using var sha256 = System.Security.Cryptography.SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password + "ManyasliGida2024!"));
-            return Convert.ToBase64String(hashedBytes);
-        }
-
-        private bool VerifyPassword(string password, string hashedPassword)
-        {
-            // Check plain text first (for migration)
-            if (password == hashedPassword) return true;
-            
-            // Check hashed password
-            var hashedInput = HashPassword(password);
-            return hashedInput == hashedPassword;
-        }
-
-        private async Task SendEmailVerificationCodeAsync(string email)
-        {
-            try
-            {
-                var code = GenerateVerificationCode();
-                var expiry = DateTimeHelper.NowTurkey.AddMinutes(15); // Türkiye zamanı kullan
-
-                // Save verification code
-                var verification = new EmailVerification
-                {
-                    Email = email.ToLower(),
-                    VerificationCode = code,
-                    ExpiresAt = expiry,
-                    IsUsed = false,
-                    CreatedAt = DateTimeHelper.NowTurkey // Türkiye zamanı kullan
-                };
-
-                _context.EmailVerifications.Add(verification);
-                await _context.SaveChangesAsync();
-
-                // Send email
-                var emailService = HttpContext.RequestServices.GetRequiredService<IEmailService>();
-                await emailService.SendEmailVerificationAsync(email, code);
-                
-                _logger.LogInformation("Verification email sent to {Email}", email);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send verification email to {Email}", email);
-            }
-        }
-
-        private static string GenerateVerificationCode()
-        {
-            var random = new Random();
-            return random.Next(100000, 999999).ToString();
-        }
-
-        [HttpGet]
-        public IActionResult CheckLoginStatus()
-        {
-            var userId = HttpContext.Session.GetString("UserId");
-            var userName = HttpContext.Session.GetString("UserName");
-            
-            var isLoggedIn = !string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userName);
-            
-            return Json(new { isLoggedIn = isLoggedIn });
-        }
-
-        [HttpGet]
-        public IActionResult GetUserInfo()
-        {
-            var userInfo = new
-            {
-                firstName = HttpContext.Session.GetString("UserFirstName") ?? "",
-                lastName = HttpContext.Session.GetString("UserLastName") ?? "",
-                email = HttpContext.Session.GetString("UserEmail") ?? "",
-                phone = HttpContext.Session.GetString("UserPhone") ?? "",
-                city = HttpContext.Session.GetString("UserCity") ?? "",
-                address = HttpContext.Session.GetString("UserAddress") ?? ""
-            };
-            
-            return Json(userInfo);
         }
     }
 }

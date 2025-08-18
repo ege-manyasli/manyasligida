@@ -1,0 +1,413 @@
+@model manyasligida.Models.DTOs.InventoryDashboardViewModel
+@{
+    ViewData["Title"] = "Stok Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-boxes me-2"></i>Stok Yönetimi
+        </h1>
+        <div>
+            <a href="@Url.Action("Purchases", "Inventory")" class="btn btn-primary me-2">
+                <i class="fas fa-plus me-1"></i>Mal Alımı
+            </a>
+            <a href="@Url.Action("Stock", "Inventory")" class="btn btn-success me-2">
+                <i class="fas fa-warehouse me-1"></i>Stok Takibi
+            </a>
+            <a href="@Url.Action("Transactions", "Inventory")" class="btn btn-info">
+                <i class="fas fa-exchange-alt me-1"></i>İşlemler
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Tarih Filtresi -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="dateFilterForm" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Başlangıç Tarihi</label>
+                    <input type="date" class="form-control" id="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Bitiş Tarihi</label>
+                    <input type="date" class="form-control" id="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i>Filtrele
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetDateFilter()">
+                        <i class="fas fa-undo me-1"></i>Sıfırla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Özet Kartları -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Toplam Alım Tutarı
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalPurchaseAmount">
+                                ₺@Model.TotalPurchaseAmount.ToString("N2")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Toplam Stok Değeri
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalStockValue">
+                                ₺@Model.TotalStockValue.ToString("N2")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-warehouse fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Toplam Mal Çeşidi
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalItems">
+                                @Model.TotalItems
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Düşük Stok Uyarısı
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="lowStockItems">
+                                @Model.LowStockItems
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Son Mal Alımları -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-shopping-cart me-2"></i>Son Mal Alımları
+                    </h6>
+                    <a href="@Url.Action("Purchases", "Inventory")" class="btn btn-sm btn-outline-primary">
+                        Tümünü Gör
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Mal İsmi</th>
+                                    <th>Miktar</th>
+                                    <th>Fiyat</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPurchasesTable">
+                                @foreach (var purchase in Model.RecentPurchases.Take(5))
+                                {
+                                    <tr>
+                                        <td>@purchase.ItemName</td>
+                                        <td>@purchase.Quantity @purchase.Unit</td>
+                                        <td>₺@purchase.UnitPrice.ToString("N2")</td>
+                                        <td>@purchase.PurchaseDate.ToString("dd.MM.yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stok Durumu -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-warehouse me-2"></i>Stok Durumu
+                    </h6>
+                    <a href="@Url.Action("Stock", "Inventory")" class="btn btn-sm btn-outline-success">
+                        Tümünü Gör
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Mal İsmi</th>
+                                    <th>Stok</th>
+                                    <th>Min. Stok</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockItemsTable">
+                                @foreach (var stock in Model.StockItems.Take(5))
+                                {
+                                    <tr>
+                                        <td>@stock.ItemName</td>
+                                        <td>@stock.CurrentStock @stock.Unit</td>
+                                        <td>@stock.MinimumStock @stock.Unit</td>
+                                        <td>
+                                            @if (stock.IsLowStock)
+                                            {
+                                                <span class="badge bg-danger">Düşük</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Normal</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son İşlemler -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-exchange-alt me-2"></i>Son İşlemler
+                    </h6>
+                    <a href="@Url.Action("Transactions", "Inventory")" class="btn btn-sm btn-outline-info">
+                        Tümünü Gör
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Mal İsmi</th>
+                                    <th>İşlem Tipi</th>
+                                    <th>Miktar</th>
+                                    <th>Açıklama</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTransactionsTable">
+                                @foreach (var transaction in Model.RecentTransactions.Take(10))
+                                {
+                                    <tr>
+                                        <td>@transaction.TransactionDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td>@transaction.ItemName</td>
+                                        <td>
+                                            @if (transaction.TransactionType == "IN")
+                                            {
+                                                <span class="badge bg-success">Giriş</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Çıkış</span>
+                                            }
+                                        </td>
+                                        <td>@transaction.Quantity @transaction.Unit</td>
+                                        <td>@transaction.Description</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Tarih filtresi form submit
+            $('#dateFilterForm').on('submit', function(e) {
+                e.preventDefault();
+                loadDashboardData();
+            });
+        });
+
+        function loadDashboardData() {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            $.ajax({
+                url: '@Url.Action("GetDashboardData", "Inventory")',
+                type: 'POST',
+                data: {
+                    startDate: startDate,
+                    endDate: endDate,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        updateDashboard(response.data);
+                    } else {
+                        showAlert('error', response.message);
+                    }
+                },
+                error: function() {
+                    showAlert('error', 'Veriler yüklenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function updateDashboard(data) {
+            $('#totalPurchaseAmount').text('₺' + parseFloat(data.totalPurchaseAmount).toLocaleString('tr-TR', {minimumFractionDigits: 2}));
+            $('#totalStockValue').text('₺' + parseFloat(data.totalStockValue).toLocaleString('tr-TR', {minimumFractionDigits: 2}));
+            $('#totalItems').text(data.totalItems);
+            $('#lowStockItems').text(data.lowStockItems);
+
+            // Tabloları güncelle
+            updateRecentPurchasesTable(data.recentPurchases);
+            updateStockItemsTable(data.stockItems);
+            updateRecentTransactionsTable(data.recentTransactions);
+        }
+
+        function updateRecentPurchasesTable(purchases) {
+            const tbody = $('#recentPurchasesTable');
+            tbody.empty();
+
+            purchases.slice(0, 5).forEach(function(purchase) {
+                const row = `
+                    <tr>
+                        <td>${purchase.itemName}</td>
+                        <td>${purchase.quantity} ${purchase.unit || ''}</td>
+                        <td>₺${parseFloat(purchase.unitPrice).toLocaleString('tr-TR', {minimumFractionDigits: 2})}</td>
+                        <td>${new Date(purchase.purchaseDate).toLocaleDateString('tr-TR')}</td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+
+        function updateStockItemsTable(stocks) {
+            const tbody = $('#stockItemsTable');
+            tbody.empty();
+
+            stocks.slice(0, 5).forEach(function(stock) {
+                const statusBadge = stock.isLowStock ? 
+                    '<span class="badge bg-danger">Düşük</span>' : 
+                    '<span class="badge bg-success">Normal</span>';
+
+                const row = `
+                    <tr>
+                        <td>${stock.itemName}</td>
+                        <td>${stock.currentStock} ${stock.unit || ''}</td>
+                        <td>${stock.minimumStock} ${stock.unit || ''}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+
+        function updateRecentTransactionsTable(transactions) {
+            const tbody = $('#recentTransactionsTable');
+            tbody.empty();
+
+            transactions.slice(0, 10).forEach(function(transaction) {
+                const typeBadge = transaction.transactionType === 'IN' ? 
+                    '<span class="badge bg-success">Giriş</span>' : 
+                    '<span class="badge bg-danger">Çıkış</span>';
+
+                const row = `
+                    <tr>
+                        <td>${new Date(transaction.transactionDate).toLocaleString('tr-TR')}</td>
+                        <td>${transaction.itemName}</td>
+                        <td>${typeBadge}</td>
+                        <td>${transaction.quantity} ${transaction.unit || ''}</td>
+                        <td>${transaction.description || ''}</td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+
+        function resetDateFilter() {
+            const today = new Date();
+            const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+            
+            $('#startDate').val(lastMonth.toISOString().split('T')[0]);
+            $('#endDate').val(today.toISOString().split('T')[0]);
+            
+            loadDashboardData();
+        }
+
+        function showAlert(type, message) {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const icon = type === 'error' ? 'exclamation-triangle' : 'check-circle';
+            
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${icon} me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('.container-fluid').prepend(alertHtml);
+        }
+    </script>
+}

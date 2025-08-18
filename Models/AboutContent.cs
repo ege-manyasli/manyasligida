@@ -7,36 +7,30 @@ namespace manyasligida.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string Title { get; set; } = string.Empty;
+        public string? Title { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string Subtitle { get; set; } = string.Empty;
+        public string? Subtitle { get; set; }
 
-        [Required]
-        public string StoryTitle { get; set; } = string.Empty;
+        public string? Content { get; set; }
+
+        public string? ImageUrl { get; set; }
+
+        public string? StoryTitle { get; set; }
 
         public string? StorySubtitle { get; set; }
 
-        [Required]
-        public string StoryContent { get; set; } = string.Empty;
+        public string? StoryContent { get; set; }
 
         public string? StoryImageUrl { get; set; }
 
         // Mission & Vision
-        [Required]
-        public string MissionTitle { get; set; } = string.Empty;
+        public string? MissionTitle { get; set; }
 
-        [Required]
-        public string MissionContent { get; set; } = string.Empty;
+        public string? MissionContent { get; set; }
 
-        [Required]
-        public string VisionTitle { get; set; } = string.Empty;
+        public string? VisionTitle { get; set; }
 
-        [Required]
-        public string VisionContent { get; set; } = string.Empty;
+        public string? VisionContent { get; set; }
 
         // Values Section
         public string? ValuesTitle { get; set; }

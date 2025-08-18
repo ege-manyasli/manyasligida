@@ -6,30 +6,21 @@ namespace manyasligida.Services.Interfaces;
 public interface IAccountService
 {
     // Authentication
-    Task<AuthResponse> LoginAsync(LoginRequest request);
-    Task<AuthResponse> RegisterAsync(RegisterRequest request);
+    Task<ApiResponse<LoginResponse>> LoginAsync(LoginRequest request);
+    Task<ApiResponse<RegisterResponse>> RegisterAsync(RegisterRequest request);
     Task<ApiResponse<bool>> LogoutAsync();
     Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordRequest request);
     
     // Profile Management
     Task<ApiResponse<UserResponse>> GetCurrentUserAsync();
     Task<ApiResponse<UserResponse>> UpdateProfileAsync(UpdateProfileRequest request);
-    Task<ApiResponse<bool>> DeleteAccountAsync();
+    
+    // Password Reset
+    Task<ApiResponse<bool>> SendPasswordResetCodeAsync(string email);
+    Task<ApiResponse<bool>> VerifyPasswordResetCodeAsync(string email, string resetCode);
+    Task<ApiResponse<bool>> ResetPasswordAsync(ResetPasswordRequest request);
     
     // Email Verification
-    Task<ApiResponse<bool>> SendEmailVerificationAsync(string email);
-    Task<ApiResponse<bool>> VerifyEmailAsync(EmailVerificationRequest request);
+    Task<ApiResponse<bool>> VerifyEmailAsync(string email, string verificationCode);
     Task<ApiResponse<bool>> ResendVerificationCodeAsync(string email);
-    
-    // Session Management
-    Task<ApiResponse<bool>> ValidateSessionAsync();
-    Task<ApiResponse<bool>> ExtendSessionAsync();
-    Task<ApiResponse<int>> GetActiveSessionCountAsync();
-    Task<ApiResponse<bool>> ForceLogoutOtherSessionsAsync();
-    
-    // Admin Functions
-    Task<ApiResponse<List<UserResponse>>> GetAllUsersAsync(int page = 1, int pageSize = 50);
-    Task<ApiResponse<UserResponse>> GetUserByIdAsync(int userId);
-    Task<ApiResponse<bool>> ToggleUserStatusAsync(int userId);
-    Task<ApiResponse<bool>> SetUserAdminStatusAsync(int userId, bool isAdmin);
 }

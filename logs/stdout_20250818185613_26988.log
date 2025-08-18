@@ -1,0 +1,998 @@
+? Turkey timezone detected and configured
+info: Program[0]
+      === APPLICATION STARTUP BEGIN ===
+info: Program[0]
+      Environment: Development
+info: Program[0]
+      Content Root: C:\Users\pc\manyasligida
+info: Program[0]
+      Web Root: C:\Users\pc\manyasligida\wwwroot
+info: Program[0]
+      ASPNETCORE_ENVIRONMENT: Development
+info: Program[0]
+      Connection string configured: True
+info: Program[0]
+      Development mode configured
+info: Program[0]
+      GlobalExceptionMiddleware registered
+info: Program[0]
+      PerformanceMonitoringMiddleware registered
+info: Program[0]
+      Session configured for cart/temporary data only
+info: Program[0]
+      Authentication configured
+info: Program[0]
+      Uploads static files configured at C:\Users\pc\manyasligida\wwwroot\uploads
+info: Program[0]
+      Authorization configured
+info: Program[0]
+      === APPLICATION STARTUP COMPLETE ===
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://127.0.0.1:15108
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\pc\manyasligida
+info: manyasligida.Controllers.HomeController[0]
+      Home page requested
+info: manyasligida.Services.HomeService[0]
+      Getting home content from database
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
+      The foreign key property 'CartItem.ProductId1' was created in shadow state because a conflicting property with the simple name 'ProductId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
+      The foreign key property 'CookieConsentDetail.CookieCategoryId1' was created in shadow state because a conflicting property with the simple name 'CookieCategoryId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
+      The foreign key property 'CookieConsentDetail.CookieConsentId1' was created in shadow state because a conflicting property with the simple name 'CookieConsentId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
+      The foreign key property 'OrderItem.ProductId1' was created in shadow state because a conflicting property with the simple name 'ProductId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
+      No store type was specified for the decimal property 'OldPrice' on entity type 'Product'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+warn: Microsoft.EntityFrameworkCore.Query[10103]
+      The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (180ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [t].[Value]
+      FROM (
+          SELECT COUNT(*) as [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'HomeContents'
+      ) AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (180ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [h].[Id], [h].[AboutButtonText], [h].[AboutContent], [h].[AboutDescription], [h].[AboutFeatures], [h].[AboutImageUrl], [h].[AboutSubtitle], [h].[AboutTitle], [h].[BlogSubtitle], [h].[BlogTitle], [h].[ContactAddress], [h].[ContactDescription], [h].[ContactEmail], [h].[ContactPhone], [h].[ContactSubtitle], [h].[ContactTitle], [h].[Content], [h].[CreatedAt], [h].[FeatureItems], [h].[FeaturesSubtitle], [h].[FeaturesTitle], [h].[HeroBackgroundColor], [h].[HeroButtonText], [h].[HeroButtonUrl], [h].[HeroDescription], [h].[HeroImageUrl], [h].[HeroSecondButtonText], [h].[HeroSubtitle], [h].[HeroTitle], [h].[HeroVideoUrl], [h].[ImageUrl], [h].[IsActive], [h].[MaxBlogsToShow], [h].[MaxProductsToShow], [h].[NewsletterButtonText], [h].[NewsletterDescription], [h].[NewsletterTitle], [h].[PrimaryColor], [h].[ProductsSubtitle], [h].[ProductsTitle], [h].[SecondaryColor], [h].[ServicesDescription], [h].[ServicesSubtitle], [h].[ServicesTitle], [h].[ShowLatestBlogs], [h].[ShowPopularProducts], [h].[StatsItems], [h].[StatsSubtitle], [h].[StatsTitle], [h].[Title], [h].[UpdatedAt], [h].[VideoUrl]
+      FROM [HomeContents] AS [h]
+      WHERE [h].[IsActive] = CAST(1 AS bit)
+      ORDER BY [h].[UpdatedAt] DESC
+info: manyasligida.Services.HomeService[0]
+      Found home content: True
+info: manyasligida.Services.HomeService[0]
+      Successfully retrieved home content with VideoUrl: /uploads/home/b5bee6fa-e6c8-4b88-b4cf-dffaf0877e61.mp4
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (215ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [p].[Id], [p].[Name], [p].[ImageUrl], [p].[Price]
+      FROM [Products] AS [p]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+      ORDER BY [p].[IsPopular] DESC, [p].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Name], (
+          SELECT COUNT(*)
+          FROM [Products] AS [p]
+          WHERE [p].[CategoryId] = [c].[Id] AND [p].[IsActive] = CAST(1 AS bit)) AS [ProductCount]
+      FROM [Categories] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[DisplayOrder]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [b].[Id], [b].[Title], [b].[Content], [b].[ImageUrl], [b].[CreatedAt]
+      FROM [Blogs] AS [b]
+      WHERE [b].[IsActive] = CAST(1 AS bit)
+      ORDER BY [b].[CreatedAt] DESC
+fail: Microsoft.EntityFrameworkCore.Database.Command[20102]
+      Failed executing DbCommand (169ms) [Parameters=[@__sessionId_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[ConsentDate], [t].[CreatedAt], [t].[ExpiryDate], [t].[IpAddress], [t].[IsAccepted], [t].[IsActive], [t].[Preferences], [t].[SessionId], [t].[UserAgent], [t].[UserId], [t0].[Id], [t0].[CookieCategoryId], [t0].[CookieCategoryId1], [t0].[CookieConsentId], [t0].[CookieConsentId1], [t0].[CreatedAt], [t0].[IsAccepted], [t0].[Id0], [t0].[CreatedAt0], [t0].[Description], [t0].[IsActive], [t0].[IsRequired], [t0].[Name], [t0].[SortOrder]
+      FROM (
+          SELECT TOP(1) [c].[Id], [c].[ConsentDate], [c].[CreatedAt], [c].[ExpiryDate], [c].[IpAddress], [c].[IsAccepted], [c].[IsActive], [c].[Preferences], [c].[SessionId], [c].[UserAgent], [c].[UserId]
+          FROM [CookieConsents] AS [c]
+          WHERE [c].[SessionId] = @__sessionId_0 AND [c].[IsActive] = CAST(1 AS bit)
+      ) AS [t]
+      LEFT JOIN (
+          SELECT [c0].[Id], [c0].[CookieCategoryId], [c0].[CookieCategoryId1], [c0].[CookieConsentId], [c0].[CookieConsentId1], [c0].[CreatedAt], [c0].[IsAccepted], [c1].[Id] AS [Id0], [c1].[CreatedAt] AS [CreatedAt0], [c1].[Description], [c1].[IsActive], [c1].[IsRequired], [c1].[Name], [c1].[SortOrder]
+          FROM [CookieConsentDetails] AS [c0]
+          INNER JOIN [CookieCategories] AS [c1] ON [c0].[CookieCategoryId] = [c1].[Id]
+      ) AS [t0] ON [t].[Id] = [t0].[CookieConsentId1]
+      ORDER BY [t].[Id], [t0].[Id]
+fail: Microsoft.EntityFrameworkCore.Query[10100]
+      An exception occurred while iterating over the results of a query for context type 'manyasligida.Data.ApplicationDbContext'.
+      Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid column name 'CookieCategoryId1'.
+      Invalid column name 'CookieConsentId1'.
+         at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+         at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+         at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+      --- End of stack trace from previous location ---
+         at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+         at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+      ClientConnectionId:06c703f9-e67f-4333-946a-fb113ff5a938
+      Error Number:207,State:1,Class:16
+      Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid column name 'CookieCategoryId1'.
+      Invalid column name 'CookieConsentId1'.
+         at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+         at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+         at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+      --- End of stack trace from previous location ---
+         at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+         at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+      ClientConnectionId:06c703f9-e67f-4333-946a-fb113ff5a938
+      Error Number:207,State:1,Class:16
+fail: manyasligida.Services.CookieConsentService[0]
+      Error getting consent status
+      Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid column name 'CookieCategoryId1'.
+      Invalid column name 'CookieConsentId1'.
+         at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+         at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+         at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+      --- End of stack trace from previous location ---
+         at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+         at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at manyasligida.Services.CookieConsentService.GetConsentStatusAsync(String sessionId) in C:\Users\pc\manyasligida\Services\CookieConsentService.cs:line 196
+      ClientConnectionId:06c703f9-e67f-4333-946a-fb113ff5a938
+      Error Number:207,State:1,Class:16
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: / took 3385ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET / took 3385ms from ::1
+info: manyasligida.Controllers.AdminController[0]
+      Admin login attempt for email: test@manyasli.com
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[@__ToLower_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+      FROM [Users] AS [u]
+      WHERE LOWER([u].[Email]) = @__ToLower_0 AND [u].[IsActive] = CAST(1 AS bit)
+info: manyasligida.Controllers.AdminController[0]
+      Login successful for user: 2, IsAdmin: True
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Products] AS [p]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Categories] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (175ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Blogs] AS [b]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (170ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Galleries] AS [g]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Videos] AS [v]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [ContactMessages] AS [c]
+      WHERE [c].[IsRead] = CAST(0 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COALESCE(SUM([o].[TotalAmount]), 0.0)
+      FROM [Orders] AS [o]
+      WHERE [o].[OrderStatus] = N'Delivered'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], COALESCE([u].[FirstName], N''), COALESCE([u].[LastName], N''), COALESCE([u].[Email], N''), [t].[TotalAmount], [t].[OrderStatus], [t].[OrderDate]
+      FROM (
+          SELECT TOP(@__p_0) [o].[Id], [o].[OrderDate], [o].[OrderStatus], [o].[TotalAmount], [o].[UserId]
+          FROM [Orders] AS [o]
+          ORDER BY [o].[OrderDate] DESC
+      ) AS [t]
+      INNER JOIN [Users] AS [u] ON [t].[UserId] = [u].[Id]
+      ORDER BY [t].[OrderDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (181ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [c].[Id], [c].[CreatedAt], [c].[Email], [c].[IsRead], [c].[IsReplied], [c].[Message], [c].[Name], [c].[Phone], [c].[RepliedAt], [c].[ReplyMessage], [c].[Subject]
+      FROM [ContactMessages] AS [c]
+      ORDER BY [c].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (173ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [b].[Id], COALESCE([b].[Title], N'') AS [Title], [b].[CreatedAt]
+      FROM [Blogs] AS [b]
+      WHERE [b].[IsActive] = CAST(1 AS bit)
+      ORDER BY [b].[CreatedAt] DESC
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /Admin took 2115ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /Admin took 2115ms from ::1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (198ms) [Parameters=[@__startDate_Value_0='?' (DbType = DateTime2), @__endDate_Value_1='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[Category], [i].[CreatedAt], [i].[IsActive], [i].[ItemName], [i].[Notes], [i].[PurchaseDate], [i].[Quantity], [i].[Supplier], [i].[Unit], [i].[UnitPrice], [i].[UpdatedAt]
+      FROM [Inventories] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[PurchaseDate] >= @__startDate_Value_0 AND [i].[PurchaseDate] <= @__endDate_Value_1
+      ORDER BY [i].[PurchaseDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (169ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[AverageCost], [i].[Category], [i].[CurrentStock], [i].[IsActive], [i].[ItemName], [i].[LastUpdated], [i].[MinimumStock], [i].[Unit]
+      FROM [InventoryStocks] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit)
+      ORDER BY [i].[ItemName]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (169ms) [Parameters=[@__startDate_Value_0='?' (DbType = DateTime2), @__endDate_Value_1='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[CreatedAt], [i].[Description], [i].[ItemName], [i].[Quantity], [i].[TransactionDate], [i].[TransactionType], [i].[Unit], [i].[UnitPrice]
+      FROM [InventoryTransactions] AS [i]
+      WHERE [i].[TransactionDate] >= @__startDate_Value_0 AND [i].[TransactionDate] <= @__endDate_Value_1
+      ORDER BY [i].[TransactionDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[AverageCost], [i].[Category], [i].[CurrentStock], [i].[IsActive], [i].[ItemName], [i].[LastUpdated], [i].[MinimumStock], [i].[Unit]
+      FROM [InventoryStocks] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[CurrentStock] <= [i].[MinimumStock]
+      ORDER BY [i].[ItemName]
+fail: manyasligida.Services.InventoryService[0]
+      Error getting total stock value
+      System.InvalidOperationException: The LINQ expression 'DbSet<InventoryStock>()
+          .Where(i => i.IsActive)
+          .Sum(i => i.StockValue)' could not be translated. Additional information: Translation of member 'StockValue' on entity type 'InventoryStock' failed. This commonly occurs when the specified member is unmapped. Either rewrite the query in a form that can be translated, or switch to client evaluation explicitly by inserting a call to 'AsEnumerable', 'AsAsyncEnumerable', 'ToList', or 'ToListAsync'. See https://go.microsoft.com/fwlink/?linkid=2101038 for more information.
+         at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.Translate(Expression expression)
+         at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.Translate(Expression expression)
+         at Microsoft.EntityFrameworkCore.Query.QueryCompilationContext.CreateQueryExecutor[TResult](Expression query)
+         at Microsoft.EntityFrameworkCore.Storage.Database.CompileQuery[TResult](Expression query, Boolean async)
+         at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.CompileQueryCore[TResult](IDatabase database, Expression query, IModel model, Boolean async)
+         at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass12_0`1.<ExecuteAsync>b__0()
+         at Microsoft.EntityFrameworkCore.Query.Internal.CompiledQueryCache.GetOrAddQuery[TResult](Object cacheKey, Func`1 compiler)
+         at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteAsync[TResult](Expression query, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, Expression expression, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, LambdaExpression expression, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.SumAsync[TSource](IQueryable`1 source, Expression`1 selector, CancellationToken cancellationToken)
+         at manyasligida.Services.InventoryService.GetTotalStockValueAsync() in C:\Users\pc\manyasligida\Services\InventoryService.cs:line 365
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[AverageCost], [i].[Category], [i].[CurrentStock], [i].[IsActive], [i].[ItemName], [i].[LastUpdated], [i].[MinimumStock], [i].[Unit]
+      FROM [InventoryStocks] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit)
+      ORDER BY [i].[ItemName]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (179ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Category]
+      FROM (
+          SELECT DISTINCT [i].[Category]
+          FROM [Inventories] AS [i]
+          WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[Category] IS NOT NULL AND [i].[Category] NOT LIKE N''
+      ) AS [t]
+      ORDER BY [t].[Category]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[CreatedAt], [i].[Description], [i].[ItemName], [i].[Quantity], [i].[TransactionDate], [i].[TransactionType], [i].[Unit], [i].[UnitPrice]
+      FROM [InventoryTransactions] AS [i]
+      ORDER BY [i].[TransactionDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (175ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[Category], [i].[CreatedAt], [i].[IsActive], [i].[ItemName], [i].[Notes], [i].[PurchaseDate], [i].[Quantity], [i].[Supplier], [i].[Unit], [i].[UnitPrice], [i].[UpdatedAt]
+      FROM [Inventories] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit)
+      ORDER BY [i].[PurchaseDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (177ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Category]
+      FROM (
+          SELECT DISTINCT [i].[Category]
+          FROM [Inventories] AS [i]
+          WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[Category] IS NOT NULL AND [i].[Category] NOT LIKE N''
+      ) AS [t]
+      ORDER BY [t].[Category]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Supplier]
+      FROM (
+          SELECT DISTINCT [i].[Supplier]
+          FROM [Inventories] AS [i]
+          WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[Supplier] IS NOT NULL AND [i].[Supplier] NOT LIKE N''
+      ) AS [t]
+      ORDER BY [t].[Supplier]
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /API/Suppliers took 1131ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /API/Suppliers took 1131ms from ::1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (160ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[AverageCost], [i].[Category], [i].[CurrentStock], [i].[IsActive], [i].[ItemName], [i].[LastUpdated], [i].[MinimumStock], [i].[Unit]
+      FROM [InventoryStocks] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[CurrentStock] <= [i].[MinimumStock]
+      ORDER BY [i].[ItemName]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [b].[Id], COALESCE([b].[Title], N'') AS [Title], COALESCE([b].[Content], N'') AS [Content], COALESCE([b].[ImageUrl], N'') AS [ImageUrl], [b].[IsActive], [b].[CreatedAt], [b].[UpdatedAt], [b].[PublishedAt]
+      FROM [Blogs] AS [b]
+      ORDER BY [b].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (167ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[CertificateItems], [a].[CertificatesSubtitle], [a].[CertificatesTitle], [a].[Content], [a].[CreatedAt], [a].[CtaButtonText], [a].[CtaContent], [a].[CtaSecondButtonText], [a].[CtaTitle], [a].[ImageUrl], [a].[IsActive], [a].[MissionContent], [a].[MissionTitle], [a].[ProductionSteps], [a].[ProductionSubtitle], [a].[ProductionTitle], [a].[RegionContent], [a].[RegionFeatures], [a].[RegionImageUrl], [a].[RegionSubtitle], [a].[RegionTitle], [a].[StoryContent], [a].[StoryFeatures], [a].[StoryImageUrl], [a].[StorySubtitle], [a].[StoryTitle], [a].[Subtitle], [a].[Title], [a].[UpdatedAt], [a].[ValueItems], [a].[ValuesContent], [a].[ValuesSubtitle], [a].[ValuesTitle], [a].[VisionContent], [a].[VisionTitle]
+      FROM [AboutContents] AS [a]
+      WHERE [a].[IsActive] = CAST(1 AS bit)
+      ORDER BY [a].[UpdatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (155ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[CertificateItems], [a].[CertificatesSubtitle], [a].[CertificatesTitle], [a].[Content], [a].[CreatedAt], [a].[CtaButtonText], [a].[CtaContent], [a].[CtaSecondButtonText], [a].[CtaTitle], [a].[ImageUrl], [a].[IsActive], [a].[MissionContent], [a].[MissionTitle], [a].[ProductionSteps], [a].[ProductionSubtitle], [a].[ProductionTitle], [a].[RegionContent], [a].[RegionFeatures], [a].[RegionImageUrl], [a].[RegionSubtitle], [a].[RegionTitle], [a].[StoryContent], [a].[StoryFeatures], [a].[StoryImageUrl], [a].[StorySubtitle], [a].[StoryTitle], [a].[Subtitle], [a].[Title], [a].[UpdatedAt], [a].[ValueItems], [a].[ValuesContent], [a].[ValuesSubtitle], [a].[ValuesTitle], [a].[VisionContent], [a].[VisionTitle]
+      FROM [AboutContents] AS [a]
+      WHERE [a].[IsActive] = CAST(1 AS bit)
+fail: Microsoft.EntityFrameworkCore.Query[10100]
+      An exception occurred while iterating over the results of a query for context type 'manyasligida.Data.ApplicationDbContext'.
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1509(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1509(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+fail: manyasligida.Services.AboutService[0]
+      Error updating about content
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1509(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at manyasligida.Services.AboutService.UpdateAboutContentAsync(AboutEditRequest request) in C:\Users\pc\manyasligida\Services\AboutService.cs:line 93
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[CertificateItems], [a].[CertificatesSubtitle], [a].[CertificatesTitle], [a].[Content], [a].[CreatedAt], [a].[CtaButtonText], [a].[CtaContent], [a].[CtaSecondButtonText], [a].[CtaTitle], [a].[ImageUrl], [a].[IsActive], [a].[MissionContent], [a].[MissionTitle], [a].[ProductionSteps], [a].[ProductionSubtitle], [a].[ProductionTitle], [a].[RegionContent], [a].[RegionFeatures], [a].[RegionImageUrl], [a].[RegionSubtitle], [a].[RegionTitle], [a].[StoryContent], [a].[StoryFeatures], [a].[StoryImageUrl], [a].[StorySubtitle], [a].[StoryTitle], [a].[Subtitle], [a].[Title], [a].[UpdatedAt], [a].[ValueItems], [a].[ValuesContent], [a].[ValuesSubtitle], [a].[ValuesTitle], [a].[VisionContent], [a].[VisionTitle]
+      FROM [AboutContents] AS [a]
+      WHERE [a].[IsActive] = CAST(1 AS bit)
+fail: Microsoft.EntityFrameworkCore.Query[10100]
+      An exception occurred while iterating over the results of a query for context type 'manyasligida.Data.ApplicationDbContext'.
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1509(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1509(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+fail: manyasligida.Services.AboutService[0]
+      Error updating about content
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1509(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at manyasligida.Services.AboutService.UpdateAboutContentAsync(AboutEditRequest request) in C:\Users\pc\manyasligida\Services\AboutService.cs:line 93
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[CreatedAt], [i].[Description], [i].[ItemName], [i].[Quantity], [i].[TransactionDate], [i].[TransactionType], [i].[Unit], [i].[UnitPrice]
+      FROM [InventoryTransactions] AS [i]
+      ORDER BY [i].[TransactionDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (157ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[Category], [i].[CreatedAt], [i].[IsActive], [i].[ItemName], [i].[Notes], [i].[PurchaseDate], [i].[Quantity], [i].[Supplier], [i].[Unit], [i].[UnitPrice], [i].[UpdatedAt]
+      FROM [Inventories] AS [i]
+      WHERE [i].[IsActive] = CAST(1 AS bit)
+      ORDER BY [i].[PurchaseDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Category]
+      FROM (
+          SELECT DISTINCT [i].[Category]
+          FROM [Inventories] AS [i]
+          WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[Category] IS NOT NULL AND [i].[Category] NOT LIKE N''
+      ) AS [t]
+      ORDER BY [t].[Category]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (171ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Supplier]
+      FROM (
+          SELECT DISTINCT [i].[Supplier]
+          FROM [Inventories] AS [i]
+          WHERE [i].[IsActive] = CAST(1 AS bit) AND [i].[Supplier] IS NOT NULL AND [i].[Supplier] NOT LIKE N''
+      ) AS [t]
+      ORDER BY [t].[Supplier]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (180ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [s].[Id], [s].[Address], [s].[CreatedAt], [s].[Email], [s].[FacebookUrl], [s].[FaviconUrl], [s].[InstagramUrl], [s].[IsActive], [s].[LogoUrl], [s].[Phone], [s].[SiteDescription], [s].[SiteKeywords], [s].[SiteTitle], [s].[TwitterUrl], [s].[UpdatedAt], [s].[WorkingHours], [s].[YoutubeUrl]
+      FROM [SiteSettings] AS [s]
+      WHERE [s].[IsActive] = CAST(1 AS bit)
+      ORDER BY COALESCE([s].[UpdatedAt], [s].[CreatedAt]) DESC
+fail: Microsoft.EntityFrameworkCore.Query[10100]
+      An exception occurred while iterating over the results of a query for context type 'manyasligida.Data.ApplicationDbContext'.
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1556(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1556(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+fail: manyasligida.Services.SiteSettingsService[0]
+      Error getting site settings
+      System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+         at Microsoft.Data.SqlClient.SqlDataReader.GetString(Int32 i)
+         at lambda_method1556(Closure, DbDataReader, Int32[])
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadObject(DbDataReader reader, Int32 ordinal, ReaderColumn column)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.ReadRow()
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.BufferedDataRecord.InitializeAsync(DbDataReader reader, IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.BufferedDataReader.InitializeAsync(IReadOnlyList`1 columns, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+         at manyasligida.Services.SiteSettingsService.GetAsync() in C:\Users\pc\manyasligida\Services\SiteSettingsService.cs:line 29
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [CookieConsents] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (188ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM (
+          SELECT DISTINCT [c].[CookieConsentId]
+          FROM [CookieConsentDetails] AS [c]
+          WHERE [c].[IsAccepted] = CAST(1 AS bit)
+      ) AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[IsRequired], [c].[Name], [c].[SortOrder]
+      FROM [CookieCategories] AS [c]
+      ORDER BY [c].[SortOrder]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (168ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [CookieConsents] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [CookieConsents] AS [c]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [CookieConsents] AS [c]
+      WHERE [c].[ExpiryDate] < GETUTCDATE()
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [CookieConsents] AS [c]
+      WHERE CONVERT(date, [c].[ConsentDate]) = CONVERT(date, GETUTCDATE())
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /CookieConsent/Management took 1235ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /CookieConsent/Management took 1235ms from ::1
+fail: manyasligida.Services.CookieConsentService[0]
+      Error getting daily consent analytics
+      System.InvalidOperationException: The LINQ expression 'DbSet<CookieConsent>()
+          .Where(c => c.ConsentDate >= __startDate_0)
+          .GroupBy(c => c.ConsentDate.Date)
+          .Select(g => new { 
+              Date = g.Key.ToString("yyyy-MM-dd"), 
+              TotalCount = g
+                  .AsQueryable()
+                  .Count(), 
+              AcceptedCount = g
+                  .AsQueryable()
+                  .SelectMany(
+                      collectionSelector: e => DbSet<CookieConsentDetail>()
+                          .Where(c0 => EF.Property<int?>(e, "Id") != null && object.Equals(
+                              objA: (object)EF.Property<int?>(e, "Id"), 
+                              objB: (object)EF.Property<int?>(c0, "CookieConsentId1")))
+                          .Where(c0 => c0.IsAccepted), 
+                      resultSelector: (e, c) => new TransparentIdentifier<CookieConsent, CookieConsentDetail>(
+                          Outer = e, 
+                          Inner = c
+                      ))
+                  .Select(ti => ti.Inner.CookieConsentId)
+                  .Distinct()
+                  .Count(), 
+              DeclinedCount = g
+                  .AsQueryable()
+                  .SelectMany(
+                      collectionSelector: e => DbSet<CookieConsentDetail>()
+                          .Where(c1 => EF.Property<int?>(e, "Id") != null && object.Equals(
+                              objA: (object)EF.Property<int?>(e, "Id"), 
+                              objB: (object)EF.Property<int?>(c1, "CookieConsentId1")))
+                          .Where(c1 => !(c1.IsAccepted)), 
+                      resultSelector: (e, c) => new TransparentIdentifier<CookieConsent, CookieConsentDetail>(
+                          Outer = e, 
+                          Inner = c
+                      ))
+                  .Select(ti0 => ti0.Inner.CookieConsentId)
+                  .Distinct()
+                  .Count()
+           })
+          .OrderBy(e2 => e2.Date)' could not be translated. Additional information: Translation of method 'System.DateTime.ToString' failed. If this method can be mapped to your custom function, see https://go.microsoft.com/fwlink/?linkid=2132413 for more information. Either rewrite the query in a form that can be translated, or switch to client evaluation explicitly by inserting a call to 'AsEnumerable', 'AsAsyncEnumerable', 'ToList', or 'ToListAsync'. See https://go.microsoft.com/fwlink/?linkid=2101038 for more information.
+         at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.Translate(Expression expression)
+         at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.Translate(Expression expression)
+         at Microsoft.EntityFrameworkCore.Query.QueryCompilationContext.CreateQueryExecutor[TResult](Expression query)
+         at Microsoft.EntityFrameworkCore.Storage.Database.CompileQuery[TResult](Expression query, Boolean async)
+         at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.CompileQueryCore[TResult](IDatabase database, Expression query, IModel model, Boolean async)
+         at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass12_0`1.<ExecuteAsync>b__0()
+         at Microsoft.EntityFrameworkCore.Query.Internal.CompiledQueryCache.GetOrAddQuery[TResult](Object cacheKey, Func`1 compiler)
+         at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteAsync[TResult](Expression query, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1.GetAsyncEnumerator(CancellationToken cancellationToken)
+         at System.Runtime.CompilerServices.ConfiguredCancelableAsyncEnumerable`1.GetAsyncEnumerator()
+         at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+         at manyasligida.Services.CookieConsentService.GetDailyConsentAnalyticsAsync(Int32 days) in C:\Users\pc\manyasligida\Services\CookieConsentService.cs:line 500
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (169ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Products] AS [p]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (170ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Categories] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (169ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Blogs] AS [b]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Galleries] AS [g]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (161ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Videos] AS [v]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (162ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [ContactMessages] AS [c]
+      WHERE [c].[IsRead] = CAST(0 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (172ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COALESCE(SUM([o].[TotalAmount]), 0.0)
+      FROM [Orders] AS [o]
+      WHERE [o].[OrderStatus] = N'Delivered'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], COALESCE([u].[FirstName], N''), COALESCE([u].[LastName], N''), COALESCE([u].[Email], N''), [t].[TotalAmount], [t].[OrderStatus], [t].[OrderDate]
+      FROM (
+          SELECT TOP(@__p_0) [o].[Id], [o].[OrderDate], [o].[OrderStatus], [o].[TotalAmount], [o].[UserId]
+          FROM [Orders] AS [o]
+          ORDER BY [o].[OrderDate] DESC
+      ) AS [t]
+      INNER JOIN [Users] AS [u] ON [t].[UserId] = [u].[Id]
+      ORDER BY [t].[OrderDate] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [c].[Id], [c].[CreatedAt], [c].[Email], [c].[IsRead], [c].[IsReplied], [c].[Message], [c].[Name], [c].[Phone], [c].[RepliedAt], [c].[ReplyMessage], [c].[Subject]
+      FROM [ContactMessages] AS [c]
+      ORDER BY [c].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (177ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [b].[Id], COALESCE([b].[Title], N'') AS [Title], [b].[CreatedAt]
+      FROM [Blogs] AS [b]
+      WHERE [b].[IsActive] = CAST(1 AS bit)
+      ORDER BY [b].[CreatedAt] DESC
+warn: manyasligida.Services.PerformanceMonitorService[0]
+      Slow request detected: /Admin took 2001ms
+warn: manyasligida.Middleware.PerformanceMonitoringMiddleware[0]
+      Slow request: GET /Admin took 2001ms from ::1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], COALESCE([u].[FirstName], N'') AS [FirstName], COALESCE([u].[LastName], N'') AS [LastName], COALESCE([u].[Email], N'') AS [Email], COALESCE([u].[Phone], N'') AS [Phone], COALESCE([u].[Address], N'') AS [Address], COALESCE([u].[City], N'') AS [City], COALESCE([u].[PostalCode], N'') AS [PostalCode], [u].[IsActive], [u].[IsAdmin], [u].[EmailConfirmed], [u].[CreatedAt], [u].[UpdatedAt], [u].[LastLoginAt], COALESCE([u].[PasswordResetToken], N'') AS [PasswordResetToken], COALESCE([u].[PasswordResetCode], N'') AS [PasswordResetCode], COALESCE([u].[GoogleId], N'') AS [GoogleId]
+      FROM [Users] AS [u]
+      ORDER BY [u].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (163ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[Address], [t].[City], [t].[CreatedAt], [t].[Email], [t].[EmailConfirmed], [t].[FirstName], [t].[GoogleId], [t].[IsActive], [t].[IsAdmin], [t].[LastLoginAt], [t].[LastName], [t].[Password], [t].[PasswordResetCode], [t].[PasswordResetCodeExpiry], [t].[PasswordResetToken], [t].[PasswordResetTokenExpiry], [t].[Phone], [t].[PostalCode], [t].[UpdatedAt], [o].[Id], [o].[City], [o].[CustomerEmail], [o].[CustomerName], [o].[CustomerPhone], [o].[DeliveredDate], [o].[DiscountAmount], [o].[Notes], [o].[OrderDate], [o].[OrderNumber], [o].[OrderStatus], [o].[PaymentStatus], [o].[PostalCode], [o].[ShippedDate], [o].[ShippingAddress], [o].[ShippingCost], [o].[SubTotal], [o].[TaxAmount], [o].[TotalAmount], [o].[UserId]
+      FROM (
+          SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+          FROM [Users] AS [u]
+          WHERE [u].[Id] = @__id_0
+      ) AS [t]
+      LEFT JOIN [Orders] AS [o] ON [t].[Id] = [o].[UserId]
+      ORDER BY [t].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (176ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], COALESCE([u].[FirstName], N'') AS [FirstName], COALESCE([u].[LastName], N'') AS [LastName], COALESCE([u].[Email], N'') AS [Email], COALESCE([u].[Phone], N'') AS [Phone], COALESCE([u].[Address], N'') AS [Address], COALESCE([u].[City], N'') AS [City], COALESCE([u].[PostalCode], N'') AS [PostalCode], [u].[IsActive], [u].[IsAdmin], [u].[EmailConfirmed], [u].[CreatedAt], [u].[UpdatedAt], [u].[LastLoginAt], COALESCE([u].[PasswordResetToken], N'') AS [PasswordResetToken], COALESCE([u].[PasswordResetCode], N'') AS [PasswordResetCode], COALESCE([u].[GoogleId], N'') AS [GoogleId]
+      FROM [Users] AS [u]
+      ORDER BY [u].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (165ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[Address], [t].[City], [t].[CreatedAt], [t].[Email], [t].[EmailConfirmed], [t].[FirstName], [t].[GoogleId], [t].[IsActive], [t].[IsAdmin], [t].[LastLoginAt], [t].[LastName], [t].[Password], [t].[PasswordResetCode], [t].[PasswordResetCodeExpiry], [t].[PasswordResetToken], [t].[PasswordResetTokenExpiry], [t].[Phone], [t].[PostalCode], [t].[UpdatedAt], [o].[Id], [o].[City], [o].[CustomerEmail], [o].[CustomerName], [o].[CustomerPhone], [o].[DeliveredDate], [o].[DiscountAmount], [o].[Notes], [o].[OrderDate], [o].[OrderNumber], [o].[OrderStatus], [o].[PaymentStatus], [o].[PostalCode], [o].[ShippedDate], [o].[ShippingAddress], [o].[ShippingCost], [o].[SubTotal], [o].[TaxAmount], [o].[TotalAmount], [o].[UserId]
+      FROM (
+          SELECT TOP(1) [u].[Id], [u].[Address], [u].[City], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FirstName], [u].[GoogleId], [u].[IsActive], [u].[IsAdmin], [u].[LastLoginAt], [u].[LastName], [u].[Password], [u].[PasswordResetCode], [u].[PasswordResetCodeExpiry], [u].[PasswordResetToken], [u].[PasswordResetTokenExpiry], [u].[Phone], [u].[PostalCode], [u].[UpdatedAt]
+          FROM [Users] AS [u]
+          WHERE [u].[Id] = @__id_0
+      ) AS [t]
+      LEFT JOIN [Orders] AS [o] ON [t].[Id] = [o].[UserId]
+      ORDER BY [t].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (164ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], COALESCE([u].[FirstName], N'') AS [FirstName], COALESCE([u].[LastName], N'') AS [LastName], COALESCE([u].[Email], N'') AS [Email], COALESCE([u].[Phone], N'') AS [Phone], COALESCE([u].[Address], N'') AS [Address], COALESCE([u].[City], N'') AS [City], COALESCE([u].[PostalCode], N'') AS [PostalCode], [u].[IsActive], [u].[IsAdmin], [u].[EmailConfirmed], [u].[CreatedAt], [u].[UpdatedAt], [u].[LastLoginAt], COALESCE([u].[PasswordResetToken], N'') AS [PasswordResetToken], COALESCE([u].[PasswordResetCode], N'') AS [PasswordResetCode], COALESCE([u].[GoogleId], N'') AS [GoogleId]
+      FROM [Users] AS [u]
+      ORDER BY [u].[CreatedAt] DESC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,417 @@
+@{
+    ViewData["Title"] = "Stok Takibi";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-warehouse me-2"></i>Stok Takibi
+        </h1>
+        <div>
+            <a href="@Url.Action("LowStockReport", "Inventory")" class="btn btn-warning me-2">
+                <i class="fas fa-exclamation-triangle me-1"></i>Düşük Stok Raporu
+            </a>
+            <a href="@Url.Action("StockValueReport", "Inventory")" class="btn btn-info me-2">
+                <i class="fas fa-chart-bar me-1"></i>Stok Değeri Raporu
+            </a>
+            <a href="@Url.Action("Index", "Inventory")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Stok Kalemi Ekleme Formu -->
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-plus me-2"></i>Yeni Stok Kalemi
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="addStockForm">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Mal İsmi *</label>
+                            <input type="text" name="ItemName" class="form-control" required placeholder="Örn: Süt, Peynir, Yoğurt..." />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kategori</label>
+                            <input type="text" name="Category" class="form-control" placeholder="Örn: Süt Ürünleri, Et Ürünleri..." list="categories" />
+                                                         <datalist id="categories">
+                                 <option value="Süt Ürünleri" />
+                                 <option value="Et Ürünleri" />
+                                 <option value="Sebze" />
+                                 <option value="Meyve" />
+                                 <option value="Temizlik" />
+                                 <option value="Diğer" />
+                             </datalist>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Minimum Stok</label>
+                                    <input type="number" name="MinimumStock" class="form-control" step="0.001" min="0" value="0" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Birim</label>
+                                    <select name="Unit" class="form-select">
+                                        <option value="kg">Kilogram (kg)</option>
+                                        <option value="lt">Litre (lt)</option>
+                                        <option value="adet">Adet</option>
+                                        <option value="paket">Paket</option>
+                                        <option value="kutu">Kutu</option>
+                                        <option value="gram">Gram (gr)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Stok Kalemi Ekle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Stok İşlemleri -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-exchange-alt me-2"></i>Stok İşlemi
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="stockTransactionForm">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Mal İsmi *</label>
+                            <input type="text" name="ItemName" class="form-control" required placeholder="Mal ismi girin..." list="stockItems" />
+                            <datalist id="stockItems"></datalist>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">İşlem Tipi *</label>
+                                    <select name="TransactionType" class="form-select" required>
+                                        <option value="IN">Stok Girişi</option>
+                                        <option value="OUT">Stok Çıkışı</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Miktar *</label>
+                                    <input type="number" name="Quantity" class="form-control" step="0.001" min="0.001" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Birim Fiyat (₺)</label>
+                            <input type="number" name="UnitPrice" class="form-control" step="0.01" min="0" value="0" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea name="Description" class="form-control" rows="2" placeholder="İşlem açıklaması..."></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save me-1"></i>İşlemi Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stok Listesi -->
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-list me-2"></i>Stok Listesi
+                    </h6>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshStock()">
+                            <i class="fas fa-sync-alt me-1"></i>Yenile
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Mal İsmi</th>
+                                    <th>Kategori</th>
+                                    <th>Mevcut Stok</th>
+                                    <th>Min. Stok</th>
+                                    <th>Birim</th>
+                                    <th>Ort. Maliyet</th>
+                                    <th>Stok Değeri</th>
+                                    <th>Durum</th>
+                                    <th>Son Güncelleme</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTable">
+                                @if (ViewBag.StockItems != null)
+                                {
+                                    @foreach (var stock in ViewBag.StockItems)
+                                    {
+                                        <tr class="@(stock.IsLowStock ? "table-warning" : "")">
+                                            <td>@stock.ItemName</td>
+                                            <td>@stock.Category</td>
+                                            <td class="fw-bold">@stock.CurrentStock</td>
+                                            <td>@stock.MinimumStock</td>
+                                            <td>@stock.Unit</td>
+                                            <td>₺@stock.AverageCost.ToString("N2")</td>
+                                            <td class="fw-bold text-success">₺@stock.StockValue.ToString("N2")</td>
+                                            <td>
+                                                @if (stock.IsLowStock)
+                                                {
+                                                    <span class="badge bg-danger">Düşük Stok</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">Normal</span>
+                                                }
+                                            </td>
+                                            <td>@stock.LastUpdated.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStockItem(@stock.Id)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Form submit
+            $('#addStockForm').on('submit', function(e) {
+                e.preventDefault();
+                addStockItem();
+            });
+
+            $('#stockTransactionForm').on('submit', function(e) {
+                e.preventDefault();
+                addStockTransaction();
+            });
+
+            // Kategorileri ve stok kalemlerini yükle
+            loadCategories();
+            loadStockItems();
+        });
+
+        function addStockItem() {
+            const formData = new FormData($('#addStockForm')[0]);
+            
+            $.ajax({
+                url: '@Url.Action("AddStockItem", "Inventory")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        $('#addStockForm')[0].reset();
+                        refreshStock();
+                        loadStockItems();
+                    } else {
+                        showAlert('error', response.message);
+                        if (response.errors) {
+                            response.errors.forEach(function(error) {
+                                showAlert('error', error);
+                            });
+                        }
+                    }
+                },
+                error: function() {
+                    showAlert('error', 'Stok kalemi eklenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function addStockTransaction() {
+            const formData = new FormData($('#stockTransactionForm')[0]);
+            
+            // İşlem tarihini ekle
+            formData.append('TransactionDate', new Date().toISOString());
+            
+            $.ajax({
+                url: '@Url.Action("AddTransaction", "Inventory")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        $('#stockTransactionForm')[0].reset();
+                        refreshStock();
+                    } else {
+                        showAlert('error', response.message);
+                        if (response.errors) {
+                            response.errors.forEach(function(error) {
+                                showAlert('error', error);
+                            });
+                        }
+                    }
+                },
+                error: function() {
+                    showAlert('error', 'Stok işlemi eklenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function deleteStockItem(id) {
+            if (confirm('Bu stok kalemini silmek istediğinizden emin misiniz?')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteStockItem", "Inventory")/' + id,
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showAlert('success', response.message);
+                            refreshStock();
+                            loadStockItems();
+                        } else {
+                            showAlert('error', response.message);
+                        }
+                    },
+                    error: function() {
+                        showAlert('error', 'Stok kalemi silinirken bir hata oluştu');
+                    }
+                });
+            }
+        }
+
+        function refreshStock() {
+            $.ajax({
+                url: '@Url.Action("Stock", "Inventory")',
+                type: 'GET',
+                success: function(data) {
+                    // Sayfayı yenile
+                    location.reload();
+                },
+                error: function() {
+                    showAlert('error', 'Veriler yenilenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function loadCategories() {
+            $.ajax({
+                url: '@Url.Action("GetCategories", "Inventory")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        const datalist = $('#categories');
+                        datalist.empty();
+                        response.data.forEach(function(category) {
+                            datalist.append(`<option value="${category}">`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function loadStockItems() {
+            $.ajax({
+                url: '@Url.Action("GetStockItems", "Inventory")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        const datalist = $('#stockItems');
+                        datalist.empty();
+                        response.data.forEach(function(stock) {
+                            datalist.append(`<option value="${stock.itemName}">`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function showAlert(type, message) {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const icon = type === 'error' ? 'exclamation-triangle' : 'check-circle';
+            
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${icon} me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('.container-fluid').prepend(alertHtml);
+        }
+
+        // Mal ismi seçildiğinde mevcut stok bilgisini göster
+        $('input[name="ItemName"]').on('input', function() {
+            const itemName = $(this).val();
+            if (itemName) {
+                $.ajax({
+                    url: '@Url.Action("GetStockItem", "Inventory")/' + encodeURIComponent(itemName),
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.data) {
+                            const stock = response.data;
+                            const infoHtml = `
+                                <div class="alert alert-info alert-sm mt-2">
+                                    <strong>Mevcut Stok:</strong> ${stock.currentStock} ${stock.unit || ''} | 
+                                    <strong>Min. Stok:</strong> ${stock.minimumStock} ${stock.unit || ''} | 
+                                    <strong>Ort. Maliyet:</strong> ₺${parseFloat(stock.averageCost).toFixed(2)}
+                                </div>
+                            `;
+                            
+                            let infoDiv = $('.alert-info');
+                            if (infoDiv.length === 0) {
+                                $('input[name="ItemName"]').after(infoHtml);
+                            } else {
+                                infoDiv.replaceWith(infoHtml);
+                            }
+                        }
+                    }
+                });
+            } else {
+                $('.alert-info').remove();
+            }
+        });
+    </script>
+}

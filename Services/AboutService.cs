@@ -58,6 +58,52 @@ namespace manyasligida.Services
         {
             try
             {
+                // Request validation
+                if (request == null)
+                {
+                    return new AboutServiceResponse<AboutContentResponse>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = new List<string> { "Request data is null" }
+                    };
+                }
+
+                // Null değerleri güvenli hale getir - yeni bir request oluştur
+                var sanitizedRequest = request with
+                {
+                    Title = request.Title ?? "",
+                    Subtitle = request.Subtitle ?? "",
+                    StoryTitle = request.StoryTitle ?? "",
+                    StorySubtitle = request.StorySubtitle ?? "",
+                    StoryContent = request.StoryContent ?? "",
+                    StoryImageUrl = request.StoryImageUrl ?? "",
+                    MissionTitle = request.MissionTitle ?? "",
+                    MissionContent = request.MissionContent ?? "",
+                    VisionTitle = request.VisionTitle ?? "",
+                    VisionContent = request.VisionContent ?? "",
+                    ValuesTitle = request.ValuesTitle ?? "",
+                    ValuesSubtitle = request.ValuesSubtitle ?? "",
+                    ValuesContent = request.ValuesContent ?? "",
+                    ValueItems = request.ValueItems ?? new List<ValueItemRequest>(),
+                    ProductionTitle = request.ProductionTitle ?? "",
+                    ProductionSubtitle = request.ProductionSubtitle ?? "",
+                    ProductionSteps = request.ProductionSteps ?? new List<ProductionStepRequest>(),
+                    CertificatesTitle = request.CertificatesTitle ?? "",
+                    CertificatesSubtitle = request.CertificatesSubtitle ?? "",
+                    CertificateItems = request.CertificateItems ?? new List<CertificateItemRequest>(),
+                    RegionTitle = request.RegionTitle ?? "",
+                    RegionSubtitle = request.RegionSubtitle ?? "",
+                    RegionContent = request.RegionContent ?? "",
+                    RegionImageUrl = request.RegionImageUrl ?? "",
+                    RegionFeatures = request.RegionFeatures ?? new List<RegionFeatureRequest>(),
+                    CtaTitle = request.CtaTitle ?? "",
+                    CtaContent = request.CtaContent ?? "",
+                    CtaButtonText = request.CtaButtonText ?? "",
+                    CtaSecondButtonText = request.CtaSecondButtonText ?? "",
+                    StoryFeatures = request.StoryFeatures ?? new List<StoryFeatureRequest>()
+                };
+
                 var existingContent = await _context.AboutContents
                     .Where(a => a.IsActive)
                     .FirstOrDefaultAsync();
@@ -65,13 +111,13 @@ namespace manyasligida.Services
                 if (existingContent == null)
                 {
                     // Create new content
-                    var newContent = MapFromRequest(request);
+                    var newContent = MapFromRequest(sanitizedRequest);
                     _context.AboutContents.Add(newContent);
                 }
                 else
                 {
                     // Update existing content
-                    UpdateExistingContent(existingContent, request);
+                    UpdateExistingContent(existingContent, sanitizedRequest);
                 }
 
                 await _context.SaveChangesAsync();
@@ -81,7 +127,17 @@ namespace manyasligida.Services
                     .OrderByDescending(a => a.UpdatedAt)
                     .FirstOrDefaultAsync();
 
-                var response = MapToResponse(updatedContent!);
+                if (updatedContent == null)
+                {
+                    return new AboutServiceResponse<AboutContentResponse>
+                    {
+                        Success = false,
+                        Message = "Failed to retrieve updated content",
+                        Errors = new List<string> { "Updated content not found" }
+                    };
+                }
+
+                var response = MapToResponse(updatedContent);
 
                 _logger.LogInformation("About content updated successfully");
                 return new AboutServiceResponse<AboutContentResponse>
@@ -239,32 +295,35 @@ namespace manyasligida.Services
             return new AboutContentResponse
             {
                 Id = content.Id,
-                Title = content.Title,
-                Subtitle = content.Subtitle,
-                StoryTitle = content.StoryTitle,
-                StoryContent = content.StoryContent,
-                StoryImageUrl = content.StoryImageUrl,
-                MissionTitle = content.MissionTitle,
-                MissionContent = content.MissionContent,
-                VisionTitle = content.VisionTitle,
-                VisionContent = content.VisionContent,
-                ValuesTitle = content.ValuesTitle,
-                ValuesSubtitle = content.ValuesSubtitle,
+                Title = content.Title ?? "",
+                Subtitle = content.Subtitle ?? "",
+                StoryTitle = content.StoryTitle ?? "",
+                StorySubtitle = content.StorySubtitle ?? "",
+                StoryContent = content.StoryContent ?? "",
+                StoryImageUrl = content.StoryImageUrl ?? "",
+                MissionTitle = content.MissionTitle ?? "",
+                MissionContent = content.MissionContent ?? "",
+                VisionTitle = content.VisionTitle ?? "",
+                VisionContent = content.VisionContent ?? "",
+                ValuesTitle = content.ValuesTitle ?? "",
+                ValuesSubtitle = content.ValuesSubtitle ?? "",
+                ValuesContent = content.ValuesContent ?? "",
                 ValueItems = DeserializeValueItems(content.ValueItems),
-                ProductionTitle = content.ProductionTitle,
-                ProductionSubtitle = content.ProductionSubtitle,
+                ProductionTitle = content.ProductionTitle ?? "",
+                ProductionSubtitle = content.ProductionSubtitle ?? "",
                 ProductionSteps = DeserializeProductionSteps(content.ProductionSteps),
-                CertificatesTitle = content.CertificatesTitle,
-                CertificatesSubtitle = content.CertificatesSubtitle,
+                CertificatesTitle = content.CertificatesTitle ?? "",
+                CertificatesSubtitle = content.CertificatesSubtitle ?? "",
                 CertificateItems = DeserializeCertificates(content.CertificateItems),
-                RegionTitle = content.RegionTitle,
-                RegionContent = content.RegionContent,
-                RegionImageUrl = content.RegionImageUrl,
+                RegionTitle = content.RegionTitle ?? "",
+                RegionSubtitle = content.RegionSubtitle ?? "",
+                RegionContent = content.RegionContent ?? "",
+                RegionImageUrl = content.RegionImageUrl ?? "",
                 RegionFeatures = DeserializeRegionFeatures(content.RegionFeatures),
-                CtaTitle = content.CtaTitle,
-                CtaContent = content.CtaContent,
-                CtaButtonText = content.CtaButtonText,
-                CtaSecondButtonText = content.CtaSecondButtonText,
+                CtaTitle = content.CtaTitle ?? "",
+                CtaContent = content.CtaContent ?? "",
+                CtaButtonText = content.CtaButtonText ?? "",
+                CtaSecondButtonText = content.CtaSecondButtonText ?? "",
                 StoryFeatures = DeserializeStoryFeatures(content.StoryFeatures),
                 IsActive = content.IsActive,
                 CreatedAt = content.CreatedAt,
@@ -276,33 +335,36 @@ namespace manyasligida.Services
         {
             return new AboutContent
             {
-                Title = request.Title,
-                Subtitle = request.Subtitle,
-                StoryTitle = request.StoryTitle,
-                StoryContent = request.StoryContent,
-                StoryImageUrl = request.StoryImageUrl,
-                MissionTitle = request.MissionTitle,
-                MissionContent = request.MissionContent,
-                VisionTitle = request.VisionTitle,
-                VisionContent = request.VisionContent,
-                ValuesTitle = request.ValuesTitle,
-                ValuesSubtitle = request.ValuesSubtitle,
-                ValueItems = JsonSerializer.Serialize(request.ValueItems),
-                ProductionTitle = request.ProductionTitle,
-                ProductionSubtitle = request.ProductionSubtitle,
-                ProductionSteps = JsonSerializer.Serialize(request.ProductionSteps),
-                CertificatesTitle = request.CertificatesTitle,
-                CertificatesSubtitle = request.CertificatesSubtitle,
-                CertificateItems = JsonSerializer.Serialize(request.CertificateItems),
-                RegionTitle = request.RegionTitle,
-                RegionContent = request.RegionContent,
-                RegionImageUrl = request.RegionImageUrl,
-                RegionFeatures = JsonSerializer.Serialize(request.RegionFeatures),
-                CtaTitle = request.CtaTitle,
-                CtaContent = request.CtaContent,
-                CtaButtonText = request.CtaButtonText,
-                CtaSecondButtonText = request.CtaSecondButtonText,
-                StoryFeatures = JsonSerializer.Serialize(request.StoryFeatures),
+                Title = request.Title ?? "",
+                Subtitle = request.Subtitle ?? "",
+                StoryTitle = request.StoryTitle ?? "",
+                StorySubtitle = request.StorySubtitle ?? "",
+                StoryContent = request.StoryContent ?? "",
+                StoryImageUrl = request.StoryImageUrl ?? "",
+                MissionTitle = request.MissionTitle ?? "",
+                MissionContent = request.MissionContent ?? "",
+                VisionTitle = request.VisionTitle ?? "",
+                VisionContent = request.VisionContent ?? "",
+                ValuesTitle = request.ValuesTitle ?? "",
+                ValuesSubtitle = request.ValuesSubtitle ?? "",
+                ValuesContent = request.ValuesContent ?? "",
+                ValueItems = JsonSerializer.Serialize(request.ValueItems ?? new List<ValueItemRequest>()),
+                ProductionTitle = request.ProductionTitle ?? "",
+                ProductionSubtitle = request.ProductionSubtitle ?? "",
+                ProductionSteps = JsonSerializer.Serialize(request.ProductionSteps ?? new List<ProductionStepRequest>()),
+                CertificatesTitle = request.CertificatesTitle ?? "",
+                CertificatesSubtitle = request.CertificatesSubtitle ?? "",
+                CertificateItems = JsonSerializer.Serialize(request.CertificateItems ?? new List<CertificateItemRequest>()),
+                RegionTitle = request.RegionTitle ?? "",
+                RegionSubtitle = request.RegionSubtitle ?? "",
+                RegionContent = request.RegionContent ?? "",
+                RegionImageUrl = request.RegionImageUrl ?? "",
+                RegionFeatures = JsonSerializer.Serialize(request.RegionFeatures ?? new List<RegionFeatureRequest>()),
+                CtaTitle = request.CtaTitle ?? "",
+                CtaContent = request.CtaContent ?? "",
+                CtaButtonText = request.CtaButtonText ?? "",
+                CtaSecondButtonText = request.CtaSecondButtonText ?? "",
+                StoryFeatures = JsonSerializer.Serialize(request.StoryFeatures ?? new List<StoryFeatureRequest>()),
                 IsActive = true,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -311,33 +373,36 @@ namespace manyasligida.Services
 
         private void UpdateExistingContent(AboutContent existing, AboutEditRequest request)
         {
-            existing.Title = request.Title;
-            existing.Subtitle = request.Subtitle;
-            existing.StoryTitle = request.StoryTitle;
-            existing.StoryContent = request.StoryContent;
-            existing.StoryImageUrl = request.StoryImageUrl;
-            existing.MissionTitle = request.MissionTitle;
-            existing.MissionContent = request.MissionContent;
-            existing.VisionTitle = request.VisionTitle;
-            existing.VisionContent = request.VisionContent;
-            existing.ValuesTitle = request.ValuesTitle;
-            existing.ValuesSubtitle = request.ValuesSubtitle;
-            existing.ValueItems = JsonSerializer.Serialize(request.ValueItems);
-            existing.ProductionTitle = request.ProductionTitle;
-            existing.ProductionSubtitle = request.ProductionSubtitle;
-            existing.ProductionSteps = JsonSerializer.Serialize(request.ProductionSteps);
-            existing.CertificatesTitle = request.CertificatesTitle;
-            existing.CertificatesSubtitle = request.CertificatesSubtitle;
-            existing.CertificateItems = JsonSerializer.Serialize(request.CertificateItems);
-            existing.RegionTitle = request.RegionTitle;
-            existing.RegionContent = request.RegionContent;
-            existing.RegionImageUrl = request.RegionImageUrl;
-            existing.RegionFeatures = JsonSerializer.Serialize(request.RegionFeatures);
-            existing.CtaTitle = request.CtaTitle;
-            existing.CtaContent = request.CtaContent;
-            existing.CtaButtonText = request.CtaButtonText;
-            existing.CtaSecondButtonText = request.CtaSecondButtonText;
-            existing.StoryFeatures = JsonSerializer.Serialize(request.StoryFeatures);
+            existing.Title = request.Title ?? "";
+            existing.Subtitle = request.Subtitle ?? "";
+            existing.StoryTitle = request.StoryTitle ?? "";
+            existing.StorySubtitle = request.StorySubtitle ?? "";
+            existing.StoryContent = request.StoryContent ?? "";
+            existing.StoryImageUrl = request.StoryImageUrl ?? "";
+            existing.MissionTitle = request.MissionTitle ?? "";
+            existing.MissionContent = request.MissionContent ?? "";
+            existing.VisionTitle = request.VisionTitle ?? "";
+            existing.VisionContent = request.VisionContent ?? "";
+            existing.ValuesTitle = request.ValuesTitle ?? "";
+            existing.ValuesSubtitle = request.ValuesSubtitle ?? "";
+            existing.ValuesContent = request.ValuesContent ?? "";
+            existing.ValueItems = JsonSerializer.Serialize(request.ValueItems ?? new List<ValueItemRequest>());
+            existing.ProductionTitle = request.ProductionTitle ?? "";
+            existing.ProductionSubtitle = request.ProductionSubtitle ?? "";
+            existing.ProductionSteps = JsonSerializer.Serialize(request.ProductionSteps ?? new List<ProductionStepRequest>());
+            existing.CertificatesTitle = request.CertificatesTitle ?? "";
+            existing.CertificatesSubtitle = request.CertificatesSubtitle ?? "";
+            existing.CertificateItems = JsonSerializer.Serialize(request.CertificateItems ?? new List<CertificateItemRequest>());
+            existing.RegionTitle = request.RegionTitle ?? "";
+            existing.RegionSubtitle = request.RegionSubtitle ?? "";
+            existing.RegionContent = request.RegionContent ?? "";
+            existing.RegionImageUrl = request.RegionImageUrl ?? "";
+            existing.RegionFeatures = JsonSerializer.Serialize(request.RegionFeatures ?? new List<RegionFeatureRequest>());
+            existing.CtaTitle = request.CtaTitle ?? "";
+            existing.CtaContent = request.CtaContent ?? "";
+            existing.CtaButtonText = request.CtaButtonText ?? "";
+            existing.CtaSecondButtonText = request.CtaSecondButtonText ?? "";
+            existing.StoryFeatures = JsonSerializer.Serialize(request.StoryFeatures ?? new List<StoryFeatureRequest>());
             existing.UpdatedAt = DateTime.Now;
         }
 

@@ -1,0 +1,283 @@
+@{
+    ViewData["Title"] = "Stok İşlemleri";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-exchange-alt me-2"></i>Stok İşlemleri
+        </h1>
+        <a href="@Url.Action("Index", "Inventory")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Geri Dön
+        </a>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- İşlem Ekleme Formu -->
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-plus me-2"></i>Yeni İşlem
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="addTransactionForm">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Mal İsmi *</label>
+                            <input type="text" name="ItemName" class="form-control" required placeholder="Mal ismi girin..." list="stockItems" />
+                            <datalist id="stockItems"></datalist>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">İşlem Tipi *</label>
+                                    <select name="TransactionType" class="form-select" required>
+                                        <option value="IN">Stok Girişi</option>
+                                        <option value="OUT">Stok Çıkışı</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Miktar *</label>
+                                    <input type="number" name="Quantity" class="form-control" step="0.001" min="0.001" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Birim</label>
+                                    <select name="Unit" class="form-select">
+                                        <option value="kg">Kilogram (kg)</option>
+                                        <option value="lt">Litre (lt)</option>
+                                        <option value="adet">Adet</option>
+                                        <option value="paket">Paket</option>
+                                        <option value="kutu">Kutu</option>
+                                        <option value="gram">Gram (gr)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Birim Fiyat (₺)</label>
+                                    <input type="number" name="UnitPrice" class="form-control" step="0.01" min="0" value="0" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">İşlem Tarihi *</label>
+                            <input type="datetime-local" name="TransactionDate" class="form-control" required value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea name="Description" class="form-control" rows="3" placeholder="İşlem açıklaması..."></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save me-1"></i>İşlemi Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- İşlemler Listesi -->
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-list me-2"></i>İşlemler Listesi
+                    </h6>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshTransactions()">
+                            <i class="fas fa-sync-alt me-1"></i>Yenile
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Mal İsmi</th>
+                                    <th>İşlem Tipi</th>
+                                    <th>Miktar</th>
+                                    <th>Birim Fiyat</th>
+                                    <th>Toplam</th>
+                                    <th>Açıklama</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTable">
+                                @if (ViewBag.Transactions != null)
+                                {
+                                    @foreach (var transaction in ViewBag.Transactions)
+                                    {
+                                        <tr>
+                                            <td>@transaction.TransactionDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@transaction.ItemName</td>
+                                            <td>
+                                                @if (transaction.TransactionType == "IN")
+                                                {
+                                                    <span class="badge bg-success">Giriş</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Çıkış</span>
+                                                }
+                                            </td>
+                                            <td>@transaction.Quantity @transaction.Unit</td>
+                                            <td>₺@transaction.UnitPrice.ToString("N2")</td>
+                                            <td class="fw-bold">₺@transaction.TotalAmount.ToString("N2")</td>
+                                            <td>@transaction.Description</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Form submit
+            $('#addTransactionForm').on('submit', function(e) {
+                e.preventDefault();
+                addTransaction();
+            });
+
+            // Stok kalemlerini yükle
+            loadStockItems();
+        });
+
+        function addTransaction() {
+            const formData = new FormData($('#addTransactionForm')[0]);
+            
+            $.ajax({
+                url: '@Url.Action("AddTransaction", "Inventory")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        $('#addTransactionForm')[0].reset();
+                        $('#addTransactionForm input[name="TransactionDate"]').val(new Date().toISOString().slice(0, 16));
+                        refreshTransactions();
+                    } else {
+                        showAlert('error', response.message);
+                        if (response.errors) {
+                            response.errors.forEach(function(error) {
+                                showAlert('error', error);
+                            });
+                        }
+                    }
+                },
+                error: function() {
+                    showAlert('error', 'İşlem eklenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function refreshTransactions() {
+            $.ajax({
+                url: '@Url.Action("Transactions", "Inventory")',
+                type: 'GET',
+                success: function(data) {
+                    // Sayfayı yenile
+                    location.reload();
+                },
+                error: function() {
+                    showAlert('error', 'Veriler yenilenirken bir hata oluştu');
+                }
+            });
+        }
+
+        function loadStockItems() {
+            $.ajax({
+                url: '@Url.Action("GetStockItems", "Inventory")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        const datalist = $('#stockItems');
+                        datalist.empty();
+                        response.data.forEach(function(stock) {
+                            datalist.append(`<option value="${stock.itemName}" />`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function showAlert(type, message) {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const icon = type === 'error' ? 'exclamation-triangle' : 'check-circle';
+            
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${icon} me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('.container-fluid').prepend(alertHtml);
+        }
+
+        // Mal ismi seçildiğinde mevcut stok bilgisini göster
+        $('input[name="ItemName"]').on('input', function() {
+            const itemName = $(this).val();
+            if (itemName) {
+                $.ajax({
+                    url: '@Url.Action("GetStockItem", "Inventory")/' + encodeURIComponent(itemName),
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.data) {
+                            const stock = response.data;
+                            const infoHtml = `
+                                <div class="alert alert-info alert-sm mt-2">
+                                    <strong>Mevcut Stok:</strong> ${stock.currentStock} ${stock.unit || ''} | 
+                                    <strong>Min. Stok:</strong> ${stock.minimumStock} ${stock.unit || ''} | 
+                                    <strong>Ort. Maliyet:</strong> ₺${parseFloat(stock.averageCost).toFixed(2)}
+                                </div>
+                            `;
+                            
+                            let infoDiv = $('.alert-info');
+                            if (infoDiv.length === 0) {
+                                $('input[name="ItemName"]').after(infoHtml);
+                            } else {
+                                infoDiv.replaceWith(infoHtml);
+                            }
+                        }
+                    }
+                });
+            } else {
+                $('.alert-info').remove();
+            }
+        });
+    </script>
+}

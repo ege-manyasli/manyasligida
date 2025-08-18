@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using manyasligida.Services;
 
 namespace manyasligida.Models
@@ -11,7 +12,6 @@ namespace manyasligida.Models
         [StringLength(50)]
         public string OrderNumber { get; set; } = string.Empty;
         
-        [Required]
         public int UserId { get; set; }
         public User User { get; set; } = null!;
         
@@ -47,22 +47,27 @@ namespace manyasligida.Models
         
         [Range(0, double.MaxValue, ErrorMessage = "Ara toplam 0 veya daha büyük olmalıdır")]
         [Display(Name = "Ara Toplam")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal SubTotal { get; set; }
         
         [Range(0, double.MaxValue, ErrorMessage = "İndirim tutarı 0 veya daha büyük olmalıdır")]
         [Display(Name = "İndirim Tutarı")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; }
         
         [Range(0, double.MaxValue, ErrorMessage = "Kargo ücreti 0 veya daha büyük olmalıdır")]
         [Display(Name = "Kargo Ücreti")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal ShippingCost { get; set; }
         
         [Range(0, double.MaxValue, ErrorMessage = "Vergi tutarı 0 veya daha büyük olmalıdır")]
         [Display(Name = "Vergi Tutarı")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal TaxAmount { get; set; }
         
         [Range(0, double.MaxValue, ErrorMessage = "Toplam tutar 0 veya daha büyük olmalıdır")]
         [Display(Name = "Toplam Tutar")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
         
         [Required]
